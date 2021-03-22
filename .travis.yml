@@ -1,8 +1,0 @@
-language: node_js
-node_js: 15.14.0
-install: yarn
-cache: yarn
-script:
-  - yarn run tsc
-  - yarn run lint
-  - yarn run prettier:check
