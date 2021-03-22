@@ -4,11 +4,9 @@ name: CI
 
 # Controls when the action will run. 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches: [ main ]
+  # Triggers the workflow on pull request events but only for the dev branch
   pull_request:
-    branches: [ main ]
+    branches: [ dev, main ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -25,6 +23,9 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
+      # Check the build
+      - name: Install modules
+        run: npm i
+        
       - name: Run the linter
         run: npm run build
