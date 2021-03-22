@@ -11,7 +11,6 @@ setup();
 
 // healthcheck for gitpayd
 APP.get("/gitpayd/health", (req, res) => {
-    console.log('hi')
     log(`${req.ip} connected to gitpayd`, LogLevel.INFO);
     res.status(HTTP_OK).json({msg: 'gitpayd is UP'});
 });
