@@ -2,6 +2,8 @@ import axios from 'axios';
 import https from 'https';
 import fs from 'fs/promises';
 import os from 'os';
+import log from './logging';
+import { LogLevel } from './logging';
 
 // interface for the config file
 interface ConfigFile {
@@ -30,32 +32,27 @@ async function testLnd(host:string):Promise<void> {
     });
     const data = await axios.get(`${host}/v1/getinfo`, { httpsAgent: agent })
       .then(res => {
-        // tslint:disable-next-line:no-console
         return res.data;
     })
     .catch(() => {
-        // tslint:disable-next-line:no-console
-        console.error('lnd failed to connect');
+        log('lnd failed to connect', LogLevel.ERROR);
         // something bad happened and we can't proceed without LND connectivity
         process.exit(1);
     })
-    // tslint:disable-next-line:no-console
-    console.log(`found lnd version: ${data.version}`)
+    log(`found lnd version: ${data.version}`, LogLevel.INFO)
   }
 
 /**
  * Check for a config file. If no config file
  * exists create some default values so we can
  * check for the LND node existing
- * @returns
  */
 export default async function setup():Promise<void> {
     let config:ConfigFile | Buffer;
     try {
         config = await fs.readFile(CONFIG_PATH);
     } catch {
-        // tslint:disable-next-line:no-console
-        console.log('no config file found');
+        log('no config file found', LogLevel.ERROR);
         // none found, write it
         fs.mkdir(`${os.homedir()}/.gitpayd/`);
         fs.writeFile(CONFIG_PATH, JSON.stringify(DEFAULT_CONFIG, null, INDENT));
