@@ -16,10 +16,10 @@ export enum LogLevel {
  * @param level - level types to filter by
  */
 export default async function log(message:string, level:string):Promise<void> {
+    // issue: duplicate log on startup to stdout
     const date = new Date().toISOString();
-    const writeLog = await fs.writeFile(logFile,
-        `[${level}] ${date} => ${message}\n`,
-        err => {/* do nothing */});
     const readLog = fs.createReadStream(logFile);
-    readLog.pipe(process.stdout);
+    fs.appendFile(logFile,`[${level}] ${date} => ${message}\n`, () => {
+        readLog.pipe(process.stdout);
+    });
 }

@@ -11,6 +11,11 @@ interface ConfigFile {
     lndHost: string
 }
 
+// global settings for the daemon
+export enum GitpaydConfig {
+    PORT = 7777
+}
+
 // some defaults for linux
 const CONFIG_PATH = `${os.homedir()}/.gitpayd/config.json`;
 const DEFAULT_MACAROON = `${os.homedir()}/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`;
@@ -20,6 +25,7 @@ const DEFAULT_CONFIG: ConfigFile = {
     macaroonPath: DEFAULT_MACAROON,
     lndHost: DEFAULT_LND_HOST,
 }
+const logFile = 'app.log';
 
 /**
  * Hit the LND Node and see if it returns data
@@ -39,6 +45,7 @@ async function testLnd(host:string):Promise<void> {
         // something bad happened and we can't proceed without LND connectivity
         process.exit(1);
     })
+    log(`gipayd started at http://localhost:${ GitpaydConfig.PORT }`, LogLevel.INFO);
     log(`found lnd version: ${data.version}`, LogLevel.INFO)
   }
 
@@ -48,6 +55,8 @@ async function testLnd(host:string):Promise<void> {
  * check for the LND node existing
  */
 export default async function setup():Promise<void> {
+    // setup new empty log file
+    await fs.writeFile(logFile, '');
     let config:ConfigFile | Buffer;
     try {
         config = await fs.readFile(CONFIG_PATH);

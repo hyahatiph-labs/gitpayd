@@ -1,9 +1,7 @@
 import express from 'express';
-import setup from './setup';
-import log from './logging';
-import { LogLevel } from './logging';
+import setup, { GitpaydConfig } from './setup';
+import log, { LogLevel } from './logging';
 const APP = express();
-const PORT = 7777; // default port to listen
 const HTTP_OK = 200;
 
 // TODO: automated cert renewal
@@ -27,6 +25,4 @@ APP.post("/gitpayd/pay:paymentRequest", (req, res) => {
 });
 
 // start the Express server
-APP.listen(PORT, () => {
-    log(`gipayd started at http://localhost:${PORT}`, LogLevel.INFO);
-});
+APP.listen(GitpaydConfig.PORT, () => { /* do nothing*/ });
