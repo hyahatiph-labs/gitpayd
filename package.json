@@ -1,0 +1,20 @@
+{
+  "name": "gitpayd",
+  "version": "1.0.0",
+  "description": "git + ln, gitpayd watches your repo for new commits and sends payments to contributors",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/callmekurisu/gitpayd.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/callmekurisu/gitpayd/issues"
+  },
+  "homepage": "https://github.com/callmekurisu/gitpayd#readme"
+}
