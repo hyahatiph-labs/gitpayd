@@ -11,6 +11,7 @@ Closes #(issue number goes here)
 <b>LN:somepaymentrequestgoeshere</b>
 
 This repo is powered by the gitpay daemon and LND. Get paid for closing issues
+<br/>
 Learn more about LND at https://dev.lightning.community/
 
 ### Steps to Test
