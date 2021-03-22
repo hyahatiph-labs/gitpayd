@@ -29,3 +29,12 @@ jobs:
         
       - name: Run the linter
         run: npm run build
+
+      # execute node.js script that 
+        # use github REST API
+        # get a list of issues
+        # receive a list of prs as argument
+        # merge pr
+        # close issue
+        # will parse the payment request and send payment
+        # handle errors as needed and fail the build

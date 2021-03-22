@@ -5,6 +5,7 @@
 > ## Bounty:
 
 > Number between 1000 and 100000 satoshis
+s
 ## Before submitting an issue, check the following checklist:
 
 > If the build is passing and the application is running
