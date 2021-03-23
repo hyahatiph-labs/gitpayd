@@ -1,26 +1,47 @@
 'use strict'
 const axios = require('axios')
+const api = 'https://api.github.com/repos'
 const owner = process.argv[2]
 const repo = process.argv[3]
+let paymentRequest;
+let amount;
 
 // set accept in axios header
 axios.defaults.headers.get['Accept'] = 'application/vnd.github.v3+json';
 
-// use github REST API to get a list of issues
-async function acquireIssues() {
-    const issues = await axios.get(`https://api.github.com/repos/${owner}/${repo}/issues`)
-    const pr = await axios.get(`https://api.github.com/repos/${owner}/${repo}/pulls`)
-    issues.data.forEach(element => {
-        const bounty = element.body.split('Bounty: ')[1].split('\n')[0].trim()
-        const id = element.id
-        console.log(`Processing issue id: ${id} for ${bounty} satoshis`)
-    });
+/**
+ * Helper function for parsing values from github metadata
+ * @param {String} str 
+ * @returns 
+ */
+const splitter = (str) => { return str[1].split('\n')[0].trim() }
+
+/**
+ * Make the API call to LND for processing payments
+ * @param {String} paymentRequest 
+ * @param {Number} amount 
+ */
+async function sendPayment(paymentRequest, amount) {
+    // send the payment
+    
+    // merge the pr with github cli spawned process
 }
 
-acquireIssues().catch(e => console.error(e))
+/**
+ * This function acquires the issue linked in the pull request
+ */
+async function acquireIssues() {
+    const pr = await axios.get(`${api}/${owner}/${repo}/pulls`)
+    pr.data.forEach(async pull => {
+        const issueNum = splitter(pull.body.split('Closes #'))
+        paymentRequest = splitter(pull.body.split('LN: '))
+        const pullRequestNum = pull.number
+        console.log(`Processing issue #${issueNum}...`)
+        const issue = await axios.get(`https://api.github.com/repos/${owner}/${repo}/issues/${issueNum}`)
+        amount = splitter(issue.data.body.split('Bounty: '))
+        console.log(`Attempting to automatically merge pull request #${pullRequestNum} for ${bounty} satoshis`)
+        sendPayment(paymentRequest, amount).catch(e => console.info(e))
+    })
+}
 
-// parse payment request, send payment and merge pr
-
-// close issue
-
-// handle errors as needed and fail the build
+acquireIssues().catch(e => console.info(e))

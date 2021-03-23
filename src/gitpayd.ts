@@ -16,7 +16,7 @@ APP.get("/gitpayd/health", (req, res) => {
     res.status(HTTP_OK).json({msg: 'gitpayd is UP'});
 });
 
-// healthcheck for gitpayd
+// payment API for gitpayd
 APP.post("/gitpayd/pay:paymentRequest", (req, res) => {
     log(`${req.ip} connected to gitpayd/pay`, LogLevel.INFO);
     // send the payment request to the lnd node

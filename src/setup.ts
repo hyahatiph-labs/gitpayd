@@ -33,19 +33,15 @@ const logFile = 'app.log';
  */
 async function testLnd(host:string):Promise<void> {
     // Handle LND TLS error at the request level
-    const agent = new https.Agent({
-      rejectUnauthorized: false
-    });
+    const agent = new https.Agent({ rejectUnauthorized: false });
     const data = await axios.get(`${host}/v1/getinfo`, { httpsAgent: agent })
-      .then(res => {
-        return res.data;
-    })
-    .catch(() => {
+      .then(res => { return res.data; })
+      .catch(() => {
         log('lnd failed to connect', LogLevel.ERROR);
         // something bad happened and we can't proceed without LND connectivity
         process.exit(1);
     })
-    log(`gipayd started at http://localhost:${ GitpaydConfig.PORT }`, LogLevel.INFO);
+    log(`gipayd started at http://localhost:${GitpaydConfig.PORT}`, LogLevel.INFO);
     log(`found lnd version: ${data.version}`, LogLevel.INFO)
   }
 
@@ -55,8 +51,6 @@ async function testLnd(host:string):Promise<void> {
  * check for the LND node existing
  */
 export default async function setup():Promise<void> {
-    // setup new empty log file
-    await fs.writeFile(logFile, '');
     let config:ConfigFile | Buffer;
     try {
         config = await fs.readFile(CONFIG_PATH);
