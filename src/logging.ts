@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { spawn } from 'child_process';
 const logFile = 'app.log';
 
 /**
@@ -17,9 +18,10 @@ export enum LogLevel {
  */
 export default async function log(message:string, level:string):Promise<void> {
     // issue: duplicate log on startup to stdout
-    const date = new Date().toISOString();
-    const readLog = fs.createReadStream(logFile);
-    fs.appendFile(logFile,`[${level}] ${date} => ${message}\n`, () => {
-        readLog.pipe(process.stdout);
+    const date:string = new Date().toISOString();
+    const logString:string = `[${level}] ${date} => ${message}`
+    fs.appendFile(logFile, `${logString}\n`, () => {
+        const childLog = spawn('echo' , [`${logString}`])
+        childLog.stdout.pipe(process.stdout)
     });
 }
