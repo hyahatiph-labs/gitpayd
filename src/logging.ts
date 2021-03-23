@@ -17,7 +17,6 @@ export enum LogLevel {
  * @param level - level types to filter by
  */
 export default async function log(message:string, level:string):Promise<void> {
-    // issue: duplicate log on startup to stdout
     const date:string = new Date().toISOString();
     const logString:string = `[${level}] ${date} => ${message}`
     fs.appendFile(logFile, `${logString}\n`, () => {
