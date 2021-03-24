@@ -42,7 +42,9 @@ async function acquireIssues():Promise<void> {
             const issue = await axios.get(`https://api.github.com/repos/${OWNER}/${REPO}/issues/${ISSUE_NUM}`);
             const AMT = splitter(issue.data.body.split('Bounty: '));
             log(`Attempting to automatically merge pull request #${PULL_NUM} for ${AMT} satoshis`, LogLevel.INFO);
-            sendPayment(PAYMENT_REQUEST, AMT).catch(e => console.info(e));
+            if(AMT) {
+                sendPayment(PAYMENT_REQUEST, AMT).catch(() => log('failed to send payment', LogLevel.ERROR));
+            }
         }
     })
 }
