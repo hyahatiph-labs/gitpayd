@@ -8,7 +8,8 @@ let isFirstLog = true;
  */
 export enum LogLevel {
     INFO = 'INFO',
-    ERROR = 'ERROR'
+    ERROR = 'ERROR',
+    DEBUG = 'DEBUGs'
 }
 
 /**
