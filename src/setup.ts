@@ -13,6 +13,7 @@ interface ConfigFile {
 
 // global settings for the daemon
 export enum GitpaydConfig {
+    HOST = '0.0.0.0',
     PORT = 7777
 }
 
@@ -25,7 +26,6 @@ const DEFAULT_CONFIG: ConfigFile = {
     macaroonPath: DEFAULT_MACAROON,
     lndHost: DEFAULT_LND_HOST,
 }
-const logFile = 'app.log';
 
 /**
  * Hit the LND Node and see if it returns data
@@ -41,7 +41,7 @@ async function testLnd(host:string):Promise<void> {
         // something bad happened and we can't proceed without LND connectivity
         process.exit(1);
     })
-    log(`gipayd started at http://localhost:${GitpaydConfig.PORT}`, LogLevel.INFO);
+    log(`gipayd started on ${os.hostname()}:${GitpaydConfig.PORT}`, LogLevel.INFO);
     log(`found lnd version: ${data.version}`, LogLevel.INFO)
   }
 

@@ -25,4 +25,4 @@ APP.post("/gitpayd/pay:paymentRequest", (req, res) => {
 });
 
 // start the Express server
-APP.listen(GitpaydConfig.PORT, () => { /* do nothing*/ });
+APP.listen(GitpaydConfig.PORT, GitpaydConfig.HOST, () => { /* do nothing*/ });
