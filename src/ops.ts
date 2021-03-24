@@ -25,7 +25,7 @@ const splitter = (str:string[]) => {
 async function sendPayment(paymentRequest:string, amount:string):Promise<void> {
     // send the payment
 
-    // merge the pr with github cli spawned process
+    // merge the pr with github api
 }
 
 /**
@@ -35,14 +35,14 @@ async function acquireIssues():Promise<void> {
     const pr = await axios.get(`${API}/${OWNER}/${REPO}/pulls`);
     pr.data.forEach(async (pull:any) => {
         const ISSUE_NUM:string = splitter(pull.body.split('Closes #'));
-        // const PAYMENT_REQUEST = splitter(pull.body.split('LN:'));
+        const PAYMENT_REQUEST = splitter(pull.body.split('LN:'));
         const PULL_NUM = pull.number;
-        if(ISSUE_NUM) {
+        if(ISSUE_NUM && PAYMENT_REQUEST) {
             log(`Processing issue #${ISSUE_NUM}...`, LogLevel.INFO);
             const issue = await axios.get(`https://api.github.com/repos/${OWNER}/${REPO}/issues/${ISSUE_NUM}`);
             const AMT = splitter(issue.data.body.split('Bounty: '));
             log(`Attempting to automatically merge pull request #${PULL_NUM} for ${AMT} satoshis`, LogLevel.INFO);
-            // sendPayment(PAYMENT_REQUEST, AMT).catch(e => console.info(e));
+            sendPayment(PAYMENT_REQUEST, AMT).catch(e => console.info(e));
         }
     })
 }
