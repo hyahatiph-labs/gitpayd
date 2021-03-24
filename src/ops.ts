@@ -13,8 +13,9 @@ axios.defaults.headers.get.Accept = 'application/vnd.github.v3+json';
  * @param {String} str
  * @returns String
  */
-const splitter = (str:string[]):string => {
-    return str[1] !== undefined ? str[1].split('\n')[0].trim() : null;
+const splitter = (body:string, delimiter:string):string => {
+    const preParse = body.split(delimiter);
+    return preParse[1] !== undefined ? preParse[1].split('\n')[0].trim() : null;
 }
 
 /**
@@ -34,13 +35,13 @@ async function sendPayment(paymentRequest:string, amount:string):Promise<void> {
 async function acquireIssues():Promise<void> {
     const pr = await axios.get(`${API}/${OWNER}/${REPO}/pulls`);
     pr.data.forEach(async (pull:any) => {
-        const ISSUE_NUM :string | null = splitter(pull.body.split('Closes #'));
-        const PAYMENT_REQUEST:string = splitter(pull.body.split('LN:'));
+        const ISSUE_NUM :string | null = splitter(pull.body, 'Closes #');
+        const PAYMENT_REQUEST:string = splitter(pull.body, 'LN:');
         const PULL_NUM:number = pull.number;
         if(ISSUE_NUM && PAYMENT_REQUEST) {
             log(`Processing issue #${ISSUE_NUM}...`, LogLevel.INFO);
             const issue = await axios.get(`https://api.github.com/repos/${OWNER}/${REPO}/issues/${ISSUE_NUM}`);
-            const AMT:string | null = splitter(issue.data.body.split('Bounty: '));
+            const AMT:string | null = splitter(issue.data.body, 'Bounty: ');
             log(`Attempting to automatically merge pull request #${PULL_NUM} for ${AMT} satoshis`, LogLevel.INFO);
             if(AMT) {
                 sendPayment(PAYMENT_REQUEST, AMT).catch(() => log('failed to send payment', LogLevel.ERROR));
