@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import { spawn } from 'child_process';
-const logFile = 'app.log';
+export const logFile = 'app.log';
 let isFirstLog = true;
 
 /**
@@ -9,7 +9,7 @@ let isFirstLog = true;
 export enum LogLevel {
     INFO = 'INFO',
     ERROR = 'ERROR',
-    DEBUG = 'DEBUGs'
+    DEBUG = 'DEBUG'
 }
 
 /**
@@ -17,14 +17,15 @@ export enum LogLevel {
  * doesn't like console.log()
  * @param message - message to write
  * @param level - level types to filter by
+ * @param write - true is writing to app.log file
  */
-export default async function log(message:string, level:LogLevel):Promise<void> {
+export default async function log(message:string, level:LogLevel, write:boolean):Promise<void> {
     // existing logs are volatile
-    if(isFirstLog) { await fs.writeFile(logFile, ''); }
+    if(isFirstLog && write) { await fs.writeFile(logFile, ''); }
     isFirstLog = false;
     const date:string = new Date().toISOString();
-    const logString:string = `[${level}] ${date} => ${message}`
-    fs.appendFile(logFile, `${logString}\n`);
-    const childLog = spawn('echo' , [`${logString}`])
-    childLog.stdout.pipe(process.stdout)
+    const logString:string = `[${level}] ${date} => ${message}`;
+    if(write) { fs.appendFile(logFile, `${logString}\n`); }
+    const childLog = spawn('echo' , [`${logString}`]);
+    childLog.stdout.pipe(process.stdout);
 }
