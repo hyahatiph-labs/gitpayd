@@ -1,10 +1,14 @@
-'use strict'
 import axios from 'axios';
 import log, { LogLevel } from './logging';
 import { GitpaydConfig } from './setup';
 const API = 'https://api.github.com/repos';
-const OWNER = process.argv[2];
-const REPO = process.argv[3];
+const OWNER = process.env.GITPAYD_OWNER;
+const REPO = process.env.GITPAYD_REPO;
+const GITPAYD_HOST = process.env.GITPAYD_HOST;
+const GITPAYD_PORT = process.env.GITPAYD_PORT;
+const API_KEY = process.argv[2];
+const GITHUB_TOKEN = process.argv[3];
+const headers = { 'Authorization': API_KEY }
 
 // set accept in axios header
 axios.defaults.headers.get.Accept = 'application/vnd.github.v3+json';
@@ -22,14 +26,14 @@ const splitter = (body:string, delimiter:string):string | null => {
 /**
  * Make the API call to LND for processing payments
  * @param {String} paymentRequest
- * @param {Number} amount
  */
-async function sendPayment(paymentRequest:string, amount:string):Promise<void> {
-    // const GITHUB_TOKEN:string = process.env.GITHUB_TOKEN;
+async function sendPayment(paymentRequest:string):Promise<void> {
     // send the payment
-
+    const PRE_IMAGE =
+    await axios.post(`http://${GITPAYD_HOST}:${GITPAYD_PORT}/gitpayd/pay/${paymentRequest}`, {headers});
+    log(`payment pre-image: ${PRE_IMAGE}`, LogLevel.INFO, false);
     // merge the pr with github api
-    log('debugging sending payment', LogLevel.DEBUG, false);
+    
 }
 
 /**
@@ -41,18 +45,19 @@ async function sendPayment(paymentRequest:string, amount:string):Promise<void> {
  async function amtParser(amount:string, paymentRequest:string):Promise<void> {
     // decode the payment request and make sure it matches bounty
     // TODO: change host and port to env variables and implement security
-    const DECODED_AMT = await axios.get(`http://${GitpaydConfig.HOST}:${GitpaydConfig.PORT}/gitpayd/decode/${paymentRequest}`);
+    const DECODED_AMT =
+    await axios.get(`http://${GITPAYD_HOST}:${GITPAYD_PORT}/gitpayd/decode/${paymentRequest}`, {headers});
     log(`payment amount decoded: ${DECODED_AMT.data.amt} sats`, LogLevel.DEBUG, false);
     // TODO: add this check after dev work is complete
     // if(DECODED_AMT.data.amt !== amount) {
     //     log('payment request amount mismatch', LogLevel.ERROR, false);
     // }
-    const BALANCE = await axios.get(`http://${GitpaydConfig.HOST}:${GitpaydConfig.PORT}/gitpayd/balance`);
+    const BALANCE = await axios.get(`http://${GITPAYD_HOST}:${GITPAYD_PORT}/gitpayd/balance`, {headers});
     log(`gitpayd channel balance is: ${BALANCE.data.balance.sat} sats`, LogLevel.DEBUG, false);
     // ensure the node has a high enough local balance to payout
     const NUM_AMT = parseInt(amount, 10);
     if(NUM_AMT > 0 && NUM_AMT < GitpaydConfig.MAX_PAYMENT && (BALANCE.data.balance.sat >= NUM_AMT)) {
-            sendPayment(paymentRequest, amount);
+            sendPayment(paymentRequest);
     }
 }
 
@@ -69,7 +74,7 @@ async function acquireIssues():Promise<void> {
             log(`Processing issue #${ISSUE_NUM}...`, LogLevel.INFO, false);
             const ISSUE = await axios.get(`https://api.github.com/repos/${OWNER}/${REPO}/issues/${ISSUE_NUM}`);
             const AMT:string | null = splitter(ISSUE.data.body, 'Bounty: ');
-            log(`Attempting to automatically merge pull request #${PULL_NUM} for ${AMT} satoshis`, LogLevel.INFO, false);
+            log(`Attempting to automatically merge pull request #${PULL_NUM} for ${AMT} sats`, LogLevel.INFO, false);
             amtParser(AMT, PAYMENT_REQUEST);
         }
     })

@@ -4,8 +4,12 @@ import fsp from 'fs/promises';
 import os from 'os';
 import log, { LogLevel } from './logging';
 let globalLndHost:string;
+let globalMacaroon:string;
 // Handle LND TLS error at the request level
 const agent = new https.Agent({ rejectUnauthorized: false });
+
+// accessor for macaroon
+export const getMacaroon = () => { return globalMacaroon; }
 
 // interface for the config file
 interface ConfigFile {
@@ -72,6 +76,7 @@ export default async function setup():Promise<void> {
     // api call to lnd node
     const LND_HOST:string = JSON.parse(config.toString()).lndHost;
     globalLndHost = LND_HOST;
+    globalMacaroon = MACAROON;
     testLnd(LND_HOST, startTime).catch(() => { throw new Error('LND is not online. Exiting...') });
 }
 
@@ -91,9 +96,7 @@ export enum PaymentAction {
  * @param action
  * @param res
  */
-export function handlePaymentAction(paymentRequest:string | null,
-    action:PaymentAction, res:any):Promise<AxiosResponse<any>>{
-    let handle;
+export function handlePaymentAction(paymentRequest:string | null, action:PaymentAction):Promise<AxiosResponse<any>> {
     switch (action) {
         // case for decoding payment
         case PaymentAction.DECODE:
@@ -104,11 +107,9 @@ export function handlePaymentAction(paymentRequest:string | null,
         // case for sending payment
         case PaymentAction.PAY:
             return axios.post(`${globalLndHost}/v1/channels/transactions`,
-            {
-                httpsAgent: agent,
-                payment_request: paymentRequest
-            })
+            { payment_request: paymentRequest },
+            { httpsAgent: agent })
         default:
-            handle = null;
+            return axios.get(`${globalLndHost}/v1/getinfo`, { httpsAgent: agent })
     }
 }
