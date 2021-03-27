@@ -61,14 +61,15 @@ APP.post("/gitpayd/pay/:paymentRequest", (req, res) => {
     const AUTH = req.headers.authorization;
     if(AUTH !== getMacaroon()) {
         res.status(GitpaydConfig.SERVER_FAILURE).json({msg: `bad creds: ${AUTH}`})
+    } else {
+        log(`${req.ip} connected to gitpayd/pay`, LogLevel.INFO, true);
+        // send the payment request to the lnd node
+        handlePaymentAction(req.params.paymentRequest, PaymentAction.PAY)
+          .then(pay => res.status(GitpaydConfig.HTTP_OK)
+          .json({ image: pay.data.payment_preimage }))
+          .catch(() => res.status(GitpaydConfig.SERVER_FAILURE)
+          .json({ msg: 'gitpayd failed to send payment' }));
     }
-    log(`${req.ip} connected to gitpayd/pay`, LogLevel.INFO, true);
-    // send the payment request to the lnd node
-    handlePaymentAction(req.params.paymentRequest, PaymentAction.PAY)
-        .then(pay => res.status(GitpaydConfig.HTTP_OK)
-        .json({ image: pay.data.payment_preimage.toString('hex') }))
-        .catch(() => res.status(GitpaydConfig.SERVER_FAILURE)
-        .json({ msg: 'gitpayd failed to send payment' }));
 });
 
 // start the Express server

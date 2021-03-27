@@ -6,8 +6,7 @@ const OWNER = process.argv[2];
 const REPO = process.argv[3];
 const GITPAYD_HOST = process.argv[4];
 const GITPAYD_PORT = process.argv[5];
-const API_KEY = process.argv[6];
-const headers = { 'Authorization': API_KEY }
+const headers = { 'Authorization': process.argv[6] }
 
 // set accept in axios header
 axios.defaults.headers.get.Accept = 'application/vnd.github.v3+json';
@@ -30,8 +29,8 @@ const splitter = (body:string, delimiter:string):string | null => {
 async function sendPayment(paymentRequest:string):Promise<void> {
     // send the payment
     const PRE_IMAGE =
-    await axios.post(`http://${GITPAYD_HOST}:${GITPAYD_PORT}/gitpayd/pay/${paymentRequest}`, {headers});
-    log(`payment pre-image: ${PRE_IMAGE}`, LogLevel.INFO, false);
+    await axios.post(`http://${GITPAYD_HOST}:${GITPAYD_PORT}/gitpayd/pay/${paymentRequest}`, {}, {headers});
+    log(`payment pre-image: ${PRE_IMAGE.data.image}`, LogLevel.INFO, false);
 }
 
 /**
@@ -64,7 +63,6 @@ async function sendPayment(paymentRequest:string):Promise<void> {
  */
 async function acquireIssues():Promise<void> {
     const PR = await axios.get(`${API}/${OWNER}/${REPO}/pulls`);
-    log(`pull request ${PR}`, LogLevel.DEBUG, false);
     PR.data.forEach(async (pull:any) => {
         const ISSUE_NUM:string | null = splitter(pull.body, 'Closes #');
         const PAYMENT_REQUEST:string | null = splitter(pull.body, 'LN:');
