@@ -16,9 +16,9 @@ APP.get("/gitpayd/health", (req, res) => {
     const AUTH = req.headers.authorization;
     if(AUTH !== getMacaroon()) {
         log(`${req.ip} unauthorized access on gitpayd/health`, LogLevel.ERROR, true);
-        res.status(GitpaydConfig.SERVER_FAILURE).json({msg: `bad creds: ${AUTH}`})
+        res.status(GitpaydConfig.SERVER_FAILURE).json({ msg: `bad creds: ${AUTH}` })
     } else {
-        res.status(GitpaydConfig.HTTP_OK).json({msg: 'gitpayd is UP'});
+        res.status(GitpaydConfig.HTTP_OK).json({ msg: 'gitpayd is UP' });
     }
 });
 
@@ -27,7 +27,7 @@ APP.get("/gitpayd/decode/:paymentRequest", (req, res) => {
     const AUTH = req.headers.authorization;
     if(AUTH !== getMacaroon()) {
         log(`${req.ip} unauthorized access on gitpayd/health`, LogLevel.ERROR, true);
-        res.status(GitpaydConfig.SERVER_FAILURE).json({msg: `bad creds: ${AUTH}`})
+        res.status(GitpaydConfig.SERVER_FAILURE).json({ msg: `bad creds: ${AUTH}` })
     } else {
         log(`${req.ip} connected to gitpayd/decode`, LogLevel.INFO, true);
         // decode the payment request with the lnd node
@@ -44,7 +44,7 @@ APP.get("/gitpayd/balance", (req, res) => {
     const AUTH = req.headers.authorization;
     if(AUTH !== getMacaroon()) {
         log(`${req.ip} unauthorized access on gitpayd/balance`, LogLevel.ERROR, true);
-        res.status(GitpaydConfig.SERVER_FAILURE).json({msg: `bad creds: ${AUTH}`})
+        res.status(GitpaydConfig.SERVER_FAILURE).json({ msg: `bad creds: ${AUTH}` })
     } else {
         log(`${req.ip} connected to gitpayd/balance`, LogLevel.INFO, true);
         // send the payment request to the lnd node
