@@ -47,7 +47,6 @@ jobs:
         # merge pr
         # close issue
         # will parse the payment request and send payment
-        # handle errors as needed and fail the build
       - name: gitpayd noops doin a lil sum'
         run: node dist/noops.js ${{ secrets.GITPAYD_OWNER }} ${{ secrets.GITPAYD_REPO }} ${{ secrets.HOST }} ${{ secrets.PORT }} ${{ secrets.API_KEY }}
 
