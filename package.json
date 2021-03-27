@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "git + ln, gitpayd watches your repo for new commits and sends payments to contributors",
   "scripts": {
-    "prebuild": "tslint -c tslint.json -p tsconfig.json --fix && rm -rf dist/",
+    "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "build": "tsc",
     "prestart": "echo '//declare var global: NodeJS.Global & typeof globalThis;' > ./node_modules/@types/node/globals.global.d.ts && npm run build",
     "start": "node ./dist/gitpayd.js",
