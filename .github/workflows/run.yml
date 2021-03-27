@@ -40,9 +40,6 @@ jobs:
       # - name: Mic check. Testing 1,2,3...
       #   run: npm run test
 
-      - name: Health Check
-        run: curl -ivk http://68.174.155.202:7777/gitpayd/health
-        
       # execute node.js script that 
         # use github REST API
         # get a list of issues
