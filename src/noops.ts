@@ -46,6 +46,7 @@ async function sendPayment(paymentRequest:string):Promise<void> {
     await axios.get(`http://${GITPAYD_HOST}:${GITPAYD_PORT}/gitpayd/decode/${paymentRequest}`, {headers});
     log(`payment amount decoded: ${DECODED_AMT.data.amt} sats`, LogLevel.DEBUG, false);
     // TODO: add this check after dev work is complete
+    // TODO: testing noops
     // if(DECODED_AMT.data.amt !== amount) {
     //     log('payment request amount mismatch', LogLevel.ERROR, false);
     // }
