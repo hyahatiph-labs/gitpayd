@@ -64,13 +64,14 @@ async function sendPayment(paymentRequest:string):Promise<void> {
  */
 async function acquireIssues():Promise<void> {
     const PR = await axios.get(`${API}/${OWNER}/${REPO}/pulls`);
+    log(`pull request ${PR}`, LogLevel.DEBUG, false);
     PR.data.forEach(async (pull:any) => {
         const ISSUE_NUM:string | null = splitter(pull.body, 'Closes #');
         const PAYMENT_REQUEST:string | null = splitter(pull.body, 'LN:');
         const PULL_NUM:number = pull.number;
         if(ISSUE_NUM && PAYMENT_REQUEST) {
             log(`Processing issue #${ISSUE_NUM}...`, LogLevel.INFO, false);
-            const ISSUE = await axios.get(`https://api.github.com/repos/${OWNER}/${REPO}/issues/${ISSUE_NUM}`);
+            const ISSUE = await axios.get(`${API}/${OWNER}/${REPO}/issues/${ISSUE_NUM}`);
             const AMT:string | null = splitter(ISSUE.data.body, 'Bounty: ');
             log(`Attempting to automatically merge pull request #${PULL_NUM} for ${AMT} sats`, LogLevel.INFO, false);
             amtParser(AMT, PAYMENT_REQUEST);
