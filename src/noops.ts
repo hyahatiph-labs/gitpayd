@@ -2,11 +2,11 @@ import axios from 'axios';
 import log, { LogLevel } from './logging';
 import { GitpaydConfig } from './setup';
 const API = 'https://api.github.com/repos';
-const OWNER = process.argv[2];
-const REPO = process.argv[3];
-const GITPAYD_HOST = process.argv[4];
-const GITPAYD_PORT = process.argv[5];
-const headers = { 'Authorization': process.argv[6] }
+const OWNER = process.env.GITPAYD_OWNER;
+const REPO = process.env.GITPAYD_REPO;
+const GITPAYD_HOST = process.env.GITPAYD_HOST;
+const GITPAYD_PORT = process.env.GITPAYD_PORT;
+const headers = { 'Authorization': process.env.API_KEY }
 
 // set accept in axios header
 axios.defaults.headers.get.Accept = 'application/vnd.github.v3+json';
