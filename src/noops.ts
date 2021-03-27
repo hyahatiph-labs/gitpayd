@@ -78,4 +78,7 @@ async function acquireIssues():Promise<void> {
     })
 }
 
-acquireIssues().catch(() => log('failed to process issues', LogLevel.ERROR, false));
+acquireIssues().catch(e => {
+    log(`${e}`, LogLevel.DEBUG, false);
+    log('failed to process issues', LogLevel.ERROR, false)
+});
