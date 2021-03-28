@@ -56,7 +56,7 @@ jobs:
           API_KEY: ${{ secrets.API_KEY }}
         run: |
           echo running health check
-          curl -ivk http://$GITPAYD_HOST:$GITPAYD_PORT/gitpayd/healh -H 'authorization: $API_KEY'
+          curl -ivk http://$GITPAYD_HOST:$GITPAYD_PORT/gitpayd/healh -H "authorization: $API_KEY"
           node dist/noops.js
 
       # - name: Automatically Merge PR
