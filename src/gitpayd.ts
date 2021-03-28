@@ -13,13 +13,7 @@ setup().catch(() => { throw new Error('gitpayd failed to initialize') });
 // healthcheck for gitpayd
 APP.get("/gitpayd/health", (req, res) => {
     log(`${req.ip} connected to gitpayd/health`, LogLevel.INFO, true);
-    const AUTH = req.headers.authorization;
-    if(AUTH !== getMacaroon()) {
-        log(`${req.ip} unauthorized access on gitpayd/health`, LogLevel.ERROR, true);
-        res.status(GitpaydConfig.SERVER_FAILURE).json({ msg: `bad creds: ${AUTH}` })
-    } else {
-        res.status(GitpaydConfig.HTTP_OK).json({ msg: 'gitpayd is UP' });
-    }
+    res.status(GitpaydConfig.HTTP_OK).json({ msg: 'gitpayd is UP' });
 });
 
 // decode payment API for gitpayd

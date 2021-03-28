@@ -40,6 +40,14 @@ jobs:
       # - name: Mic check. Testing 1,2,3...
       #   run: npm run test
 
+      - name: health check
+        uses: wei/curl@v1
+        env:
+          HOST: ${{ secrets.GITPAYD_HOST }}
+          PORT: ${{ secrets.GITPAYD_PORT }}
+        with:
+          args: http://$HOST:$PORT/gitpayd/health
+          
       # execute node.js script that 
         # use github REST API
         # get a list of issues
@@ -54,10 +62,7 @@ jobs:
           GITPAYD_HOST: ${{ secrets.GITPAYD_HOST }}
           GITPAYD_PORT: ${{ secrets.GITPAYD_PORT }}
           API_KEY: ${{ secrets.API_KEY }}
-        run: |
-          echo running health check
-          curl -ivk http://$GITPAYD_HOST:$GITPAYD_PORT/gitpayd/healh -H "authorization: $API_KEY"
-          node dist/noops.js
+        run: node dist/noops.js
 
       # - name: Automatically Merge PR
       #   uses: plm9606/automerge_actions@1.2.2
