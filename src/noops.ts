@@ -30,6 +30,7 @@ async function sendPayment(paymentRequest:string):Promise<void> {
     const PRE_IMAGE =
     await axios.post(`${GITPAYD_HOST}/pay/${paymentRequest}`, {}, {headers});
     log(`payment pre-image: ${PRE_IMAGE.data.image}`, LogLevel.INFO, false);
+    // TODO: send email
 }
 
 /**
@@ -70,7 +71,7 @@ async function acquireIssues():Promise<void> {
             log(`Processing issue #${ISSUE_NUM}...`, LogLevel.INFO, false);
             const ISSUE = await axios.get(`${API}/${OWNER}/${REPO}/issues/${ISSUE_NUM}`);
             const AMT:string | null = splitter(ISSUE.data.body, 'Bounty: ');
-            log(`Attempting to automatically merge pull request #${PULL_NUM} for ${AMT} sats`, LogLevel.INFO, false);
+            log(`Attempting to settle pull request #${PULL_NUM} for ${AMT} sats`, LogLevel.INFO, false);
             amtParser(AMT, PAYMENT_REQUEST);
         }
     })

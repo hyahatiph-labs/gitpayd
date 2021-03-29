@@ -8,9 +8,6 @@ import https from 'https';
 import fs from 'fs';
 const APP = express();
 
-// TODO: automated cert renewal
-// TODO: convert server to HTTPS
-
 // check for lnd first
 setup().catch(() => { throw new Error('gitpayd failed to initialize') });
 

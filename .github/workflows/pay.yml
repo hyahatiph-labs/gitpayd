@@ -1,4 +1,4 @@
-# This is the workflow for the gitpayd server
+# This is the send payment workflow for the gitpayd server
 # Set environment variables
   # GITPAYD_OWNER - owner of the repo gitpayd is watching
   # GITPAYD_REPO - repo name
@@ -6,12 +6,14 @@
   # GITPAYD_PORT - gitpayd port (default is 7777)
   # API_KEY - secret (LND admin macaroon)
 
-name: CI
+name: Send Payment
 
 # Controls when the action will run. 
 on:
   # Triggers the workflow on pull request events but only for the dev branch
   pull_request:
+    types:
+      - closed
     branches: [ dev ]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -35,10 +37,6 @@ jobs:
         
       - name: If you build it they will come
         run: npm run build
-      
-      # TODO: Run some test suite
-      # - name: Mic check. Testing 1,2,3...
-      #   run: npm run test
 
       - name: health check
         env:
@@ -58,18 +56,4 @@ jobs:
           GITPAYD_REPO: ${{ secrets.GITPAYD_REPO }}
           GITPAYD_HOST: ${{ secrets.GITPAYD_HOST }}
           API_KEY: ${{ secrets.API_KEY }}
-        run: node dist/noops.js
-
-      - name: Automatically Merge PR
-        uses: plm9606/automerge_actions@1.2.2
-        with:
-          # The label name to automatically merge. Default is "automerge".
-          label-name: noops
-          # The number of reviewers to automatically merge. Default is 1.
-          reviewers-number: 0
-          # The merge method ("merge", "squash", "rebase"). Default is "merge"
-          merge-method: merge
-          # Let the bot delete the merged branch. true or false.
-          auto-delete: false
-          # GitHub WebHook Secret Token
-          github-token: ${{ secrets.GITHUB_TOKEN }}    
+        run: node dist/noops.js   
