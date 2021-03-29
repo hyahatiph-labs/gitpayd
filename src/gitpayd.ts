@@ -24,7 +24,7 @@ APP.get("/gitpayd/health", (req, res) => {
 APP.get("/gitpayd/decode/:paymentRequest", (req, res) => {
     const AUTH = req.headers.authorization;
     if(AUTH !== getMacaroon()) {
-        log(`${req.ip} unauthorized access on gitpayd/health`, LogLevel.ERROR, true);
+        log(`${req.ip} unauthorized access on gitpayd/decode`, LogLevel.ERROR, true);
         res.status(GitpaydConfig.SERVER_FAILURE).json({ msg: `bad creds: ${AUTH}` })
     } else {
         log(`${req.ip} connected to gitpayd/decode`, LogLevel.INFO, true);
