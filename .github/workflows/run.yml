@@ -64,7 +64,7 @@ jobs:
         uses: plm9606/automerge_actions@1.2.2
         with:
           # The label name to automatically merge. Default is "automerge".
-          label-name: dev
+          label-name: noops
           # The number of reviewers to automatically merge. Default is 1.
           reviewers-number: 0
           # The merge method ("merge", "squash", "rebase"). Default is "merge"
