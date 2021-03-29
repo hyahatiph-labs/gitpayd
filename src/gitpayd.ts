@@ -1,6 +1,7 @@
 import express from 'express';
-import setup, { CERT_PATH, getMacaroon, GitpaydConfig,
-    handlePaymentAction, KEY_PATH, PASSPHRASE, PaymentAction } from './setup';
+import setup, { CA_PATH, CERT_PATH, getMacaroon,
+    GitpaydConfig, handlePaymentAction, KEY_PATH,
+    PASSPHRASE, PaymentAction, ROOT_PATH } from './setup';
 import log, { LogLevel } from './logging';
 import http from 'http';
 import https from 'https';
@@ -75,6 +76,10 @@ HTTP_SERVER.listen(GitpaydConfig.PORT);
 const HTTPS_SERVER = https.createServer({
     key: fs.readFileSync(KEY_PATH),
     passphrase: (PASSPHRASE),
-    cert: fs.readFileSync(CERT_PATH)
+    cert: fs.readFileSync(CERT_PATH),
+    ca: [
+        fs.readFileSync(CA_PATH),
+        fs.readFileSync(ROOT_PATH)
+    ]
   }, APP);
 HTTPS_SERVER.listen(GitpaydConfig.SECURE_PORT);

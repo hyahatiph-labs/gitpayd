@@ -14,6 +14,8 @@ export const getMacaroon = () => { return globalMacaroon; }
 // set https certs here
 export const KEY_PATH = process.env.KEY_PATH;
 export const CERT_PATH = process.env.CERT_PATH;
+export const CA_PATH = process.env.CA_PATH;
+export const ROOT_PATH = process.env.ROOT_PATH;
 export const PASSPHRASE = process.env.PASSPHRASE;
 
 // interface for the config file

@@ -41,11 +41,9 @@ jobs:
       #   run: npm run test
 
       - name: health check
-        uses: wei/curl@v1
         env:
           HOST: ${{ secrets.GITPAYD_HOST }}
-        with:
-          args: -ivk https://$HOST/gitpayd/health
+        run: curl -iv https://$HOST/gitpayd/health
           
       # execute node.js script that 
         # use github REST API
