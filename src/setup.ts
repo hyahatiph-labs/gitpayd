@@ -11,6 +11,11 @@ const agent = new https.Agent({ rejectUnauthorized: false });
 // accessor for macaroon
 export const getMacaroon = () => { return globalMacaroon; }
 
+// set https certs here
+export const KEY_PATH = process.env.KEY_PATH;
+export const CERT_PATH = process.env.CERT_PATH;
+export const PASSPHRASE = process.env.PASSPHRASE;
+
 // interface for the config file
 interface ConfigFile {
     macaroonPath: string
@@ -22,7 +27,8 @@ interface ConfigFile {
  */
 export enum GitpaydConfig {
     HOST = '0.0.0.0',
-    PORT = 7777,
+    PORT = 80,
+    SECURE_PORT = 443,
     MAX_PAYMENT = 100000,
     HTTP_OK = 200,
     SERVER_FAILURE = 500
@@ -48,7 +54,7 @@ async function testLnd(host:string, startTime:number):Promise<void> {
     log(`found lnd version: ${INFO.data.version}`, LogLevel.INFO, true)
     const END_TIME:number = new Date().getMilliseconds() - startTime;
     const REAL_TIME:number = END_TIME < 0 ? END_TIME * -1 : END_TIME;
-    log(`gitpayd started in ${REAL_TIME} ms on ${os.hostname()}:${GitpaydConfig.PORT}`, LogLevel.INFO, true);
+    log(`gitpayd started in ${REAL_TIME} ms on ${os.hostname()}`, LogLevel.INFO, true);
 }
 
 /**

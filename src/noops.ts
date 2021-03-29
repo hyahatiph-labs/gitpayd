@@ -5,7 +5,6 @@ const API = 'https://api.github.com/repos';
 const OWNER = process.env.GITPAYD_OWNER;
 const REPO = process.env.GITPAYD_REPO;
 const GITPAYD_HOST = process.env.GITPAYD_HOST;
-const GITPAYD_PORT = process.env.GITPAYD_PORT;
 const headers = { 'Authorization': process.env.API_KEY }
 
 // set accept in axios header
@@ -29,7 +28,7 @@ const splitter = (body:string, delimiter:string):string | null => {
 async function sendPayment(paymentRequest:string):Promise<void> {
     // send the payment
     const PRE_IMAGE =
-    await axios.post(`http://${GITPAYD_HOST}:${GITPAYD_PORT}/gitpayd/pay/${paymentRequest}`, {}, {headers});
+    await axios.post(`http://${GITPAYD_HOST}/gitpayd/pay/${paymentRequest}`, {}, {headers});
     log(`payment pre-image: ${PRE_IMAGE.data.image}`, LogLevel.INFO, false);
 }
 
@@ -42,14 +41,14 @@ async function sendPayment(paymentRequest:string):Promise<void> {
  async function amtParser(amount:string, paymentRequest:string):Promise<void> {
     // decode the payment request and make sure it matches bounty
     const DECODED_AMT =
-    await axios.get(`http://${GITPAYD_HOST}:${GITPAYD_PORT}/gitpayd/decode/${paymentRequest}`, {headers});
+    await axios.get(`http://${GITPAYD_HOST}/gitpayd/decode/${paymentRequest}`, {headers});
     log(`payment amount decoded: ${DECODED_AMT.data.amt} sats`, LogLevel.DEBUG, false);
     // TODO: add this check after dev work is complete
     // TODO: testing noops
     // if(DECODED_AMT.data.amt !== amount) {
     //     log('payment request amount mismatch', LogLevel.ERROR, false);
     // }
-    const BALANCE = await axios.get(`http://${GITPAYD_HOST}:${GITPAYD_PORT}/gitpayd/balance`, {headers});
+    const BALANCE = await axios.get(`http://${GITPAYD_HOST}/gitpayd/balance`, {headers});
     log(`gitpayd channel balance is: ${BALANCE.data.balance.sat} sats`, LogLevel.DEBUG, false);
     // ensure the node has a high enough local balance to payout
     const NUM_AMT = parseInt(amount, 10);

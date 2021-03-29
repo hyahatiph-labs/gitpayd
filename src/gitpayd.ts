@@ -1,7 +1,10 @@
 import express from 'express';
-import setup, { getMacaroon, GitpaydConfig,
-    handlePaymentAction, PaymentAction } from './setup';
+import setup, { CERT_PATH, getMacaroon, GitpaydConfig,
+    handlePaymentAction, KEY_PATH, PASSPHRASE, PaymentAction } from './setup';
 import log, { LogLevel } from './logging';
+import http from 'http';
+import https from 'https';
+import fs from 'fs';
 const APP = express();
 
 // TODO: automated cert renewal
@@ -67,4 +70,11 @@ APP.post("/gitpayd/pay/:paymentRequest", (req, res) => {
 });
 
 // start the Express server
-APP.listen(GitpaydConfig.PORT, GitpaydConfig.HOST, () => { /* do nothing*/ });
+const HTTP_SERVER = http.createServer(APP);
+HTTP_SERVER.listen(GitpaydConfig.PORT);
+const HTTPS_SERVER = https.createServer({
+    key: fs.readFileSync(KEY_PATH),
+    passphrase: (PASSPHRASE),
+    cert: fs.readFileSync(CERT_PATH)
+  }, APP);
+HTTPS_SERVER.listen(GitpaydConfig.SECURE_PORT);

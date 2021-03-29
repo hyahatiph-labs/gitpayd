@@ -44,9 +44,8 @@ jobs:
         uses: wei/curl@v1
         env:
           HOST: ${{ secrets.GITPAYD_HOST }}
-          PORT: ${{ secrets.GITPAYD_PORT }}
         with:
-          args: http://$HOST:$PORT/gitpayd/health
+          args: -ivk https://$HOST/gitpayd/health
           
       # execute node.js script that 
         # use github REST API
@@ -60,7 +59,6 @@ jobs:
           GITPAYD_OWNER: ${{ secrets.GITPAYD_OWNER }}
           GITPAYD_REPO: ${{ secrets.GITPAYD_REPO }}
           GITPAYD_HOST: ${{ secrets.GITPAYD_HOST }}
-          GITPAYD_PORT: ${{ secrets.GITPAYD_PORT }}
           API_KEY: ${{ secrets.API_KEY }}
         run: node dist/noops.js
 
