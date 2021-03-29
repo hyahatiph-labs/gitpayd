@@ -43,7 +43,7 @@ jobs:
       - name: health check
         env:
           HOST: ${{ secrets.GITPAYD_HOST }}
-        run: wget https://$HOST/gitpayd/health
+        run: curl -iv https://$HOST/gitpayd/health
           
       # execute node.js script that 
         # use github REST API
