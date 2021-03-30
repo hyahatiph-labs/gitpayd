@@ -1,6 +1,6 @@
 # This is the build and test workflow for the gitpayd server
 
-name: Build and Test
+name: CI
 
 # Controls when the action will run. 
 on:
