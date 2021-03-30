@@ -6,9 +6,6 @@ name: Build
 on:
   # Triggers the workflow on pull request events but only for the dev branch
   pull_request:
-    types:
-      - opened
-      - edited
     branches: [ dev ]
 
   # Allows you to run this workflow manually from the Actions tab
