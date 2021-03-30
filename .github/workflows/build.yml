@@ -35,9 +35,10 @@ jobs:
       # - name: Mic check. Testing 1,2,3...
       #   run: npm run test
 
+      # Check if the server is online but don't fail if it isn't
       - name: health check
         env:
           HOST: ${{ secrets.GITPAYD_HOST }}
-        run: curl -iv https://$HOST/gitpayd/health
+        run: curl -iv https://$HOST/gitpayd/health || echo gitpayd is offline...
         
       # TODO: Algorithms and logic for automatically merging
