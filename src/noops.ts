@@ -72,10 +72,10 @@ async function acquireIssues():Promise<void> {
             const AMT:string | null = splitter(ISSUE.data.body, 'Bounty: ');
             log(`Attempting to settle pull request #${PULL_NUM} for ${AMT} sats`, LogLevel.INFO, false);
             amtParser(AMT, PAYMENT_REQUEST);
+            const MERGE = await axios.put(`${API}/${OWNER}/${REPO}/pulls/${PULL_NUM}/merge`,
+                MERGE_BODY, { headers: {'authorization': TOKEN} });
+            log(`${MERGE.data.message}`, LogLevel.INFO, false);
         }
-        const MERGE = await axios.put(`${API}/${OWNER}/${REPO}/pulls/${PULL_NUM}/merge`,
-            MERGE_BODY, { headers: {'authorization': TOKEN} });
-         log(`${MERGE.data.message}`, LogLevel.INFO, false);
     })
 }
 
