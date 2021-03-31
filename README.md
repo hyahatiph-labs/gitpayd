@@ -45,10 +45,12 @@ gitpayd/
 </ul>
 <b>Sample .gitpayd/config.json</b>
 
-`{`
-  `"macaroonPath": "/home/USER/.lnd/data/chain/bitcoin/mainnet/admin.macaroon",`
- ` "lndHost": "https://localhost:8080"`
-`}`
+```json 
+{
+ "macaroonPath": "/home/USER/.lnd/data/chain/bitcoin/mainnet/admin.macaroon",
+ "lndHost": "https://localhost:8080"`
+}
+```
 
 ## Building
 
