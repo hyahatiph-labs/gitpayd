@@ -8,7 +8,7 @@ const EXPECTED_VALUE = 100000;
 
 describe('Validate', () => {
   describe('Result', () => {
-    it('should amount for parsing bounty', () => {
+    it('should return amount for parsing bounty', () => {
       const check = splitter(BODY, DELIMITER);
       assert.strictEqual(parseInt(check, 10), EXPECTED_VALUE);
     });
