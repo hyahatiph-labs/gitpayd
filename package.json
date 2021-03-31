@@ -21,10 +21,8 @@
   },
   "homepage": "https://github.com/callmekurisu/gitpayd#readme",
   "dependencies": {
-    "@grpc/proto-loader": "^0.5.6",
     "axios": "^0.21.1",
     "express": "^4.17.1",
-    "grpc": "^1.24.6",
     "ts-node": "^9.1.1"
   },
   "devDependencies": {
