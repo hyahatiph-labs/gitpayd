@@ -33,6 +33,7 @@ export enum GitpaydConfig {
     SECURE_PORT = 443,
     MAX_PAYMENT = 100000,
     HTTP_OK = 200,
+    UNAUTHORIZED = 443,
     SERVER_FAILURE = 500
 }
 
@@ -48,8 +49,8 @@ const DEFAULT_CONFIG: ConfigFile = {
 
 /**
  * Hit the LND Node and see if it returns data
- * @param host
- * @param startTime
+ * @param {string} host
+ * @param {number} startTime
  */
 async function testLnd(host:string, startTime:number):Promise<void> {
     const INFO = await axios.get(`${host}/v1/getinfo`, { httpsAgent: agent })
@@ -101,9 +102,8 @@ export enum PaymentAction {
 
 /**
  * Re-usable function for doing LND Stuff
- * @param paymentRequest
- * @param action
- * @param res
+ * @param {string} paymentRequest - invoice sent to gitpayd
+ * @param {PaymentAction} action - decode, get the channel balance, or process payments
  */
 export function handlePaymentAction(paymentRequest:string | null, action:PaymentAction):Promise<AxiosResponse<any>> {
     switch (action) {

@@ -25,7 +25,7 @@ export const splitter = (body:string, delimiter:string):string | null => {
 
 /**
  * Make the API call to LND for processing payments
- * @param {String} paymentRequest - lnd invoice
+ * @param {string} paymentRequest - lnd invoice
  */
 async function sendPayment(paymentRequest:string):Promise<void> {
     // send the payment
@@ -36,19 +36,17 @@ async function sendPayment(paymentRequest:string):Promise<void> {
 
 /**
  * Helper function for processing payment validity
- * @param {String} amount - bounty from the issue
- * @param {String} paymentRequest - lnd invoice
- * @returns String
+ * @param {string} amount - bounty from the issue
+ * @param {string} paymentRequest - lnd invoice
  */
  async function amtParser(amount:string, paymentRequest:string):Promise<void> {
     // decode the payment request and make sure it matches bounty
     const DECODED_AMT =
     await axios.get(`${GITPAYD_HOST}/decode/${paymentRequest}`, {headers});
     log(`payment amount decoded: ${DECODED_AMT.data.amt} sats`, LogLevel.DEBUG, false);
-    // TODO: add this check after dev work is complete
-    // TODO: testing noops
+    // TODO: add this check for strict payments
     // if(DECODED_AMT.data.amt !== amount) {
-    //     log('payment request amount mismatch', LogLevel.ERROR, false);
+    //     throw new Error('Decoded amount does not match bounty!')
     // }
     const BALANCE = await axios.get(`${GITPAYD_HOST}/balance`, {headers});
     log(`gitpayd channel balance is: ${BALANCE.data.balance.sat} sats`, LogLevel.DEBUG, false);
@@ -76,7 +74,7 @@ async function acquireIssues():Promise<void> {
             amtParser(AMT, PAYMENT_REQUEST);
         }
         const MERGE = await axios.put(`${API}/${OWNER}/${REPO}/pulls/${PULL_NUM}/merge`,
-            MERGE_BODY, {headers: {'authorization': TOKEN}});
+            MERGE_BODY, { headers: {'authorization': TOKEN} });
          log(`${MERGE.data.message}`, LogLevel.INFO, false);
     })
 }

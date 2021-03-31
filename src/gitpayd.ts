@@ -22,7 +22,7 @@ APP.get("/gitpayd/decode/:paymentRequest", (req, res) => {
     const AUTH = req.headers.authorization;
     if(AUTH !== getMacaroon()) {
         log(`${req.ip} unauthorized access on gitpayd/decode`, LogLevel.ERROR, true);
-        res.status(GitpaydConfig.SERVER_FAILURE).json({ msg: `bad creds: ${AUTH}` })
+        res.status(GitpaydConfig.UNAUTHORIZED).json({ msg: `bad creds: ${AUTH}` })
     } else {
         log(`${req.ip} connected to gitpayd/decode`, LogLevel.INFO, true);
         // decode the payment request with the lnd node
@@ -39,7 +39,7 @@ APP.get("/gitpayd/balance", (req, res) => {
     const AUTH = req.headers.authorization;
     if(AUTH !== getMacaroon()) {
         log(`${req.ip} unauthorized access on gitpayd/balance`, LogLevel.ERROR, true);
-        res.status(GitpaydConfig.SERVER_FAILURE).json({ msg: `bad creds: ${AUTH}` })
+        res.status(GitpaydConfig.UNAUTHORIZED).json({ msg: `bad creds: ${AUTH}` })
     } else {
         log(`${req.ip} connected to gitpayd/balance`, LogLevel.INFO, true);
         // send the payment request to the lnd node
@@ -55,7 +55,7 @@ APP.get("/gitpayd/balance", (req, res) => {
 APP.post("/gitpayd/pay/:paymentRequest", (req, res) => {
     const AUTH = req.headers.authorization;
     if(AUTH !== getMacaroon()) {
-        res.status(GitpaydConfig.SERVER_FAILURE).json({msg: `bad creds: ${AUTH}`})
+        res.status(GitpaydConfig.UNAUTHORIZED).json({msg: `bad creds: ${AUTH}`})
     } else {
         log(`${req.ip} connected to gitpayd/pay`, LogLevel.INFO, true);
         // send the payment request to the lnd node
@@ -69,16 +69,20 @@ APP.post("/gitpayd/pay/:paymentRequest", (req, res) => {
 
 // start the Express server
 // hint: sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
-// comment out HTTPS_SERVER stuff if needed
+// comment out HTTPS_SERVER stuff if unable to configure SSL
 const HTTP_SERVER = http.createServer(APP);
 HTTP_SERVER.listen(GitpaydConfig.PORT);
-const HTTPS_SERVER = https.createServer({
-    key: fs.readFileSync(KEY_PATH),
-    passphrase: (PASSPHRASE),
-    cert: fs.readFileSync(CERT_PATH),
-    ca: [
-        fs.readFileSync(CA_PATH),
-        fs.readFileSync(ROOT_PATH)
-    ]
-  }, APP);
-HTTPS_SERVER.listen(GitpaydConfig.SECURE_PORT);
+try {
+    const HTTPS_SERVER = https.createServer({
+        key: fs.readFileSync(KEY_PATH),
+        passphrase: (PASSPHRASE),
+        cert: fs.readFileSync(CERT_PATH),
+        ca: [
+            fs.readFileSync(CA_PATH),
+            fs.readFileSync(ROOT_PATH)
+        ]
+      }, APP);
+    HTTPS_SERVER.listen(GitpaydConfig.SECURE_PORT);
+} catch {
+    log(`HTTPS is not configured`, LogLevel.ERROR, true);
+}

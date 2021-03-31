@@ -42,12 +42,9 @@ jobs:
         run: curl -iv https://$HOST/gitpayd/health
   
         # execute node.js script that 
-          # use github REST API
-          # get a list of issues
-          # receive a list of prs as argument
-          # merge pr
-          # close issue
-          # will parse the payment request and send payment
+          # get a list of issues and associated pull requests
+          # merge pr and close issue
+          # parse the payment request and send payment
       - name: gitpayd noops doin a lil sum'
         env:
           GITPAYD_OWNER: ${{ secrets.GITPAYD_OWNER }}

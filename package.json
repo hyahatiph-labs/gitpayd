@@ -1,6 +1,6 @@
 {
   "name": "gitpayd",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "git + ln, gitpayd watches your repo for new commits and sends payments to contributors",
   "scripts": {
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
