@@ -48,7 +48,7 @@ gitpayd/
 ```json 
 {
  "macaroonPath": "/home/USER/.lnd/data/chain/bitcoin/mainnet/admin.macaroon",
- "lndHost": "https://localhost:8080"`
+ "lndHost": "https://localhost:8080"
 }
 ```
 
