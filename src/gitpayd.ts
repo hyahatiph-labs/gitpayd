@@ -68,6 +68,8 @@ APP.post("/gitpayd/pay/:paymentRequest", (req, res) => {
 });
 
 // start the Express server
+// hint: sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
+// comment out HTTPS_SERVER stuff if needed
 const HTTP_SERVER = http.createServer(APP);
 HTTP_SERVER.listen(GitpaydConfig.PORT);
 const HTTPS_SERVER = https.createServer({

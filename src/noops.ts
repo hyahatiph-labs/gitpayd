@@ -5,7 +5,9 @@ const API = 'https://api.github.com/repos';
 const OWNER = process.env.GITPAYD_OWNER;
 const REPO = process.env.GITPAYD_REPO;
 const GITPAYD_HOST = `https://${process.env.GITPAYD_HOST}/gitpayd`;
-const headers = { 'Authorization': process.env.API_KEY }
+const headers = { 'Authorization': process.env.API_KEY };
+const TOKEN = `token ${process.env.GITPAYD_TOKEN}`;
+const MERGE_BODY = { "commit_title": "merged by gitpayd" };
 
 // set accept in axios header
 axios.defaults.headers.get.Accept = 'application/vnd.github.v3+json';
@@ -16,7 +18,7 @@ axios.defaults.headers.get.Accept = 'application/vnd.github.v3+json';
  * @param {string} delimiter - split on this
  * @returns String
  */
-const splitter = (body:string, delimiter:string):string | null => {
+export const splitter = (body:string, delimiter:string):string | null => {
     const PRE_PARSE = body.split(delimiter);
     return PRE_PARSE[1] !== undefined ? PRE_PARSE[1].split('\n')[0].trim() : null;
 }
@@ -30,7 +32,6 @@ async function sendPayment(paymentRequest:string):Promise<void> {
     const PRE_IMAGE =
     await axios.post(`${GITPAYD_HOST}/pay/${paymentRequest}`, {}, {headers});
     log(`payment pre-image: ${PRE_IMAGE.data.image}`, LogLevel.INFO, false);
-    // TODO: send email
 }
 
 /**
@@ -62,18 +63,21 @@ async function sendPayment(paymentRequest:string):Promise<void> {
  * This function acquires the issue linked in the pull request
  */
 async function acquireIssues():Promise<void> {
-    const PR = await axios.get(`${API}/${OWNER}/${REPO}/pulls`);
+    const PR = await axios.get(`${API}/${OWNER}/${REPO}/pulls?state=open`);
     PR.data.forEach(async (pull:any) => {
         const ISSUE_NUM:string | null = splitter(pull.body, 'Closes #');
         const PAYMENT_REQUEST:string | null = splitter(pull.body, 'LN:');
         const PULL_NUM:number = pull.number;
         if(ISSUE_NUM && PAYMENT_REQUEST) {
             log(`Processing issue #${ISSUE_NUM}...`, LogLevel.INFO, false);
-            const ISSUE = await axios.get(`${API}/${OWNER}/${REPO}/issues/${ISSUE_NUM}`);
+            const ISSUE = await axios.get(`${API}/${OWNER}/${REPO}/issues/${ISSUE_NUM}?state=open`);
             const AMT:string | null = splitter(ISSUE.data.body, 'Bounty: ');
             log(`Attempting to settle pull request #${PULL_NUM} for ${AMT} sats`, LogLevel.INFO, false);
             amtParser(AMT, PAYMENT_REQUEST);
         }
+        const MERGE = await axios.put(`${API}/${OWNER}/${REPO}/pulls/${PULL_NUM}/merge`,
+            MERGE_BODY, {headers: {'authorization': TOKEN}});
+         log(`${MERGE.data.message}`, LogLevel.INFO, false);
     })
 }
 

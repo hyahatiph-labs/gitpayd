@@ -31,14 +31,28 @@ jobs:
       - name: If you build it they will come
         run: npm run build
       
-      # TODO: Run some test suite
-      # - name: Mic check. Testing 1,2,3...
-      #   run: npm run test
+      # Everyone loves testing
+      - name: Mic check. Testing 1,2,3...
+        run: npm run test
 
-      # Check if the server is online but don't fail if it isn't
+      # Check if the server is online
       - name: health check
         env:
           HOST: ${{ secrets.GITPAYD_HOST }}
-        run: curl -iv https://$HOST/gitpayd/health || echo gitpayd is offline...
-        
-      # TODO: Algorithms and logic for automatically merging
+        run: curl -iv https://$HOST/gitpayd/health
+  
+        # execute node.js script that 
+          # use github REST API
+          # get a list of issues
+          # receive a list of prs as argument
+          # merge pr
+          # close issue
+          # will parse the payment request and send payment
+      - name: gitpayd noops doin a lil sum'
+        env:
+          GITPAYD_OWNER: ${{ secrets.GITPAYD_OWNER }}
+          GITPAYD_REPO: ${{ secrets.GITPAYD_REPO }}
+          GITPAYD_HOST: ${{ secrets.GITPAYD_HOST }}
+          GITPAYD_TOKEN: ${{ secrets.GITPAYD_TOKEN }}
+          API_KEY: ${{ secrets.API_KEY }}
+        run: node dist/noops.js
