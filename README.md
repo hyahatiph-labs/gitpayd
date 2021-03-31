@@ -54,6 +54,13 @@ gitpayd/
 }
 ```
 
+<b>Delimiters</b>
+<ul>
+<li> Issues should have a line <i><u>Bounty: amt</u></i> - where amt is the amount in satoshis
+<li> Pull requests should have a line <i><u>LN: LNxxx</u></i> - where LNxxx is the invoice 
+<li> as well as, <i><u>Closes #n</u></i> - where n is the issue number the pull request will close
+</ul>
+
 ## Building
 
 1. Run `npm run build`
