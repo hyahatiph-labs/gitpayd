@@ -6,7 +6,7 @@ git + [BTC](https://bitcoin.org/en/bitcoin-core) / [LND](https://github.com/ligh
 
 ![image](https://user-images.githubusercontent.com/13033037/112792971-6e67e800-9032-11eb-96bb-79e5a460320c.png)
 
-*** <b>Caution</b>: This application and Lightning Network APIs are beta and breaking changes may occur. Use mainnet at your own risk!
+*** <b>Caution</b>: This application is beta and breaking changes may occur. Use mainnet at your own risk!
 
 ## Project Layout
 
