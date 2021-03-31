@@ -24,6 +24,7 @@ gitpayd/
 1. Run `npm i && npm start`
 2. Test health check at `http://localhost/gitpayd/health`
 3. Verify configuration files at `~/.gitpayd/config.json`
+<br/>
 *** Optional: Configure SSL certs
 
 
