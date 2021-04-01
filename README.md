@@ -42,10 +42,13 @@ gitpayd/
 <li>GITPAYD_OWNER -  repo owner
 <li>GITPAYD_REPO - name of repo to watch
 <li>GITPAYD_HOST - host of your server
-<li>GITPAYD_TOKEN - aka [GITHUB_TOKEN](https://docs.github.com/en/actions/reference/authentication-in-a-workflow)
+<li>GITPAYD_TOKEN - aka GITHUB_TOKEN***
 <li>API_KEY - default is same as LND admin.macaroon
 </ul>
 <b>Sample .gitpayd/config.json</b>
+
+[GITHUB_TOKEN](https://docs.github.com/en/actions/reference/authentication-in-a-workflow)
+
 
 ```json 
 {
