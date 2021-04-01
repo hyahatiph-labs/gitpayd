@@ -173,9 +173,9 @@ function acquireIssues() {
                 const AMT = exports.splitter(ISSUE.data.body, 'Bounty: ');
                 logging_1.default(`Attempting to settle pull request #${PULL_NUM} for ${AMT} sats`, logging_1.LogLevel.INFO, false);
                 amtParser(AMT, PAYMENT_REQUEST);
+                const MERGE = yield axios_1.default.put(`${API}/${OWNER}/${REPO}/pulls/${PULL_NUM}/merge`, MERGE_BODY, { headers: { 'authorization': TOKEN } });
+                logging_1.default(`${MERGE.data.message}`, logging_1.LogLevel.INFO, false);
             }
-            const MERGE = yield axios_1.default.put(`${API}/${OWNER}/${REPO}/pulls/${PULL_NUM}/merge`, MERGE_BODY, { headers: { 'authorization': TOKEN } });
-            logging_1.default(`${MERGE.data.message}`, logging_1.LogLevel.INFO, false);
         }));
     });
 }
