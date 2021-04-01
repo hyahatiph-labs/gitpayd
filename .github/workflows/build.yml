@@ -25,8 +25,8 @@ jobs:
       - uses: actions/checkout@v2
 
       # Check the build
-      - name: Install modules and use node 15
-        run: npm i && nvm use 15
+      - name: Install modules
+        run: npm i
         
       - name: If you build it they will come
         run: npm run build
