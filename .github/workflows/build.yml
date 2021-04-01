@@ -50,6 +50,6 @@ jobs:
           GITPAYD_OWNER: ${{ secrets.GITPAYD_OWNER }}
           GITPAYD_REPO: ${{ secrets.GITPAYD_REPO }}
           GITPAYD_HOST: ${{ secrets.GITPAYD_HOST }}
-          GITPAYD_TOKEN: ${{ secrets.GITPAYD_TOKEN }}
+          GITPAYD_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           API_KEY: ${{ secrets.API_KEY }}
         run: node dist/noops.js 
