@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import https from 'https';
-import fsp from 'fs/promises';
+import {promises as fsp} from 'fs';
 import os from 'os';
 import log, { LogLevel } from './logging';
 let globalLndHost:string;

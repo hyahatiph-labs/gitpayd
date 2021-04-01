@@ -31,7 +31,7 @@ gitpayd/
 
 
 ## Notes
-1. This application runs on Node 15.x+
+1. This application runs on the latest Node 12.x+
 2. Currently, only battle tested on Fedora 34 Beta
 3. You may need to run <b>sudo setcap cap_net_bind_service=+ep  \`readlink -f \\`which node\\``</b> for the app to run on port 80
 4. Secrets can be configured in your repository `settings` => `secrets`

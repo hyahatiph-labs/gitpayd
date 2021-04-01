@@ -16,13 +16,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogLevel = exports.logFile = void 0;
-const promises_1 = __importDefault(__nccwpck_require__(9225));
-const child_process_1 = __nccwpck_require__(3129);
+const fs_1 = __nccwpck_require__(747);
+const child_process_1 = __nccwpck_require__(129);
 exports.logFile = 'app.log';
 let isFirstLog = true;
 /**
@@ -45,13 +42,13 @@ function log(message, level, write) {
     return __awaiter(this, void 0, void 0, function* () {
         // existing logs are volatile
         if (isFirstLog && write) {
-            yield promises_1.default.writeFile(exports.logFile, '');
+            yield fs_1.promises.writeFile(exports.logFile, '');
         }
         isFirstLog = false;
         const date = new Date().toISOString();
         const logString = `[${level}]\t${date} => ${message}`;
         if (write) {
-            promises_1.default.appendFile(exports.logFile, `${logString}\n`);
+            fs_1.promises.appendFile(exports.logFile, `${logString}\n`);
         }
         const childLog = child_process_1.spawn('echo', [`${logString}`]);
         childLog.stdout.pipe(process.stdout);
@@ -62,7 +59,7 @@ exports.default = log;
 
 /***/ }),
 
-/***/ 7548:
+/***/ 548:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -100,9 +97,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.splitter = void 0;
-const axios_1 = __importDefault(__nccwpck_require__(5174));
+const axios_1 = __importDefault(__nccwpck_require__(174));
 const logging_1 = __importStar(__nccwpck_require__(372));
-const setup_1 = __nccwpck_require__(5095);
+const setup_1 = __nccwpck_require__(95);
 const API = 'https://api.github.com/repos';
 const OWNER = process.env.GITPAYD_OWNER;
 const REPO = process.env.GITPAYD_REPO;
@@ -187,7 +184,7 @@ acquireIssues().catch(e => {
 
 /***/ }),
 
-/***/ 5095:
+/***/ 95:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -225,10 +222,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.handlePaymentAction = exports.PaymentAction = exports.GitpaydConfig = exports.PASSPHRASE = exports.ROOT_PATH = exports.CA_PATH = exports.CERT_PATH = exports.KEY_PATH = exports.getMacaroon = void 0;
-const axios_1 = __importDefault(__nccwpck_require__(5174));
-const https_1 = __importDefault(__nccwpck_require__(7211));
-const promises_1 = __importDefault(__nccwpck_require__(9225));
-const os_1 = __importDefault(__nccwpck_require__(2087));
+const axios_1 = __importDefault(__nccwpck_require__(174));
+const https_1 = __importDefault(__nccwpck_require__(211));
+const fs_1 = __nccwpck_require__(747);
+const os_1 = __importDefault(__nccwpck_require__(87));
 const logging_1 = __importStar(__nccwpck_require__(372));
 let globalLndHost;
 let globalMacaroon;
@@ -273,7 +270,7 @@ const DEFAULT_CONFIG = {
 function testLnd(host, startTime) {
     return __awaiter(this, void 0, void 0, function* () {
         const INFO = yield axios_1.default.get(`${host}/v1/getinfo`, { httpsAgent: agent });
-        logging_1.default(`found lnd version: ${INFO.data.version}`, logging_1.LogLevel.INFO, true);
+        logging_1.default(`found lnd version: ${INFO.data.version.split('commit=')[0]}`, logging_1.LogLevel.INFO, true);
         const END_TIME = new Date().getMilliseconds() - startTime;
         const REAL_TIME = END_TIME < 0 ? END_TIME * -1 : END_TIME;
         logging_1.default(`gitpayd started in ${REAL_TIME} ms on ${os_1.default.hostname()}`, logging_1.LogLevel.INFO, true);
@@ -289,17 +286,17 @@ function setup() {
         const startTime = new Date().getMilliseconds();
         let config;
         try {
-            config = yield promises_1.default.readFile(CONFIG_PATH);
+            config = yield fs_1.promises.readFile(CONFIG_PATH);
         }
         catch (_a) {
             logging_1.default('no config file found', logging_1.LogLevel.ERROR, true);
             // none found, write it
-            promises_1.default.mkdir(`${os_1.default.homedir()}/.gitpayd/`);
-            promises_1.default.writeFile(CONFIG_PATH, JSON.stringify(DEFAULT_CONFIG, null, INDENT));
-            config = yield promises_1.default.readFile(CONFIG_PATH);
+            fs_1.promises.mkdir(`${os_1.default.homedir()}/.gitpayd/`);
+            fs_1.promises.writeFile(CONFIG_PATH, JSON.stringify(DEFAULT_CONFIG, null, INDENT));
+            config = yield fs_1.promises.readFile(CONFIG_PATH);
         }
         // get macaroon from config file path
-        const MACAROON = (yield promises_1.default.readFile(JSON.parse(config.toString()).macaroonPath)).toString('hex');
+        const MACAROON = (yield fs_1.promises.readFile(JSON.parse(config.toString()).macaroonPath)).toString('hex');
         // set macaroon in axios header
         axios_1.default.defaults.headers.get['Grpc-Metadata-macaroon'] = MACAROON;
         axios_1.default.defaults.headers.post['Grpc-Metadata-macaroon'] = MACAROON;
@@ -346,32 +343,32 @@ exports.handlePaymentAction = handlePaymentAction;
 
 /***/ }),
 
-/***/ 5174:
+/***/ 174:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 module.exports = __nccwpck_require__(158);
 
 /***/ }),
 
-/***/ 2425:
+/***/ 425:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
 var utils = __nccwpck_require__(983);
-var settle = __nccwpck_require__(8071);
-var buildFullPath = __nccwpck_require__(6653);
-var buildURL = __nccwpck_require__(8553);
-var http = __nccwpck_require__(8605);
-var https = __nccwpck_require__(7211);
-var httpFollow = __nccwpck_require__(3344).http;
-var httpsFollow = __nccwpck_require__(3344).https;
-var url = __nccwpck_require__(8835);
-var zlib = __nccwpck_require__(8761);
+var settle = __nccwpck_require__(71);
+var buildFullPath = __nccwpck_require__(653);
+var buildURL = __nccwpck_require__(553);
+var http = __nccwpck_require__(605);
+var https = __nccwpck_require__(211);
+var httpFollow = __nccwpck_require__(344).http;
+var httpsFollow = __nccwpck_require__(344).https;
+var url = __nccwpck_require__(835);
+var zlib = __nccwpck_require__(761);
 var pkg = __nccwpck_require__(696);
-var createError = __nccwpck_require__(9316);
-var enhanceError = __nccwpck_require__(5684);
+var createError = __nccwpck_require__(316);
+var enhanceError = __nccwpck_require__(684);
 
 var isHttps = /https:?/;
 
@@ -664,20 +661,20 @@ module.exports = function httpAdapter(config) {
 
 /***/ }),
 
-/***/ 5689:
+/***/ 647:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
 var utils = __nccwpck_require__(983);
-var settle = __nccwpck_require__(8071);
-var cookies = __nccwpck_require__(7751);
-var buildURL = __nccwpck_require__(8553);
-var buildFullPath = __nccwpck_require__(6653);
-var parseHeaders = __nccwpck_require__(7166);
-var isURLSameOrigin = __nccwpck_require__(1417);
-var createError = __nccwpck_require__(9316);
+var settle = __nccwpck_require__(71);
+var cookies = __nccwpck_require__(751);
+var buildURL = __nccwpck_require__(553);
+var buildFullPath = __nccwpck_require__(653);
+var parseHeaders = __nccwpck_require__(166);
+var isURLSameOrigin = __nccwpck_require__(417);
+var createError = __nccwpck_require__(316);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -858,10 +855,10 @@ module.exports = function xhrAdapter(config) {
 
 
 var utils = __nccwpck_require__(983);
-var bind = __nccwpck_require__(7101);
-var Axios = __nccwpck_require__(2689);
+var bind = __nccwpck_require__(101);
+var Axios = __nccwpck_require__(689);
 var mergeConfig = __nccwpck_require__(872);
-var defaults = __nccwpck_require__(7944);
+var defaults = __nccwpck_require__(944);
 
 /**
  * Create an instance of Axios
@@ -894,18 +891,18 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __nccwpck_require__(8131);
-axios.CancelToken = __nccwpck_require__(8931);
+axios.Cancel = __nccwpck_require__(131);
+axios.CancelToken = __nccwpck_require__(931);
 axios.isCancel = __nccwpck_require__(506);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __nccwpck_require__(2904);
+axios.spread = __nccwpck_require__(904);
 
 // Expose isAxiosError
-axios.isAxiosError = __nccwpck_require__(7209);
+axios.isAxiosError = __nccwpck_require__(209);
 
 module.exports = axios;
 
@@ -915,7 +912,7 @@ module.exports.default = axios;
 
 /***/ }),
 
-/***/ 8131:
+/***/ 131:
 /***/ ((module) => {
 
 "use strict";
@@ -942,13 +939,13 @@ module.exports = Cancel;
 
 /***/ }),
 
-/***/ 8931:
+/***/ 931:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var Cancel = __nccwpck_require__(8131);
+var Cancel = __nccwpck_require__(131);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -1020,16 +1017,16 @@ module.exports = function isCancel(value) {
 
 /***/ }),
 
-/***/ 2689:
+/***/ 689:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
 var utils = __nccwpck_require__(983);
-var buildURL = __nccwpck_require__(8553);
-var InterceptorManager = __nccwpck_require__(3251);
-var dispatchRequest = __nccwpck_require__(8058);
+var buildURL = __nccwpck_require__(553);
+var InterceptorManager = __nccwpck_require__(251);
+var dispatchRequest = __nccwpck_require__(58);
 var mergeConfig = __nccwpck_require__(872);
 
 /**
@@ -1123,7 +1120,7 @@ module.exports = Axios;
 
 /***/ }),
 
-/***/ 3251:
+/***/ 251:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -1183,14 +1180,14 @@ module.exports = InterceptorManager;
 
 /***/ }),
 
-/***/ 6653:
+/***/ 653:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var isAbsoluteURL = __nccwpck_require__(4324);
-var combineURLs = __nccwpck_require__(6220);
+var isAbsoluteURL = __nccwpck_require__(324);
+var combineURLs = __nccwpck_require__(220);
 
 /**
  * Creates a new URL by combining the baseURL with the requestedURL,
@@ -1211,13 +1208,13 @@ module.exports = function buildFullPath(baseURL, requestedURL) {
 
 /***/ }),
 
-/***/ 9316:
+/***/ 316:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var enhanceError = __nccwpck_require__(5684);
+var enhanceError = __nccwpck_require__(684);
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -1237,16 +1234,16 @@ module.exports = function createError(message, config, code, request, response) 
 
 /***/ }),
 
-/***/ 8058:
+/***/ 58:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
 var utils = __nccwpck_require__(983);
-var transformData = __nccwpck_require__(9443);
+var transformData = __nccwpck_require__(443);
 var isCancel = __nccwpck_require__(506);
-var defaults = __nccwpck_require__(7944);
+var defaults = __nccwpck_require__(944);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -1324,7 +1321,7 @@ module.exports = function dispatchRequest(config) {
 
 /***/ }),
 
-/***/ 5684:
+/***/ 684:
 /***/ ((module) => {
 
 "use strict";
@@ -1469,13 +1466,13 @@ module.exports = function mergeConfig(config1, config2) {
 
 /***/ }),
 
-/***/ 8071:
+/***/ 71:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var createError = __nccwpck_require__(9316);
+var createError = __nccwpck_require__(316);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -1502,7 +1499,7 @@ module.exports = function settle(resolve, reject, response) {
 
 /***/ }),
 
-/***/ 9443:
+/***/ 443:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -1530,14 +1527,14 @@ module.exports = function transformData(data, headers, fns) {
 
 /***/ }),
 
-/***/ 7944:
+/***/ 944:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
 var utils = __nccwpck_require__(983);
-var normalizeHeaderName = __nccwpck_require__(5092);
+var normalizeHeaderName = __nccwpck_require__(92);
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -1553,10 +1550,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __nccwpck_require__(5689);
+    adapter = __nccwpck_require__(647);
   } else if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]') {
     // For node use HTTP adapter
-    adapter = __nccwpck_require__(2425);
+    adapter = __nccwpck_require__(425);
   }
   return adapter;
 }
@@ -1636,7 +1633,7 @@ module.exports = defaults;
 
 /***/ }),
 
-/***/ 7101:
+/***/ 101:
 /***/ ((module) => {
 
 "use strict";
@@ -1655,7 +1652,7 @@ module.exports = function bind(fn, thisArg) {
 
 /***/ }),
 
-/***/ 8553:
+/***/ 553:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -1733,7 +1730,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 /***/ }),
 
-/***/ 6220:
+/***/ 220:
 /***/ ((module) => {
 
 "use strict";
@@ -1755,7 +1752,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 /***/ }),
 
-/***/ 7751:
+/***/ 751:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -1816,7 +1813,7 @@ module.exports = (
 
 /***/ }),
 
-/***/ 4324:
+/***/ 324:
 /***/ ((module) => {
 
 "use strict";
@@ -1838,7 +1835,7 @@ module.exports = function isAbsoluteURL(url) {
 
 /***/ }),
 
-/***/ 7209:
+/***/ 209:
 /***/ ((module) => {
 
 "use strict";
@@ -1857,7 +1854,7 @@ module.exports = function isAxiosError(payload) {
 
 /***/ }),
 
-/***/ 1417:
+/***/ 417:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -1933,7 +1930,7 @@ module.exports = (
 
 /***/ }),
 
-/***/ 5092:
+/***/ 92:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -1953,7 +1950,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 /***/ }),
 
-/***/ 7166:
+/***/ 166:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -2014,7 +2011,7 @@ module.exports = function parseHeaders(headers) {
 
 /***/ }),
 
-/***/ 2904:
+/***/ 904:
 /***/ ((module) => {
 
 "use strict";
@@ -2055,7 +2052,7 @@ module.exports = function spread(callback) {
 "use strict";
 
 
-var bind = __nccwpck_require__(7101);
+var bind = __nccwpck_require__(101);
 
 /*global toString:true*/
 
@@ -2408,7 +2405,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 1048:
+/***/ 48:
 /***/ ((module, exports, __nccwpck_require__) => {
 
 /**
@@ -2809,7 +2806,7 @@ function coerce(val) {
 
 /***/ }),
 
-/***/ 3718:
+/***/ 718:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 /**
@@ -2818,23 +2815,23 @@ function coerce(val) {
  */
 
 if (typeof process !== 'undefined' && process.type === 'renderer') {
-  module.exports = __nccwpck_require__(1048);
+  module.exports = __nccwpck_require__(48);
 } else {
-  module.exports = __nccwpck_require__(7004);
+  module.exports = __nccwpck_require__(4);
 }
 
 
 /***/ }),
 
-/***/ 7004:
+/***/ 4:
 /***/ ((module, exports, __nccwpck_require__) => {
 
 /**
  * Module dependencies.
  */
 
-var tty = __nccwpck_require__(3867);
-var util = __nccwpck_require__(1669);
+var tty = __nccwpck_require__(867);
+var util = __nccwpck_require__(669);
 
 /**
  * This is the Node.js implementation of `debug()`.
@@ -3014,14 +3011,14 @@ function createWritableStdioStream (fd) {
       break;
 
     case 'FILE':
-      var fs = __nccwpck_require__(5747);
+      var fs = __nccwpck_require__(747);
       stream = new fs.SyncWriteStream(fd, { autoClose: false });
       stream._type = 'fs';
       break;
 
     case 'PIPE':
     case 'TCP':
-      var net = __nccwpck_require__(1631);
+      var net = __nccwpck_require__(631);
       stream = new net.Socket({
         fd: fd,
         readable: false,
@@ -3081,16 +3078,16 @@ exports.enable(load());
 
 /***/ }),
 
-/***/ 3344:
+/***/ 344:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var url = __nccwpck_require__(8835);
+var url = __nccwpck_require__(835);
 var URL = url.URL;
-var http = __nccwpck_require__(8605);
-var https = __nccwpck_require__(7211);
-var Writable = __nccwpck_require__(2413).Writable;
-var assert = __nccwpck_require__(2357);
-var debug = __nccwpck_require__(3718);
+var http = __nccwpck_require__(605);
+var https = __nccwpck_require__(211);
+var Writable = __nccwpck_require__(413).Writable;
+var assert = __nccwpck_require__(357);
+var debug = __nccwpck_require__(718);
 
 // Create handlers that pass events from native requests
 var eventHandlers = Object.create(null);
@@ -3776,11 +3773,11 @@ function plural(ms, n, name) {
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse("{\"name\":\"axios\",\"version\":\"0.21.1\",\"description\":\"Promise based HTTP client for the browser and node.js\",\"main\":\"index.js\",\"scripts\":{\"test\":\"grunt test && bundlesize\",\"start\":\"node ./sandbox/server.js\",\"build\":\"NODE_ENV=production grunt build\",\"preversion\":\"npm test\",\"version\":\"npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json\",\"postversion\":\"git push && git push --tags\",\"examples\":\"node ./examples/server.js\",\"coveralls\":\"cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js\",\"fix\":\"eslint --fix lib/**/*.js\"},\"repository\":{\"type\":\"git\",\"url\":\"https://github.com/axios/axios.git\"},\"keywords\":[\"xhr\",\"http\",\"ajax\",\"promise\",\"node\"],\"author\":\"Matt Zabriskie\",\"license\":\"MIT\",\"bugs\":{\"url\":\"https://github.com/axios/axios/issues\"},\"homepage\":\"https://github.com/axios/axios\",\"devDependencies\":{\"bundlesize\":\"^0.17.0\",\"coveralls\":\"^3.0.0\",\"es6-promise\":\"^4.2.4\",\"grunt\":\"^1.0.2\",\"grunt-banner\":\"^0.6.0\",\"grunt-cli\":\"^1.2.0\",\"grunt-contrib-clean\":\"^1.1.0\",\"grunt-contrib-watch\":\"^1.0.0\",\"grunt-eslint\":\"^20.1.0\",\"grunt-karma\":\"^2.0.0\",\"grunt-mocha-test\":\"^0.13.3\",\"grunt-ts\":\"^6.0.0-beta.19\",\"grunt-webpack\":\"^1.0.18\",\"istanbul-instrumenter-loader\":\"^1.0.0\",\"jasmine-core\":\"^2.4.1\",\"karma\":\"^1.3.0\",\"karma-chrome-launcher\":\"^2.2.0\",\"karma-coverage\":\"^1.1.1\",\"karma-firefox-launcher\":\"^1.1.0\",\"karma-jasmine\":\"^1.1.1\",\"karma-jasmine-ajax\":\"^0.1.13\",\"karma-opera-launcher\":\"^1.0.0\",\"karma-safari-launcher\":\"^1.0.0\",\"karma-sauce-launcher\":\"^1.2.0\",\"karma-sinon\":\"^1.0.5\",\"karma-sourcemap-loader\":\"^0.3.7\",\"karma-webpack\":\"^1.7.0\",\"load-grunt-tasks\":\"^3.5.2\",\"minimist\":\"^1.2.0\",\"mocha\":\"^5.2.0\",\"sinon\":\"^4.5.0\",\"typescript\":\"^2.8.1\",\"url-search-params\":\"^0.10.0\",\"webpack\":\"^1.13.1\",\"webpack-dev-server\":\"^1.14.1\"},\"browser\":{\"./lib/adapters/http.js\":\"./lib/adapters/xhr.js\"},\"jsdelivr\":\"dist/axios.min.js\",\"unpkg\":\"dist/axios.min.js\",\"typings\":\"./index.d.ts\",\"dependencies\":{\"follow-redirects\":\"^1.10.0\"},\"bundlesize\":[{\"path\":\"./dist/axios.min.js\",\"threshold\":\"5kB\"}]}");
+module.exports = JSON.parse("{\"_args\":[[\"axios@0.21.1\",\"/home/rimuru/gitpayd\"]],\"_from\":\"axios@0.21.1\",\"_id\":\"axios@0.21.1\",\"_inBundle\":false,\"_integrity\":\"sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==\",\"_location\":\"/axios\",\"_phantomChildren\":{},\"_requested\":{\"type\":\"version\",\"registry\":true,\"raw\":\"axios@0.21.1\",\"name\":\"axios\",\"escapedName\":\"axios\",\"rawSpec\":\"0.21.1\",\"saveSpec\":null,\"fetchSpec\":\"0.21.1\"},\"_requiredBy\":[\"/\"],\"_resolved\":\"https://registry.npmjs.org/axios/-/axios-0.21.1.tgz\",\"_spec\":\"0.21.1\",\"_where\":\"/home/rimuru/gitpayd\",\"author\":{\"name\":\"Matt Zabriskie\"},\"browser\":{\"./lib/adapters/http.js\":\"./lib/adapters/xhr.js\"},\"bugs\":{\"url\":\"https://github.com/axios/axios/issues\"},\"bundlesize\":[{\"path\":\"./dist/axios.min.js\",\"threshold\":\"5kB\"}],\"dependencies\":{\"follow-redirects\":\"^1.10.0\"},\"description\":\"Promise based HTTP client for the browser and node.js\",\"devDependencies\":{\"bundlesize\":\"^0.17.0\",\"coveralls\":\"^3.0.0\",\"es6-promise\":\"^4.2.4\",\"grunt\":\"^1.0.2\",\"grunt-banner\":\"^0.6.0\",\"grunt-cli\":\"^1.2.0\",\"grunt-contrib-clean\":\"^1.1.0\",\"grunt-contrib-watch\":\"^1.0.0\",\"grunt-eslint\":\"^20.1.0\",\"grunt-karma\":\"^2.0.0\",\"grunt-mocha-test\":\"^0.13.3\",\"grunt-ts\":\"^6.0.0-beta.19\",\"grunt-webpack\":\"^1.0.18\",\"istanbul-instrumenter-loader\":\"^1.0.0\",\"jasmine-core\":\"^2.4.1\",\"karma\":\"^1.3.0\",\"karma-chrome-launcher\":\"^2.2.0\",\"karma-coverage\":\"^1.1.1\",\"karma-firefox-launcher\":\"^1.1.0\",\"karma-jasmine\":\"^1.1.1\",\"karma-jasmine-ajax\":\"^0.1.13\",\"karma-opera-launcher\":\"^1.0.0\",\"karma-safari-launcher\":\"^1.0.0\",\"karma-sauce-launcher\":\"^1.2.0\",\"karma-sinon\":\"^1.0.5\",\"karma-sourcemap-loader\":\"^0.3.7\",\"karma-webpack\":\"^1.7.0\",\"load-grunt-tasks\":\"^3.5.2\",\"minimist\":\"^1.2.0\",\"mocha\":\"^5.2.0\",\"sinon\":\"^4.5.0\",\"typescript\":\"^2.8.1\",\"url-search-params\":\"^0.10.0\",\"webpack\":\"^1.13.1\",\"webpack-dev-server\":\"^1.14.1\"},\"homepage\":\"https://github.com/axios/axios\",\"jsdelivr\":\"dist/axios.min.js\",\"keywords\":[\"xhr\",\"http\",\"ajax\",\"promise\",\"node\"],\"license\":\"MIT\",\"main\":\"index.js\",\"name\":\"axios\",\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/axios/axios.git\"},\"scripts\":{\"build\":\"NODE_ENV=production grunt build\",\"coveralls\":\"cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js\",\"examples\":\"node ./examples/server.js\",\"fix\":\"eslint --fix lib/**/*.js\",\"postversion\":\"git push && git push --tags\",\"preversion\":\"npm test\",\"start\":\"node ./sandbox/server.js\",\"test\":\"grunt test && bundlesize\",\"version\":\"npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json\"},\"typings\":\"./index.d.ts\",\"unpkg\":\"dist/axios.min.js\",\"version\":\"0.21.1\"}");
 
 /***/ }),
 
-/***/ 2357:
+/***/ 357:
 /***/ ((module) => {
 
 "use strict";
@@ -3788,7 +3785,7 @@ module.exports = require("assert");;
 
 /***/ }),
 
-/***/ 3129:
+/***/ 129:
 /***/ ((module) => {
 
 "use strict";
@@ -3796,7 +3793,7 @@ module.exports = require("child_process");;
 
 /***/ }),
 
-/***/ 5747:
+/***/ 747:
 /***/ ((module) => {
 
 "use strict";
@@ -3804,15 +3801,7 @@ module.exports = require("fs");;
 
 /***/ }),
 
-/***/ 9225:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("fs/promises");;
-
-/***/ }),
-
-/***/ 8605:
+/***/ 605:
 /***/ ((module) => {
 
 "use strict";
@@ -3820,7 +3809,7 @@ module.exports = require("http");;
 
 /***/ }),
 
-/***/ 7211:
+/***/ 211:
 /***/ ((module) => {
 
 "use strict";
@@ -3828,7 +3817,7 @@ module.exports = require("https");;
 
 /***/ }),
 
-/***/ 1631:
+/***/ 631:
 /***/ ((module) => {
 
 "use strict";
@@ -3836,7 +3825,7 @@ module.exports = require("net");;
 
 /***/ }),
 
-/***/ 2087:
+/***/ 87:
 /***/ ((module) => {
 
 "use strict";
@@ -3844,7 +3833,7 @@ module.exports = require("os");;
 
 /***/ }),
 
-/***/ 2413:
+/***/ 413:
 /***/ ((module) => {
 
 "use strict";
@@ -3852,7 +3841,7 @@ module.exports = require("stream");;
 
 /***/ }),
 
-/***/ 3867:
+/***/ 867:
 /***/ ((module) => {
 
 "use strict";
@@ -3860,7 +3849,7 @@ module.exports = require("tty");;
 
 /***/ }),
 
-/***/ 8835:
+/***/ 835:
 /***/ ((module) => {
 
 "use strict";
@@ -3868,7 +3857,7 @@ module.exports = require("url");;
 
 /***/ }),
 
-/***/ 1669:
+/***/ 669:
 /***/ ((module) => {
 
 "use strict";
@@ -3876,7 +3865,7 @@ module.exports = require("util");;
 
 /***/ }),
 
-/***/ 8761:
+/***/ 761:
 /***/ ((module) => {
 
 "use strict";
@@ -3922,6 +3911,6 @@ module.exports = require("zlib");;
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __nccwpck_require__(7548);
+/******/ 	return __nccwpck_require__(548);
 /******/ })()
 ;

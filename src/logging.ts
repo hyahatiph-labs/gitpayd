@@ -1,4 +1,4 @@
-import fs from 'fs/promises';
+import {promises as fs} from 'fs';
 import { spawn } from 'child_process';
 export const logFile = 'app.log';
 let isFirstLog = true;

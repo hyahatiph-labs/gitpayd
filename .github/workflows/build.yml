@@ -41,7 +41,7 @@ jobs:
           HOST: ${{ secrets.GITPAYD_HOST }}
         run: curl -iv https://$HOST/gitpayd/health
   
-        # execute node.js script that 
+        # execute gitpayd action that: 
           # get a list of issues and associated pull requests
           # merge pr and close issue
           # parse the payment request and send payment
