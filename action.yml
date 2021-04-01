@@ -3,9 +3,6 @@
 name: 'gitpayd'
 description: 'Run the gitpayd NoOps script to interact with an existing server'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
-    required: true
   owner: 
     description: 'Owner of the repo to monitor'
     required: true

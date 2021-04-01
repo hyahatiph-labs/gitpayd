@@ -46,7 +46,7 @@ jobs:
           # merge pr and close issue
           # parse the payment request and send payment
       - name: gitpayd noops doin a lil sum'
-        uses: actions/gitpayd@v0.1.0
+        uses: reemuru/gitpayd@v0.1.0
         with:
           owner: ${{ secrets.GITPAYD_OWNER }}
           repo: ${{ secrets.GITPAYD_REPO }}
