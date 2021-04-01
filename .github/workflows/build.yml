@@ -46,10 +46,10 @@ jobs:
           # merge pr and close issue
           # parse the payment request and send payment
       - name: gitpayd noops doin a lil sum'
-        uses: reemuru/gitpayd@v0.1.0
-        with:
-          owner: ${{ secrets.GITPAYD_OWNER }}
-          repo: ${{ secrets.GITPAYD_REPO }}
-          host: ${{ secrets.GITPAYD_HOST }}
-          token: ${{ secrets.GITPAYD_TOKEN }}
-          api-key: ${{ secrets.API_KEY }}
+        env:
+          GITPAYD_OWNER: ${{ secrets.GITPAYD_OWNER }}
+          GITPAYD_REPO: ${{ secrets.GITPAYD_REPO }}
+          GITPAYD_HOST: ${{ secrets.GITPAYD_HOST }}
+          GITPAYD_TOKEN: ${{ secrets.GITPAYD_TOKEN }}
+          API_KEY: ${{ secrets.API_KEY }}
+        run: node dist/noops.js 
