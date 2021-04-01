@@ -37,12 +37,12 @@ gitpayd/
 4. Secrets can be configured in your repository `settings` => `secrets`
 5. Sample Github workflow .yml is located in `gitpayd/.github/workflows/build.yml`
 
-<b>Required Environment Variables</b>
+<b>Required Secrets</b>
 <ul>
 <li>GITPAYD_OWNER -  repo owner
 <li>GITPAYD_REPO - name of repo to watch
 <li>GITPAYD_HOST - host of your server
-<li>GITPAYD_TOKEN - aka GITHUB token
+<li>GITPAYD_TOKEN - aka [GITHUB_TOKEN](https://docs.github.com/en/actions/reference/authentication-in-a-workflow)
 <li>API_KEY - default is same as LND admin.macaroon
 </ul>
 <b>Sample .gitpayd/config.json</b>
