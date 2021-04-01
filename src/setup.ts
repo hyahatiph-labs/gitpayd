@@ -54,7 +54,7 @@ const DEFAULT_CONFIG: ConfigFile = {
  */
 async function testLnd(host:string, startTime:number):Promise<void> {
     const INFO = await axios.get(`${host}/v1/getinfo`, { httpsAgent: agent })
-    log(`found lnd version: ${INFO.data.version}`, LogLevel.INFO, true)
+    log(`found lnd version: ${INFO.data.version.split('commit=')[0]}`, LogLevel.INFO, true)
     const END_TIME:number = new Date().getMilliseconds() - startTime;
     const REAL_TIME:number = END_TIME < 0 ? END_TIME * -1 : END_TIME;
     log(`gitpayd started in ${REAL_TIME} ms on ${os.hostname()}`, LogLevel.INFO, true);
