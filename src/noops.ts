@@ -17,7 +17,7 @@ axios.defaults.headers.get.Accept = 'application/vnd.github.v3+json';
  * @param {string} role - role extracted from the pull request
  * @returns boolean
  */
-const validateCollaborators = (role:AuthorizedRoles): boolean => {
+export const validateCollaborators = (role:AuthorizedRoles): boolean => {
     return role === AuthorizedRoles.COLLABORATOR || role === AuthorizedRoles.OWNER;
 }
 
@@ -74,7 +74,7 @@ async function sendPayment(paymentRequest:string):Promise<void> {
 /**
  * This function acquires the issue linked in the pull request
  */
-async function acquireIssues():Promise<void> {
+export async function acquireIssues():Promise<void> {
     const PR = await axios.get(`${API}/${OWNER}/${REPO}/pulls?state=open`);
     PR.data.forEach(async (pull:any) => {
         const ISSUE_NUM:string | null = splitter(pull.body, 'Closes #');
@@ -96,8 +96,3 @@ async function acquireIssues():Promise<void> {
         }
     })
 }
-
-acquireIssues().catch(e => {
-    log(`${e}`, LogLevel.DEBUG, false);
-    log('failed to process issues', LogLevel.ERROR, false)
-});
