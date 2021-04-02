@@ -1,51 +1,85 @@
 import axios, { AxiosResponse } from 'axios';
 import https from 'https';
 import {promises as fsp} from 'fs';
-import os from 'os';
 import log, { LogLevel } from './logging';
-let globalLndHost:string;
-let globalMacaroon:string;
-// Handle LND TLS error at the request level
-const agent = new https.Agent({ rejectUnauthorized: false });
-
-// accessor for macaroon
-export const getMacaroon = () => { return globalMacaroon; }
+import os from 'os';
+import { randomBytes } from 'crypto';
+let globalLndHost: string;
+let globalApiKey: string;
 
 // set https certs here
-export const KEY_PATH = process.env.KEY_PATH;
-export const CERT_PATH = process.env.CERT_PATH;
-export const CA_PATH = process.env.CA_PATH;
-export const ROOT_PATH = process.env.ROOT_PATH;
-export const PASSPHRASE = process.env.PASSPHRASE;
+export const KEY_PATH: string = process.env.KEY_PATH;
+export const CERT_PATH: string = process.env.CERT_PATH;
+export const CA_PATH: string = process.env.CA_PATH;
+export const ROOT_PATH: string = process.env.ROOT_PATH;
+export const PASSPHRASE: string = process.env.PASSPHRASE;
+
+// api key size
+const API_KEY_SIZE: number = 32;
 
 // interface for the config file
 interface ConfigFile {
     macaroonPath: string
     lndHost: string
+    internalApiKey: string
 }
 
 /**
  * Global settings for the server
  */
 export enum GitpaydConfig {
-    HOST = '0.0.0.0',
-    PORT = 80,
     SECURE_PORT = 443,
     MAX_PAYMENT = 100000,
+    PAYMENT_THRESHOLD = 250000,
     HTTP_OK = 200,
-    UNAUTHORIZED = 443,
-    SERVER_FAILURE = 500
+    UNAUTHORIZED = 403,
+    SERVER_FAILURE = 500,
+}
+
+/**
+ * Authorized roles
+ */
+export enum AuthorizedRoles {
+    COLLABORATOR = 'COLLABORATOR',
+    OWNER = 'OWNER'
 }
 
 // some defaults for linux
-const CONFIG_PATH = `${os.homedir()}/.gitpayd/config.json`;
-const DEFAULT_MACAROON = `${os.homedir()}/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`;
-const DEFAULT_LND_HOST = 'https://localhost:8080';
-const INDENT = 2;
+export const CONFIG_PATH: string = `${os.homedir()}/.gitpayd/config.json`;
+export const DEFAULT_MACAROON: string = `${os.homedir()}/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`;
+export const DEFAULT_LND_HOST: string = 'https://localhost:8080';
+export const INDENT = 2;
 const DEFAULT_CONFIG: ConfigFile = {
     macaroonPath: DEFAULT_MACAROON,
     lndHost: DEFAULT_LND_HOST,
+    internalApiKey: ''
 }
+
+/**
+ * Used in conjunction with api requests in order to reduce
+ * cognitive complexity
+ */
+ export enum PaymentAction {
+    DECODE = 'DECODE',
+    PAY = 'PAY',
+    BALANCE = 'BALANCE'
+}
+
+/**
+ * Generate the internal api key
+ * It is validated against Github secrets.API_KEY
+ */
+ export async function generateInternalApkiKey():Promise<void> {
+    const buf:Buffer = randomBytes(API_KEY_SIZE);
+    log(`generated api key of length ${buf.length}`, LogLevel.INFO, true);
+    DEFAULT_CONFIG.internalApiKey = buf.toString('hex');
+}
+
+// Handle LND TLS error at the request level
+const agent = new https.Agent({ rejectUnauthorized: false });
+
+// accessor for the api key
+export const getInternalApiKey = (): string => { return globalApiKey; }
 
 /**
  * Hit the LND Node and see if it returns data
@@ -66,38 +100,33 @@ async function testLnd(host:string, startTime:number):Promise<void> {
  * check for the LND node existing
  */
 export default async function setup():Promise<void> {
-    const startTime:number = new Date().getMilliseconds();
-    let config:ConfigFile | Buffer;
+    const startTime: number = new Date().getMilliseconds();
+    let config: ConfigFile | Buffer;
     try {
         config = await fsp.readFile(CONFIG_PATH);
     } catch {
         log('no config file found', LogLevel.ERROR, true);
         // none found, write it
-        fsp.mkdir(`${os.homedir()}/.gitpayd/`);
-        fsp.writeFile(CONFIG_PATH, JSON.stringify(DEFAULT_CONFIG, null, INDENT));
+        await generateInternalApkiKey()
+            .catch(() => log(`failed to generate api key`, LogLevel.INFO, true));
+        await fsp.mkdir(`${os.homedir()}/.gitpayd/`)
+            .catch(() => log(`path for config already exists`, LogLevel.INFO, true));
+        await fsp.writeFile(CONFIG_PATH, JSON.stringify(DEFAULT_CONFIG, null, INDENT))
+            .catch(() => log('failed to write config file', LogLevel.INFO, true));
         config = await fsp.readFile(CONFIG_PATH);
     }
     // get macaroon from config file path
-    const MACAROON:string =
+    const MACAROON: string =
         (await fsp.readFile(JSON.parse(config.toString()).macaroonPath)).toString('hex');
+    const INTERNAL_API_KEY: string = JSON.parse(config.toString()).internalApiKey;
     // set macaroon in axios header
     axios.defaults.headers.get['Grpc-Metadata-macaroon'] = MACAROON;
     axios.defaults.headers.post['Grpc-Metadata-macaroon'] = MACAROON;
     // api call to lnd node
-    const LND_HOST:string = JSON.parse(config.toString()).lndHost;
+    const LND_HOST: string = JSON.parse(config.toString()).lndHost;
     globalLndHost = LND_HOST;
-    globalMacaroon = MACAROON;
+    globalApiKey = INTERNAL_API_KEY;
     testLnd(LND_HOST, startTime).catch(() => { throw new Error('LND is not online. Exiting...') });
-}
-
-/**
- * Used in conjunction with api requests in order to reduce
- * cognitive complexity
- */
-export enum PaymentAction {
-    DECODE = 'DECODE',
-    PAY = 'PAY',
-    BALANCE = 'BALANCE'
 }
 
 /**
@@ -105,7 +134,7 @@ export enum PaymentAction {
  * @param {string} paymentRequest - invoice sent to gitpayd
  * @param {PaymentAction} action - decode, get the channel balance, or process payments
  */
-export function handlePaymentAction(paymentRequest:string | null, action:PaymentAction):Promise<AxiosResponse<any>> {
+export function handlePaymentAction(paymentRequest: string | null, action: PaymentAction): Promise<AxiosResponse<any>> {
     switch (action) {
         // case for decoding payment
         case PaymentAction.DECODE:

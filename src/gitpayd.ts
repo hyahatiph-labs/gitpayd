@@ -1,15 +1,16 @@
 import express from 'express';
-import setup, { CA_PATH, CERT_PATH, getMacaroon,
-    GitpaydConfig, handlePaymentAction, KEY_PATH,
-    PASSPHRASE, PaymentAction, ROOT_PATH } from './setup';
+import setup, { handlePaymentAction, getInternalApiKey, CONFIG_PATH } from './setup';
+import { PaymentAction } from './setup';
 import log, { LogLevel } from './logging';
-import http from 'http';
 import https from 'https';
 import fs from 'fs';
+import os from 'os';
+import { CA_PATH, CERT_PATH, GitpaydConfig, KEY_PATH,
+    PASSPHRASE, ROOT_PATH } from './setup';
 const APP = express();
 
 // check for lnd first
-setup().catch(() => { throw new Error('gitpayd failed to initialize') });
+setup().catch(() => log(`setup failed, check ${CONFIG_PATH}`, LogLevel.ERROR, true));
 
 // healthcheck for gitpayd
 APP.get("/gitpayd/health", (req, res) => {
@@ -20,7 +21,7 @@ APP.get("/gitpayd/health", (req, res) => {
 // decode payment API for gitpayd
 APP.get("/gitpayd/decode/:paymentRequest", (req, res) => {
     const AUTH = req.headers.authorization;
-    if(AUTH !== getMacaroon()) {
+    if(AUTH !== getInternalApiKey()) {
         log(`${req.ip} unauthorized access on gitpayd/decode`, LogLevel.ERROR, true);
         res.status(GitpaydConfig.UNAUTHORIZED).json({ msg: `bad creds: ${AUTH}` })
     } else {
@@ -37,7 +38,7 @@ APP.get("/gitpayd/decode/:paymentRequest", (req, res) => {
 // validate channel balance API for gitpayd
 APP.get("/gitpayd/balance", (req, res) => {
     const AUTH = req.headers.authorization;
-    if(AUTH !== getMacaroon()) {
+    if(AUTH !== getInternalApiKey()) {
         log(`${req.ip} unauthorized access on gitpayd/balance`, LogLevel.ERROR, true);
         res.status(GitpaydConfig.UNAUTHORIZED).json({ msg: `bad creds: ${AUTH}` })
     } else {
@@ -47,14 +48,15 @@ APP.get("/gitpayd/balance", (req, res) => {
           .then(balance => res.status(GitpaydConfig.HTTP_OK)
           .json({ balance: balance.data.local_balance }))
           .catch(() => res.status(GitpaydConfig.SERVER_FAILURE)
-          .json({ msg: 'gitpayd failed to send payment' }));
+          .json({ msg: 'gitpayd failed return balance' }));
     }
 });
 
 // send payment API for gitpayd
 APP.post("/gitpayd/pay/:paymentRequest", (req, res) => {
     const AUTH = req.headers.authorization;
-    if(AUTH !== getMacaroon()) {
+    log(`${getInternalApiKey()}`, LogLevel.DEBUG, false);
+    if(AUTH !== getInternalApiKey()) {
         res.status(GitpaydConfig.UNAUTHORIZED).json({msg: `bad creds: ${AUTH}`})
     } else {
         log(`${req.ip} connected to gitpayd/pay`, LogLevel.INFO, true);
@@ -69,20 +71,14 @@ APP.post("/gitpayd/pay/:paymentRequest", (req, res) => {
 
 // start the Express server
 // hint: sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
-// comment out HTTPS_SERVER stuff if unable to configure SSL
-const HTTP_SERVER = http.createServer(APP);
-HTTP_SERVER.listen(GitpaydConfig.PORT);
 try {
     const HTTPS_SERVER = https.createServer({
         key: fs.readFileSync(KEY_PATH),
         passphrase: (PASSPHRASE),
         cert: fs.readFileSync(CERT_PATH),
-        ca: [
-            fs.readFileSync(CA_PATH),
-            fs.readFileSync(ROOT_PATH)
-        ]
-      }, APP);
-    HTTPS_SERVER.listen(GitpaydConfig.SECURE_PORT);
+        ca: [ fs.readFileSync(CA_PATH),fs.readFileSync(ROOT_PATH) ]
+        }, APP);
+    HTTPS_SERVER.listen(GitpaydConfig.SECURE_PORT, `${os.hostname}`);
 } catch {
-    log(`HTTPS is not configured`, LogLevel.ERROR, true);
+    log('https is not configured, check ssl certs location', LogLevel.ERROR, true);
 }

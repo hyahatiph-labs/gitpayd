@@ -27,8 +27,13 @@ gitpayd/
 2. Test health check at `http://localhost/gitpayd/health`
 3. Verify configuration files at `~/.gitpayd/config.json`
 <br/>
-*** Optional: Configure SSL certs
 
+## Security
+
+1. API key is generated at setup, protect or configure your own
+2. Pull Requests are validated against OWNER and COLLABORATOR author associations.
+3. Payment thresholds are configured in the enum GitpaydConfig.
+<br/>
 
 ## Notes
 1. This application runs on the latest Node 12.x+
@@ -42,8 +47,8 @@ gitpayd/
 <li>GITPAYD_OWNER -  repo owner
 <li>GITPAYD_REPO - name of repo to watch
 <li>GITPAYD_HOST - host of your server
-<li>GITPAYD_TOKEN - aka GITHUB_TOKEN***
-<li>API_KEY - default is automatically <b>generated at setup in ~/.gitpayd/config.json</b> => api_key
+<li>GITHUB_TOKEN*** is pre-configured for each repo
+<li>API_KEY - default is automatically <b>generated at setup in ~/.gitpayd/config.json</b>
 </ul>
 
 [GITHUB_TOKEN](https://docs.github.com/en/actions/reference/authentication-in-a-workflow)
@@ -53,7 +58,8 @@ gitpayd/
 ```json 
 {
  "macaroonPath": "/home/USER/.lnd/data/chain/bitcoin/mainnet/admin.macaroon",
- "lndHost": "https://localhost:8080"
+ "lndHost": "https://localhost:8080",
+ "internalApiKey": "xxx"
 }
 ```
 
@@ -75,8 +81,9 @@ TODO: Automated release management via `npm pkg` and workflows
 
 ## Testing
 
-WIP
+`npm test`
+more tests are encouraged
 
 ## Contributing
-
+TODO: formalized contributor guidelines
 Fork it and open a pull request.
