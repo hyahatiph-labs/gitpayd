@@ -43,7 +43,7 @@ gitpayd/
 <li>GITPAYD_REPO - name of repo to watch
 <li>GITPAYD_HOST - host of your server
 <li>GITPAYD_TOKEN - aka GITHUB_TOKEN***
-<li>API_KEY - default is same as LND admin.macaroon
+<li>API_KEY - default is automatically generated at setup in ~/.gitpayd/config.json => api_key
 </ul>
 
 [GITHUB_TOKEN](https://docs.github.com/en/actions/reference/authentication-in-a-workflow)
