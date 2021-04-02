@@ -1,7 +1,8 @@
 import {promises as fs} from 'fs';
 import { spawn } from 'child_process';
+import os from 'os';
 import { ChildProcessWithoutNullStreams } from 'node:child_process';
-export const logFile: string = 'app.log';
+export const logFile: string = `${os.homedir}/.gitpayd/app.log`;
 let isFirstLog: boolean = true;
 
 /**
