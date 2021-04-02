@@ -82,8 +82,8 @@ TODO: Automated release management via `npm pkg` and workflows
 ## Testing
 
 `npm test`
+<br/>
 more tests are encouraged
 
 ## Contributing
 TODO: formalized contributor guidelines
-Fork it and open a pull request.
