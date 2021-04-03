@@ -41,15 +41,15 @@ jobs:
         env:
           HOST: ${{ secrets.GITPAYD_HOST }}
           PORT: ${{ secrets.GITPAYD_PORT }}
-        run: curl -iv https://$HOST:$PORT/gitpayd/health
+        run: curl -i https://$HOST:$PORT/gitpayd/health
   
-      # execute gitpayd package
-      - name: gitpayd noops doin a lil sum'
-        env:
-          GITPAYD_OWNER: ${{ secrets.GITPAYD_OWNER }}
-          GITPAYD_REPO: ${{ secrets.GITPAYD_REPO }}
-          GITPAYD_HOST: ${{ secrets.GITPAYD_HOST }}
-          GITPAYD_PORT: ${{ secrets.GITPAYD_PORT }}
-          GITPAYD_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          API_KEY: ${{ secrets.API_KEY }}
-        run: npm i -g gitpayd && noops 
+      # execute noOps for gitpayd server
+      # - name: gitpayd noops doin a lil sum'
+      #   env:
+      #     GITPAYD_OWNER: ${{ secrets.GITPAYD_OWNER }}
+      #     GITPAYD_REPO: ${{ secrets.GITPAYD_REPO }}
+      #     GITPAYD_HOST: ${{ secrets.GITPAYD_HOST }}
+      #     GITPAYD_PORT: ${{ secrets.GITPAYD_PORT }}
+      #     GITPAYD_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     API_KEY: ${{ secrets.API_KEY }}
+      #   run: npm i -g gitpayd && noops 
