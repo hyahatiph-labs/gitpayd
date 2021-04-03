@@ -14,20 +14,37 @@ Github Workflows + [BTC](https://bitcoin.org/en/bitcoin-core) / [LND](https://gi
 
 ```bash
 gitpayd/
-├── src                 # All source code
+├── src                # Directory of source code
+   ├── config.ts         # configuration properties
    ├── gitpayd.ts        # Entry point for the app
    ├── logging.ts        # In house logger, since TS hates console.log()
    ├── noops.ts          # NoOps / DevOps script for processing CI / CD payments
    ├── setup.ts          # Creates configuration, connects to LND, helper functions, etc.
+├── test                 # test files
+├── util                 # helper functions
 ```
 
 ## Development
 
-1. Run `npm i && npm start`
+1. Run `npm i && node dist/gitpayd.js` *-h for help
 2. Test health check at `http://hostname:7777/gitpayd/health`
 3. Verify configuration files at `~/.gitpayd/config.json`
 <br/>
 
+```bash
+Options:
+      --help              Show help                                    [boolean]
+      --version           Show version number                          [boolean]
+      --key-path, --kp    Path to SSL private key            [string] [required]
+      --cert-path, --cep  Path to the server certification   [string] [required]
+      --ca-path, --cap    Path to the CA intermediate certification
+                                                             [string] [required]
+      --root-path, --rp   Path to the root intermediate certification
+                                                             [string] [required]
+  -p, --port              port to run the server                        [number]
+
+Missing required arguments: key-path, cert-path, ca-path, root-path
+```
 ## Security
 
 1. API key is generated at setup, protect or configure your own

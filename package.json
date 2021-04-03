@@ -6,7 +6,6 @@
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "build": "tsc",
     "prestart": "echo '//declare var global: NodeJS.Global & typeof globalThis;' > ./node_modules/@types/node/globals.global.d.ts && npm run build",
-    "start": "node ./dist/gitpayd.js",
     "test": "mocha"
   },
   "bin": {
