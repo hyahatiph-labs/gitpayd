@@ -18,12 +18,12 @@
     "url": "git+https://github.com/callmekurisu/gitpayd.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Hyahatiph Labs",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/callmekurisu/gitpayd/issues"
+    "url": "https://github.com/hyahatiph-labs/gitpayd/issues"
   },
-  "homepage": "https://github.com/callmekurisu/gitpayd#readme",
+  "homepage": "https://github.com/hyahatiph-labs/gitpayd#readme",
   "dependencies": {
     "axios": "^0.21.1",
     "express": "^4.17.1",
