@@ -14,7 +14,5 @@
             ]
         }
     },
-    "include": [
-        "src/**/*"
-    ]
+    "include": [ "src/**/*", "ops.js", "util/util.ts", "util/noops.ts" ]
 }

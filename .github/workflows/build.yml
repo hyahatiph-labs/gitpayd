@@ -1,0 +1,53 @@
+# This is the build workflow for the gitpayd server
+
+name: Build
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on pull request events but only for the dev branch
+  pull_request:
+    branches: [ dev ]
+    types: [ opened, edited, synchronize ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Check the build
+      - name: Install modules
+        run: npm i
+        
+      - name: If you build it they will come
+        run: npm run build
+      
+      # Everyone loves testing
+      - name: Mic check. Testing 1,2,3...
+        run: npm run test
+
+      # Check if the server is online
+      # optional health check
+      - name: health check
+        env:
+          HOST: ${{ secrets.GITPAYD_HOST }}
+        run: curl -iv https://$HOST/gitpayd/health
+  
+      # execute gitpayd package
+      # - name: gitpayd noops doin a lil sum'
+      #   env:
+      #     GITPAYD_OWNER: ${{ secrets.GITPAYD_OWNER }}
+      #     GITPAYD_REPO: ${{ secrets.GITPAYD_REPO }}
+      #     GITPAYD_HOST: ${{ secrets.GITPAYD_HOST }}
+      #     GITPAYD_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     API_KEY: ${{ secrets.API_KEY }}
+      #   run: npm i -g gitpayd && noops 
