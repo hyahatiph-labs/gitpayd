@@ -15,14 +15,14 @@ Github Workflows + [BTC](https://bitcoin.org/en/bitcoin-core) / [LND](https://gi
 ```bash
 gitpayd/
 ├── src                # Directory of source code
-   ├── config.ts         # configuration properties
+   ├── config.ts         # Configuration properties
    ├── gitpayd.ts        # Entry point for the app
    ├── logging.ts        # In house logger, since TS hates console.log()
    ├── setup.ts          # Creates configuration, connects to LND, helper functions, etc.
-├── test                 # test files
-├── util               # helper functions
+├── test               # Test files
+├── util               # Helper functions
    ├── noops.ts          # NoOps / DevOps script for processing CI / CD payments
-   ├── util.ts           # general purpose functions
+   ├── util.ts           # General purpose functions and logic for CI / CD
 ```
 
 ## Building
