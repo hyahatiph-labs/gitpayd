@@ -50,11 +50,11 @@ jobs:
         run: curl -iv https://$HOST/gitpayd/health
   
       # execute gitpayd package
-      - name: gitpayd noops doin a lil sum'
-        env:
-          GITPAYD_OWNER: ${{ secrets.GITPAYD_OWNER }}
-          GITPAYD_REPO: ${{ secrets.GITPAYD_REPO }}
-          GITPAYD_HOST: ${{ secrets.GITPAYD_HOST }}
-          GITPAYD_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          API_KEY: ${{ secrets.API_KEY }}
-        run: npm i -g gitpayd && noops 
+      # - name: gitpayd noops doin a lil sum'
+      #   env:
+      #     GITPAYD_OWNER: ${{ secrets.GITPAYD_OWNER }}
+      #     GITPAYD_REPO: ${{ secrets.GITPAYD_REPO }}
+      #     GITPAYD_HOST: ${{ secrets.GITPAYD_HOST }}
+      #     GITPAYD_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     API_KEY: ${{ secrets.API_KEY }}
+      #   run: npm i -g gitpayd && noops 
