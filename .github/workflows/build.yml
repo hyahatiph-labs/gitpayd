@@ -32,19 +32,24 @@ jobs:
         run: npm run build
       
       # Everyone loves testing
+      # other apps don't need env here
       - name: Mic check. Testing 1,2,3...
+        env:
+          GITPAYD_OWNER: ${{ secrets.GITPAYD_OWNER }}
+          GITPAYD_REPO: ${{ secrets.GITPAYD_REPO }}
+          GITPAYD_HOST: ${{ secrets.GITPAYD_HOST }}
+          GITPAYD_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          API_KEY: ${{ secrets.API_KEY }}
         run: npm run test
 
       # Check if the server is online
+      # optional health check
       - name: health check
         env:
           HOST: ${{ secrets.GITPAYD_HOST }}
         run: curl -iv https://$HOST/gitpayd/health
   
-        # execute gitpayd action that: 
-          # get a list of issues and associated pull requests
-          # merge pr and close issue
-          # parse the payment request and send payment
+      # execute gitpayd package
       - name: gitpayd noops doin a lil sum'
         env:
           GITPAYD_OWNER: ${{ secrets.GITPAYD_OWNER }}
@@ -52,4 +57,4 @@ jobs:
           GITPAYD_HOST: ${{ secrets.GITPAYD_HOST }}
           GITPAYD_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           API_KEY: ${{ secrets.API_KEY }}
-        run: node dist/noops.js 
+        run: npm i -g gitpayd && noops 

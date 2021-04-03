@@ -4,66 +4,14 @@ import {promises as fsp} from 'fs';
 import log, { LogLevel } from './logging';
 import os from 'os';
 import { randomBytes } from 'crypto';
+import {
+    API_KEY_SIZE, ConfigFile, CONFIG_PATH,
+    DEFAULT_CONFIG, INDENT, PaymentAction, PORT
+} from './config';
+
 let globalLndHost: string;
 let globalApiKey: string;
-
-// set https certs here
-export const KEY_PATH: string = process.env.KEY_PATH;
-export const CERT_PATH: string = process.env.CERT_PATH;
-export const CA_PATH: string = process.env.CA_PATH;
-export const ROOT_PATH: string = process.env.ROOT_PATH;
-export const PASSPHRASE: string = process.env.PASSPHRASE;
-
-// api key size
-const API_KEY_SIZE: number = 32;
-
-// interface for the config file
-interface ConfigFile {
-    macaroonPath: string
-    lndHost: string
-    internalApiKey: string
-}
-
-/**
- * Global settings for the server
- */
-export enum GitpaydConfig {
-    SECURE_PORT = 443,
-    MAX_PAYMENT = 100000,
-    PAYMENT_THRESHOLD = 250000,
-    HTTP_OK = 200,
-    UNAUTHORIZED = 403,
-    SERVER_FAILURE = 500,
-}
-
-/**
- * Authorized roles
- */
-export enum AuthorizedRoles {
-    COLLABORATOR = 'COLLABORATOR',
-    OWNER = 'OWNER'
-}
-
-// some defaults for linux
-export const CONFIG_PATH: string = `${os.homedir()}/.gitpayd/config.json`;
-export const DEFAULT_MACAROON: string = `${os.homedir()}/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`;
-export const DEFAULT_LND_HOST: string = 'https://localhost:8080';
-export const INDENT = 2;
-const DEFAULT_CONFIG: ConfigFile = {
-    macaroonPath: DEFAULT_MACAROON,
-    lndHost: DEFAULT_LND_HOST,
-    internalApiKey: ''
-}
-
-/**
- * Used in conjunction with api requests in order to reduce
- * cognitive complexity
- */
- export enum PaymentAction {
-    DECODE = 'DECODE',
-    PAY = 'PAY',
-    BALANCE = 'BALANCE'
-}
+export let passphrase: string;
 
 /**
  * Generate the internal api key
@@ -78,7 +26,10 @@ const DEFAULT_CONFIG: ConfigFile = {
 // Handle LND TLS error at the request level
 const agent = new https.Agent({ rejectUnauthorized: false });
 
-// accessor for the api key
+/**
+ * Accessor for the api key
+ * @returns - api key
+ */
 export const getInternalApiKey = (): string => { return globalApiKey; }
 
 /**
@@ -91,7 +42,7 @@ async function testLnd(host:string, startTime:number):Promise<void> {
     log(`found lnd version: ${INFO.data.version.split('commit=')[0]}`, LogLevel.INFO, true)
     const END_TIME:number = new Date().getMilliseconds() - startTime;
     const REAL_TIME:number = END_TIME < 0 ? END_TIME * -1 : END_TIME;
-    log(`gitpayd started in ${REAL_TIME} ms on ${os.hostname()}`, LogLevel.INFO, true);
+    log(`gitpayd started in ${REAL_TIME} on ${os.hostname()}:${PORT}`, LogLevel.INFO, true);
 }
 
 /**
@@ -99,7 +50,7 @@ async function testLnd(host:string, startTime:number):Promise<void> {
  * exists create some default values so we can
  * check for the LND node existing
  */
-export default async function setup():Promise<void> {
+export default async function setup(): Promise<void> {
     const startTime: number = new Date().getMilliseconds();
     let config: ConfigFile | Buffer;
     try {

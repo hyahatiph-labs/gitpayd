@@ -24,7 +24,7 @@ gitpayd/
 ## Development
 
 1. Run `npm i && npm start`
-2. Test health check at `http://localhost/gitpayd/health`
+2. Test health check at `http://hostname:7777/gitpayd/health`
 3. Verify configuration files at `~/.gitpayd/config.json`
 <br/>
 
@@ -32,13 +32,20 @@ gitpayd/
 
 1. API key is generated at setup, protect or configure your own
 2. Pull Requests are validated against OWNER and COLLABORATOR author associations.
-3. Payment thresholds are configured in the enum GitpaydConfig.
+3. Payment thresholds are configured in the enum GitpaydConfig or Environment variables.
+4. SSL certs / passphrase is required to start the server (self-signed should be fine).
+5. GITHUB_TOKEN runs at the repo level. Only authorized contributors are allowed.
 <br/>
+
+```bash
+prompt: sslpassphrase:  
+[ERROR] 2021-04-03T00:30:49.164Z => https is not configured, check ssl certs location or passphrase
+[user@server gitpayd]$ 
+```
 
 ## Notes
 1. This application runs on the latest Node 12.x+
 2. Currently, only battle tested on Fedora 34 Beta
-3. You may need to run <b>sudo setcap cap_net_bind_service=+ep  \`readlink -f \\`which node\\``</b> for the app to run on port 80
 4. Secrets can be configured in your repository `settings` => `secrets`
 5. Sample Github workflow .yml is located in `gitpayd/.github/workflows/build.yml`
 
@@ -49,6 +56,12 @@ gitpayd/
 <li>GITPAYD_HOST - host of your server
 <li>GITHUB_TOKEN*** is pre-configured for each repo
 <li>API_KEY - default is automatically <b>generated at setup in ~/.gitpayd/config.json</b>
+</ul>
+
+<b>Optional Secrets</b>
+<ul>
+<li>MAX_PAYMENT - maximum allowable payment
+<li>PAYMENT_THRESHOLD - minimum channel balance to maintain
 </ul>
 
 [GITHUB_TOKEN](https://docs.github.com/en/actions/reference/authentication-in-a-workflow)
@@ -75,9 +88,21 @@ gitpayd/
 1. Run `npm run build`
 2. Output is in `/dist`
 
+## Installation
+
+1. Run `npm i -g gitpayd`
+2. Execute `gitpayd` should start up the server
+3. Install in the workflow and execute `noops`
+
+```bash
+# gitpayd-cli required arguments
+gitpayd.js --cap=/home/USER/path-to-ca-cert/ca.crt --kp=/home/USER/path-to-private-key/PRIVATEKEY.key --cep=/home/USER/path-to-server-cert/server.crt --rp=/home/USER/path-to-root-cert/root.crt
+# optional arguments -p=PORT, -ip=IPADDRESS
+```
+
 ## Releasing
 
-TODO: Automated release management via `npm pkg` and workflows
+TODO: Automated release management via `npm publish` and workflows
 
 ## Testing
 
