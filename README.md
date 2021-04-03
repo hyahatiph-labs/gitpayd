@@ -96,7 +96,7 @@ prompt: sslpassphrase:
 
 ```bash
 # gitpayd-cli required arguments
-gitpayd.js --cap=/home/USER/path-to-ca-cert/ca.crt --kp=/home/USER/path-to-private-key/PRIVATEKEY.key --cep=/home/USER/path-to-server-cert/server.crt --rp=/home/USER/path-to-root-cert/root.crt
+gitpayd --cap=/home/USER/path-to-ca-cert/ca.crt --kp=/home/USER/path-to-private-key/PRIVATEKEY.key --cep=/home/USER/path-to-server-cert/server.crt --rp=/home/USER/path-to-root-cert/root.crt
 # optional arguments -p=PORT, -ip=IPADDRESS
 ```
 
