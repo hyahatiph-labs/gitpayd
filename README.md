@@ -35,7 +35,7 @@ gitpayd/
 
 1. Set environment variable `export GITPAYD_ENV=DEV` for development if needed
 2. Run `node dist/src/gitpayd.js` to run server *--help for help 
-3. Test health check at `http://hostname:7778/gitpayd/health`
+3. Test health check at `http://hostname:7778/gitpayd/health` (*port 7777 is default secure port)
 4. Verify configuration files at `~/.gitpayd/config.json`
 5. Run `node dist/util/gipayd.js` to run NoOps script
 <br/>
