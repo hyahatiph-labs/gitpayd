@@ -37,7 +37,7 @@ gitpayd/
 2. Run `node dist/src/gitpayd.js` to run server *--help for help 
 3. Test health check at `http://hostname:7778/gitpayd/health` (*port 7777 is default secure port)
 4. Verify configuration files at `~/.gitpayd/config.json`
-5. Run `node dist/util/gipayd.js` to run NoOps script
+5. Run `node dist/util/noops.js` to run NoOps script
 <br/>
 
 ```bash
@@ -135,4 +135,6 @@ TODO: Automated release management via `npm publish` and workflows
 more tests are encouraged
 
 ## Contributing
-TODO: formalized contributor guidelines
+Suggested Merge Flow:
+
+developer branch => PR for dev branch => PR for release/v.X.X.X branch => PR merge to main branch

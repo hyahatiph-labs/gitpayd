@@ -4,9 +4,6 @@ import os from "os";
 // api key size
 export const API_KEY_SIZE: number = 32;
 
-// TODO: get passphrase as input
-export const PASSPHRASE = process.env.GITPAYD_SSL_PASSPHRASE;
-
 // interface for the config file
 export interface ConfigFile {
   macaroonPath: string;
