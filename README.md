@@ -18,17 +18,26 @@ gitpayd/
    ├── config.ts         # configuration properties
    ├── gitpayd.ts        # Entry point for the app
    ├── logging.ts        # In house logger, since TS hates console.log()
-   ├── noops.ts          # NoOps / DevOps script for processing CI / CD payments
    ├── setup.ts          # Creates configuration, connects to LND, helper functions, etc.
 ├── test                 # test files
-├── util                 # helper functions
+├── util               # helper functions
+   ├── noops.ts          # NoOps / DevOps script for processing CI / CD payments
+   ├── util.ts           # general purpose functions
 ```
+
+## Building
+
+1. Run `npm i` to install modules
+2. Run `npm run clean && npm run build`
+3. Output is in `/dist`
 
 ## Development
 
-1. Run `npm i && node dist/gitpayd.js` *-h for help
-2. Test health check at `http://hostname:7777/gitpayd/health`
-3. Verify configuration files at `~/.gitpayd/config.json`
+1. Set environment variable `export GITPAYD_ENV=DEV` for development if needed
+2. Run `node dist/src/gitpayd.js` to run server *-h for help 
+3. Test health check at `http://hostname:7778/gitpayd/health`
+4. Verify configuration files at `~/.gitpayd/config.json`
+5. Run `node dist/util/gipayd.js` to run NoOps script
 <br/>
 
 ```bash
@@ -52,6 +61,8 @@ Missing required arguments: key-path, cert-path, ca-path, root-path
 3. Payment thresholds are configured in the enum GitpaydConfig or Environment variables.
 4. SSL certs / passphrase is required to start the server (self-signed should be fine).
 5. GITHUB_TOKEN runs at the repo level. Only authorized contributors are allowed.
+6. It is possible to run dev and secure server concurrently with environment variable
+   <b>$GITPAYD_ENV=DEV</b> set
 <br/>
 
 ```bash
@@ -71,6 +82,7 @@ prompt: sslpassphrase:
 <li>GITPAYD_OWNER -  repo owner
 <li>GITPAYD_REPO - name of repo to watch
 <li>GITPAYD_HOST - host of your server
+<li>GITPAYD_PORT - port of your server
 <li>GITHUB_TOKEN*** is pre-configured for each repo
 <li>API_KEY - default is automatically <b>generated at setup in ~/.gitpayd/config.json</b>
 </ul>
@@ -99,11 +111,6 @@ prompt: sslpassphrase:
 <li> Pull requests should have a line <b>LN: LNxxx</b> - where LNxxx is the invoice 
 <li> as well as, <b>Closes #n</b> - where n is the issue number the pull request will close
 </ul>
-
-## Building
-
-1. Run `npm run build`
-2. Output is in `/dist`
 
 ## Installation
 

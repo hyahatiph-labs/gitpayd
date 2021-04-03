@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "description": "git + ln, gitpayd watches your repo for new commits and sends payments to contributors",
   "scripts": {
+    "clean": "rm -rf dist/",
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "build": "tsc",
     "prestart": "echo '//declare var global: NodeJS.Global & typeof globalThis;' > ./node_modules/@types/node/globals.global.d.ts && npm run build",
     "test": "mocha"
   },
   "bin": {
-    "gitpayd": "./dist/gitpayd.js",
-    "noops": "./dist/noops.js"
+    "gitpayd": "./dist/src/gitpayd.js",
+    "noops": "./dist/util/noops.js"
   },
   "repository": {
     "type": "git",

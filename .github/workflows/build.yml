@@ -38,6 +38,7 @@ jobs:
           GITPAYD_OWNER: ${{ secrets.GITPAYD_OWNER }}
           GITPAYD_REPO: ${{ secrets.GITPAYD_REPO }}
           GITPAYD_HOST: ${{ secrets.GITPAYD_HOST }}
+          GITPAYD_PORT: ${{ secrets.GITPAYD_PORT }}
           GITPAYD_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           API_KEY: ${{ secrets.API_KEY }}
         run: npm run test
