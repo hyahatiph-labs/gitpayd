@@ -1,4 +1,4 @@
-# This is the build and test workflow for the gitpayd server
+# This is the build workflow for the gitpayd server
 
 name: Build
 
@@ -6,10 +6,8 @@ name: Build
 on:
   # Triggers the workflow on pull request events but only for the dev branch
   pull_request:
-    types:
-      - opened
-      - edited
     branches: [ dev ]
+    types: [ opened, edited, synchronize ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -33,13 +31,23 @@ jobs:
       - name: If you build it they will come
         run: npm run build
       
-      # TODO: Run some test suite
-      # - name: Mic check. Testing 1,2,3...
-      #   run: npm run test
+      # Everyone loves testing
+      - name: Mic check. Testing 1,2,3...
+        run: npm run test
 
+      # Check if the server is online
+      # optional health check
       - name: health check
         env:
           HOST: ${{ secrets.GITPAYD_HOST }}
         run: curl -iv https://$HOST/gitpayd/health
-        
-      # TODO: Algorithms and logic for automatically merging
+  
+      # execute gitpayd package
+      # - name: gitpayd noops doin a lil sum'
+      #   env:
+      #     GITPAYD_OWNER: ${{ secrets.GITPAYD_OWNER }}
+      #     GITPAYD_REPO: ${{ secrets.GITPAYD_REPO }}
+      #     GITPAYD_HOST: ${{ secrets.GITPAYD_HOST }}
+      #     GITPAYD_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     API_KEY: ${{ secrets.API_KEY }}
+      #   run: npm i -g gitpayd && noops 
