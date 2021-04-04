@@ -10,8 +10,7 @@
     "test": "mocha"
   },
   "bin": {
-    "gitpayd": "./dist/src/gitpayd.js",
-    "noops": "./dist/util/noops.js"
+    "gitpayd": "./dist/src/gitpayd.js"
   },
   "repository": {
     "type": "git",

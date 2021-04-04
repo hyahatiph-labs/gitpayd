@@ -13,10 +13,29 @@ import {
   PaymentAction,
   PORT,
 } from "./config";
+import prompt from "prompt";
 
 let globalLndHost: string;
 let globalApiKey: string;
-export let passphrase: string;
+
+// set github token on setup
+let internalGithubToken: string;
+
+/**
+ * Accessor for the github token
+ * @returns - api key
+ */
+ export const getGithubToken = (): object => {
+  return { authorization: `token ${internalGithubToken}` };
+};
+
+/**
+ * Mutator for the github token
+ * @returns - api key
+ */
+ export const setGithubToken = (tokenInput: string): void => {
+  internalGithubToken = tokenInput;
+};
 
 /**
  * Generate the internal api key
@@ -117,7 +136,7 @@ export function handlePaymentAction(
         httpsAgent: agent,
       });
     // case for returning channel balance
-    case PaymentAction.BALANCE:
+    case PaymentAction.RETURN_BALANCE:
       return axios.get(`${globalLndHost}/v1/balance/channels`, {
         httpsAgent: agent,
       });

@@ -7,19 +7,21 @@ import fs from "fs";
 import {
   CONFIG_PATH,
   GitpaydConfig,
-  PaymentAction,
   KEY_PATH,
   CERT_PATH,
   CA_PATH,
   ROOT_PATH,
   PORT,
   HOST,
-  SCHEMA,
   GITPAYD_ENV,
   DEV_PORT,
+  SSL_SCHEMA,
+  GITHUB_TOKEN_SCHEMA,
 } from "./config";
-import setup, { getInternalApiKey, handlePaymentAction } from "./setup";
+import setup, { setGithubToken } from "./setup";
 import prompt from "prompt";
+import { validateApiKey } from "../util/util";
+import { runNoOps } from "./noops";
 
 let passphrase: string;
 let isConfigured: boolean;
@@ -32,79 +34,19 @@ APP.get("/gitpayd/health", (req, res) => {
   res.status(GitpaydConfig.HTTP_OK).json({ msg: "gitpayd is UP" });
 });
 
-// decode payment API for gitpayd
-APP.get("/gitpayd/decode/:paymentRequest", (req, res) => {
+// NoOps for gitpayd
+APP.get("/gitpayd/noops", (req, res) => {
   const AUTH = req.headers.authorization;
-  if (AUTH !== getInternalApiKey()) {
+  if (!validateApiKey) {
     log(
-      `${req.ip} unauthorized access on gitpayd/decode`,
+      `${req.ip} unauthorized access on gitpayd/pay`,
       LogLevel.ERROR,
       true
     );
     res.status(GitpaydConfig.UNAUTHORIZED).json({ msg: `bad creds: ${AUTH}` });
   } else {
-    log(`${req.ip} connected to gitpayd/decode`, LogLevel.INFO, true);
-    // decode the payment request with the lnd node
-    handlePaymentAction(req.params.paymentRequest, PaymentAction.DECODE)
-      .then((decoded) =>
-        res
-          .status(GitpaydConfig.HTTP_OK)
-          .json({ amt: decoded.data.num_satoshis })
-      )
-      .catch(() =>
-        res
-          .status(GitpaydConfig.SERVER_FAILURE)
-          .json({ msg: "gitpayd failed to decode payment request" })
-      );
-  }
-});
-
-// validate channel balance API for gitpayd
-APP.get("/gitpayd/balance", (req, res) => {
-  const AUTH = req.headers.authorization;
-  if (AUTH !== getInternalApiKey()) {
-    log(
-      `${req.ip} unauthorized access on gitpayd/balance`,
-      LogLevel.ERROR,
-      true
-    );
-    res.status(GitpaydConfig.UNAUTHORIZED).json({ msg: `bad creds: ${AUTH}` });
-  } else {
-    log(`${req.ip} connected to gitpayd/balance`, LogLevel.INFO, true);
-    // send the payment request to the lnd node
-    handlePaymentAction(null, PaymentAction.BALANCE)
-      .then((balance) =>
-        res
-          .status(GitpaydConfig.HTTP_OK)
-          .json({ balance: balance.data.local_balance })
-      )
-      .catch(() =>
-        res
-          .status(GitpaydConfig.SERVER_FAILURE)
-          .json({ msg: "gitpayd failed return balance" })
-      );
-  }
-});
-
-// send payment API for gitpayd
-APP.post("/gitpayd/pay/:paymentRequest", (req, res) => {
-  const AUTH = req.headers.authorization;
-  if (AUTH !== getInternalApiKey()) {
-    res.status(GitpaydConfig.UNAUTHORIZED).json({ msg: `bad creds: ${AUTH}` });
-  } else {
-    log(`${req.ip} connected to gitpayd/pay`, LogLevel.INFO, true);
-    // send the payment request to the lnd node
-    handlePaymentAction(req.params.paymentRequest, PaymentAction.PAY)
-      .then((pay) =>
-        res
-          .status(GitpaydConfig.HTTP_OK)
-          .json({ image: pay.data.payment_preimage })
-      )
-      .catch(() =>
-        res
-          .status(GitpaydConfig.SERVER_FAILURE)
-          .json({ msg: "gitpayd failed to send payment" })
-      );
+    runNoOps().catch(() => log(`noOps failed to execute`, LogLevel.ERROR, true));
+    log(`${req.ip} connected to gitpayd/noops`, LogLevel.INFO, true);
   }
 });
 
@@ -114,7 +56,9 @@ APP.post("/gitpayd/pay/:paymentRequest", (req, res) => {
 async function initialize(): Promise<void> {
   // get ssl passphrase on startup
   prompt.start();
-  let { sslpassphrase } = await prompt.get(SCHEMA);
+  const { githubtoken } = await prompt.get(GITHUB_TOKEN_SCHEMA);
+  setGithubToken(githubtoken.toString());
+  let { sslpassphrase } = await prompt.get(SSL_SCHEMA);
   passphrase = sslpassphrase.toString();
   // start the gitpayd server
   try {

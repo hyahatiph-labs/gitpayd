@@ -4,8 +4,9 @@ import os from "os";
 // api key size
 export const API_KEY_SIZE: number = 32;
 
-// TODO: get passphrase as input
-export const PASSPHRASE = process.env.GITPAYD_SSL_PASSPHRASE;
+// default values for NoOps
+export const API: string = "https://api.github.com/repos";
+export const MERGE_BODY: object = { commit_title: "merged by gitpayd" };
 
 // interface for the config file
 export interface ConfigFile {
@@ -32,9 +33,20 @@ export enum GitpaydConfig {
 /**
  * Schema for SSL input
  */
-export const SCHEMA: any = {
+export const SSL_SCHEMA: any = {
   properties: {
     sslpassphrase: {
+      hidden: true,
+    },
+  },
+};
+
+/**
+ * Schema for Github token input
+ */
+ export const GITHUB_TOKEN_SCHEMA: any = {
+  properties: {
+    githubtoken: {
       hidden: true,
     },
   },
@@ -85,6 +97,30 @@ const ARGS = yargs
     alias: "host",
     description: "ip to run the server",
     demand: false,
+  })
+  .option("owner", {
+    string: true,
+    alias: "o",
+    description: "owner of the repo NoOps is running",
+    demand: true,
+  })
+  .option("repo", {
+    string: true,
+    alias: "r",
+    description: "name of the repo NoOps is running",
+    demand: true,
+  })
+  .option("max-pay", {
+    string: true,
+    alias: "mp",
+    description: "maximum allowable payment",
+    demand: false,
+  })
+  .option("payment-threshold", {
+    string: true,
+    alias: "pt",
+    description: "minimum channel balance to maintain",
+    demand: false,
   }).argv;
 
 // set https certs here
@@ -101,6 +137,22 @@ export const DEV_PORT: number =
   ARGS["dev-port"] === undefined
     ? GitpaydConfig.DEFAULT_DEV_PORT
     : ARGS["dev-port"];
+export const GITPAYD_OWNER: string = ARGS.owner;
+export const GITPAYD_REPO: string = ARGS.repo;
+
+// payment settings
+const CUSTOM_MAX_PAYMENT: string = ARGS["max-pay"];
+const CUSTOM_PAYMENT_THRESHOLD: string = ARGS["payment-threshold"];
+const DEFAULT_MAX_PAYMENT: number = 100000;
+const DEFAULT_PAYMENT_THRESHOLD: number = 250000;
+export const MAX_PAYMENT: number | string =
+  CUSTOM_MAX_PAYMENT === undefined
+  ? DEFAULT_MAX_PAYMENT
+  : parseInt(CUSTOM_MAX_PAYMENT, 10);
+export const PAYMENT_THRESHOLD: number =
+  CUSTOM_PAYMENT_THRESHOLD === undefined
+    ? DEFAULT_PAYMENT_THRESHOLD
+    : parseInt(CUSTOM_PAYMENT_THRESHOLD, 10);
 
 // some defaults for linux
 export const CONFIG_PATH: string = `${os.homedir()}/.gitpayd/config.json`;
@@ -120,5 +172,5 @@ export const DEFAULT_CONFIG: ConfigFile = {
 export enum PaymentAction {
   DECODE = "DECODE",
   PAY = "PAY",
-  BALANCE = "BALANCE",
+  RETURN_BALANCE = "RETURN_BALANCE",
 }

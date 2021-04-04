@@ -18,10 +18,10 @@ gitpayd/
    ├── config.ts         # Configuration properties
    ├── gitpayd.ts        # Entry point for the app
    ├── logging.ts        # In house logger, since TS hates console.log()
+   ├── noops.ts          # NoOps / DevOps script for processing CI / CD payments
    ├── setup.ts          # Creates configuration, connects to LND, helper functions, etc.
 ├── test               # Test files
 ├── util               # Helper functions
-   ├── noops.ts          # NoOps / DevOps script for processing CI / CD payments
    ├── util.ts           # General purpose functions and logic for CI / CD
 ```
 
@@ -42,25 +42,33 @@ gitpayd/
 
 ```bash
 Options:
-      --help              Show help                                    [boolean]
-      --version           Show version number                          [boolean]
-      --key-path, --kp    Path to SSL private key            [string] [required]
-      --cert-path, --cep  Path to the server certification   [string] [required]
-      --ca-path, --cap    Path to the CA intermediate certification
+      --help                     Show help                             [boolean]
+      --version                  Show version number                   [boolean]
+      --key-path, --kp           Path to SSL private key     [string] [required]
+      --cert-path, --cep         Path to the server certification
                                                              [string] [required]
-      --root-path, --rp   Path to the root intermediate certification
+      --ca-path, --cap           Path to the CA intermediate certification
                                                              [string] [required]
-  -p, --port              port to run the server                        [number]
+      --root-path, --rp          Path to the root intermediate certification
+                                                             [string] [required]
+  -p, --port                     port to run the server                 [number]
+      --dev-port, --dvp          dev port to run the server             [number]
+  -o, --owner                    owner of the repo NoOps is running
+                                                             [string] [required]
+  -r, --repo                     name of the repo NoOps is running
+                                                             [string] [required]
+      --max-pay, --mp            maximum allowable payment              [string]
+      --payment-threshold, --pt  minimum channel balance to maintain    [string]
 
-Missing required arguments: key-path, cert-path, ca-path, root-path
 ```
 ## Security
 
 1. API key is generated at setup, protect or configure your own
 2. Pull Requests are validated against OWNER and COLLABORATOR author associations.
-3. Payment thresholds are configured in the enum GitpaydConfig or Environment variables.
-4. SSL certs / passphrase is required to start the server (self-signed should be fine).
+3. Payment thresholds are configured in command line.
+4. SSL certs / passphrase is required to start the https server (self-signed should be fine).
 5. GITHUB_TOKEN runs at the repo level. Only authorized contributors are allowed.
+   Enter at setup.s
 6. It is possible to run dev and secure server concurrently with environment variable
    <b>$GITPAYD_ENV=DEV</b> set
 <br/>
@@ -79,18 +87,9 @@ prompt: sslpassphrase:
 
 <b>Required Secrets</b>
 <ul>
-<li>GITPAYD_OWNER -  repo owner
-<li>GITPAYD_REPO - name of repo to watch
 <li>GITPAYD_HOST - host of your server
 <li>GITPAYD_PORT - port of your server
-<li>GITHUB_TOKEN*** is pre-configured for each repo
 <li>API_KEY - default is automatically <b>generated at setup in ~/.gitpayd/config.json</b>
-</ul>
-
-<b>Optional Secrets</b>
-<ul>
-<li>MAX_PAYMENT - maximum allowable payment
-<li>PAYMENT_THRESHOLD - minimum channel balance to maintain
 </ul>
 
 [GITHUB_TOKEN](https://docs.github.com/en/actions/reference/authentication-in-a-workflow)
@@ -120,7 +119,7 @@ prompt: sslpassphrase:
 
 ```bash
 # gitpayd-cli required arguments
-gitpayd --cap=/home/USER/path-to-ca-cert/ca.crt --kp=/home/USER/path-to-private-key/PRIVATEKEY.key --cep=/home/USER/path-to-server-cert/server.crt --rp=/home/USER/path-to-root-cert/root.crt
+gitpayd --cap=/home/USER/path-to-ca-cert/ca.crt --kp=/home/USER/path-to-private-key/PRIVATEKEY.key --cep=/home/USER/path-server-cert/server.crt --rp=/home/USER/path-to-root-cert/root.crt --o=owner -r=gitpayd
 # optional arguments -p=PORT, -host=IPADDRESS
 ```
 

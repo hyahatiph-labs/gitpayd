@@ -1,4 +1,5 @@
-import { getInternalApiKey } from "../src/setup";
+// TODO: fix yargs breaking test.
+// This is duplicated form ../util/util.ts
 
 /**
  * Authorized roles
@@ -29,11 +30,3 @@ export const validateCollaborators = (role: AuthorizedRoles): boolean => {
     role === AuthorizedRoles.COLLABORATOR || role === AuthorizedRoles.OWNER
   );
 };
-
-/**
- * Validates the workflow is set with correct API key
- * @param headerApiKey - header sent from Github
- */
-export const validateApiKey = (headerApiKey: string): boolean => {
-  return headerApiKey !== getInternalApiKey();
-}
