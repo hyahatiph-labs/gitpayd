@@ -89,6 +89,7 @@ prompt: sslpassphrase:
 <ul>
 <li>GITPAYD_HOST - host of your server
 <li>GITPAYD_PORT - port of your server
+<li>GITPAYD_HOST*** - configured automatically for each build
 <li>API_KEY - default is automatically <b>generated at setup in ~/.gitpayd/config.json</b>
 </ul>
 

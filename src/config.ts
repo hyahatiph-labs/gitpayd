@@ -42,17 +42,6 @@ export const SSL_SCHEMA: any = {
 };
 
 /**
- * Schema for Github token input
- */
- export const GITHUB_TOKEN_SCHEMA: any = {
-  properties: {
-    githubtoken: {
-      hidden: true,
-    },
-  },
-};
-
-/**
  * User input for the gitpayd-cli
  */
 const ARGS = yargs

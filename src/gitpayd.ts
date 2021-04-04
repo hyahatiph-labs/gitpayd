@@ -16,9 +16,8 @@ import {
   GITPAYD_ENV,
   DEV_PORT,
   SSL_SCHEMA,
-  GITHUB_TOKEN_SCHEMA,
 } from "./config";
-import setup, { setGithubToken } from "./setup";
+import setup from "./setup";
 import prompt from "prompt";
 import { validateApiKey } from "../util/util";
 import { runNoOps } from "./noops";
@@ -35,8 +34,9 @@ APP.get("/gitpayd/health", (req, res) => {
 });
 
 // NoOps for gitpayd
-APP.get("/gitpayd/noops", (req, res) => {
+APP.post("/gitpayd/noops", (req, res) => {
   const AUTH = req.headers.authorization;
+  const GITHUB_TOKEN = req.header('github-token');
   if (!validateApiKey) {
     log(
       `${req.ip} unauthorized access on gitpayd/pay`,
@@ -45,7 +45,7 @@ APP.get("/gitpayd/noops", (req, res) => {
     );
     res.status(GitpaydConfig.UNAUTHORIZED).json({ msg: `bad creds: ${AUTH}` });
   } else {
-    runNoOps().catch(() => log(`noOps failed to execute`, LogLevel.ERROR, true));
+    runNoOps(GITHUB_TOKEN).catch(() => log(`noOps failed to execute`, LogLevel.ERROR, true));
     log(`${req.ip} connected to gitpayd/noops`, LogLevel.INFO, true);
   }
 });
@@ -56,8 +56,6 @@ APP.get("/gitpayd/noops", (req, res) => {
 async function initialize(): Promise<void> {
   // get ssl passphrase on startup
   prompt.start();
-  const { githubtoken } = await prompt.get(GITHUB_TOKEN_SCHEMA);
-  setGithubToken(githubtoken.toString());
   let { sslpassphrase } = await prompt.get(SSL_SCHEMA);
   passphrase = sslpassphrase.toString();
   // start the gitpayd server

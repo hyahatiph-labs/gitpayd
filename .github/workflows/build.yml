@@ -46,7 +46,9 @@ jobs:
       # execute nNsoOps for gitpayd server
       - name: gitpayd noops doin a lil sum'
         env:
-          GITPAYD_HOST: ${{ secrets.GITPAYD_HOST }}
-          GITPAYD_PORT: ${{ secrets.GITPAYD_PORT }}
+          HOST: ${{ secrets.GITPAYD_HOST }}
+          PORT: ${{ secrets.GITPAYD_PORT }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN}}
           API_KEY: ${{ secrets.API_KEY }}
-        run: curl -i https://$HOST:$PORT/gitpayd/noops
+        run: >
+          curl -i https://$HOST:$PORT/gitpayd/noops -H "authorization: $API_KEY" -H "github-token: $TOKEN" 2>&1 1>/dev/null

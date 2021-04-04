@@ -18,25 +18,6 @@ import prompt from "prompt";
 let globalLndHost: string;
 let globalApiKey: string;
 
-// set github token on setup
-let internalGithubToken: string;
-
-/**
- * Accessor for the github token
- * @returns - api key
- */
- export const getGithubToken = (): object => {
-  return { authorization: `token ${internalGithubToken}` };
-};
-
-/**
- * Mutator for the github token
- * @returns - api key
- */
- export const setGithubToken = (tokenInput: string): void => {
-  internalGithubToken = tokenInput;
-};
-
 /**
  * Generate the internal api key
  * It is validated against Github secrets.API_KEY
