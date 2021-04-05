@@ -134,7 +134,7 @@ prompt: sslpassphrase:
 
 1. Run `npm i -g gitpayd`
 2. Execute `gitpayd` should start up the server
-3. Install in the workflow and execute `noops`
+3. Execute from workflow as curl or create your own action thingy!
 
 ```bash
 # gitpayd-cli required arguments
