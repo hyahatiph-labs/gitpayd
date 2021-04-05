@@ -2,7 +2,7 @@ import { promises as fs } from "fs";
 import { spawn } from "child_process";
 import os from "os";
 import { ChildProcessWithoutNullStreams } from "node:child_process";
-export const logFile: string = `${os.homedir}/.gitpayd/app.log`;
+export const LOG_FILE: string = `${os.homedir}/.gitpayd/app.log`;
 let isFirstLog: boolean = true;
 
 /**
@@ -28,16 +28,16 @@ export default async function log(
 ): Promise<void> {
   // existing logs are volatile
   if (isFirstLog && write) {
-    await fs.writeFile(logFile, "");
+    await fs.writeFile(LOG_FILE, "");
   }
   isFirstLog = false;
-  const date: string = new Date().toISOString();
-  const logString: string = `[${level}]\t${date} => ${message}`;
+  const DATE: string = new Date().toISOString();
+  const LOG_STRING: string = `[${level}]\t${DATE} => ${message}`;
   if (write) {
-    fs.appendFile(logFile, `${logString}\n`);
+    fs.appendFile(LOG_FILE, `${LOG_STRING}\n`);
   }
-  const childLog: ChildProcessWithoutNullStreams = spawn("echo", [
-    `${logString}`,
+  const CHILD_LOG: ChildProcessWithoutNullStreams = spawn("echo", [
+    `${LOG_STRING}`,
   ]);
-  childLog.stdout.pipe(process.stdout);
+  CHILD_LOG.stdout.pipe(process.stdout);
 }
