@@ -29,11 +29,3 @@ export const validateCollaborators = (role: AuthorizedRoles): boolean => {
     role === AuthorizedRoles.COLLABORATOR || role === AuthorizedRoles.OWNER
   );
 };
-
-/**
- * Validates the workflow is set with correct API key
- * @param headerApiKey - header sent from Github
- */
-export const validateApiKey = (headerApiKey: string): boolean => {
-  return headerApiKey !== getInternalApiKey();
-}

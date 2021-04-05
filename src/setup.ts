@@ -13,7 +13,6 @@ import {
   PaymentAction,
   PORT,
 } from "./config";
-import prompt from "prompt";
 
 let globalLndHost: string;
 let globalApiKey: string;

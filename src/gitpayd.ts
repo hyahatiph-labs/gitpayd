@@ -17,9 +17,8 @@ import {
   DEV_PORT,
   SSL_SCHEMA,
 } from "./config";
-import setup from "./setup";
+import setup, { getInternalApiKey } from "./setup";
 import prompt from "prompt";
-import { validateApiKey } from "../util/util";
 import { runNoOps } from "./noops";
 
 let passphrase: string;
@@ -37,7 +36,7 @@ APP.get("/gitpayd/health", (req, res) => {
 APP.post("/gitpayd/noops", (req, res) => {
   const AUTH = req.headers.authorization;
   const GITHUB_TOKEN = req.header('github-token');
-  if (!validateApiKey) {
+  if (AUTH !== getInternalApiKey()) {
     log(
       `${req.ip} unauthorized access on gitpayd/pay`,
       LogLevel.ERROR,
@@ -46,11 +45,11 @@ APP.post("/gitpayd/noops", (req, res) => {
     res.status(GitpaydConfig.UNAUTHORIZED).json({ msg: `bad creds: ${AUTH}` });
   } else {
     runNoOps(GITHUB_TOKEN)
-    .then(() => res.status(GitpaydConfig.HTTP_OK).json({ msg: `NoOps Completed` }))
     .catch(e => {
       log(`noOps failed to execute`, LogLevel.ERROR, true);
       res.status(GitpaydConfig.SERVER_FAILURE).json({ msg: `${e}` });
     });
+    res.status(GitpaydConfig.HTTP_OK).json({ msg: `NoOps Completed` });
     log(`${req.ip} connected to gitpayd/noops`, LogLevel.INFO, true);
   }
 });
@@ -108,4 +107,4 @@ async function initialize(): Promise<void> {
   }
 }
 
-initialize();
+initialize().catch(() => log('gitpayd failed to initialize', LogLevel.ERROR, false));

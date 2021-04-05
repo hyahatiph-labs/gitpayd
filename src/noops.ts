@@ -52,6 +52,7 @@ async function parseAmountDue(
   const AMT_MATCHES_BOUNTY: boolean = decodedAmt === issueAmount;
   if (!AMT_MATCHES_BOUNTY) {
     log("decoded amount does not match bounty!", LogLevel.ERROR, true);
+    throw new Error('bounty payment request mismatch');
   } else {
     await handlePaymentAction(null, PaymentAction.RETURN_BALANCE).then(
       (res) => (balance = res.data.local_balance)
@@ -79,6 +80,7 @@ async function parseAmountDue(
       }
     } else {
       log("invalid payment request", LogLevel.ERROR, true);
+      throw new Error('invalid payment request');
     }
   }
 }
@@ -92,6 +94,7 @@ export async function runNoOps(token: string): Promise<void> {
   await axios.get(
     `${API}/${GITPAYD_OWNER}/${GITPAYD_REPO}/pulls?state=open`
   ).then(res => pr = res.data)
+  .catch(() => log('failed to fetch pull requests', LogLevel.ERROR, true));
   pr.forEach(async (pull: any) => {
     const ISSUE_NUM: string | null = splitter(pull.body, "Closes #");
     const PAYMENT_REQUEST: string | null = splitter(pull.body, "LN:");
@@ -118,10 +121,12 @@ export async function runNoOps(token: string): Promise<void> {
           LogLevel.INFO,
           true
         );
-        parseAmountDue(AMT, PAYMENT_REQUEST, PULL_NUM);
+        parseAmountDue(AMT, PAYMENT_REQUEST, PULL_NUM)
+          .catch(() => new Error('failed to parse amount'));
       }
     } else {
-      log(`no pull requests are eligible`, LogLevel.INFO, true);
+      log('no pull requests are eligible', LogLevel.INFO, true);
+      throw new Error('no pull request found');
     }
   });
 }
