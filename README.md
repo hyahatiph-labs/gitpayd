@@ -55,7 +55,6 @@ gitpayd/
 2. Run `node dist/src/gitpayd.js` to run server *--help for help 
 3. Test health check at `http://hostname:7778/gitpayd/health` (*port 7777 is default secure port)
 4. Verify configuration files at `~/.gitpayd/config.json`
-5. Run `node dist/util/noops.js` to run NoOps script
 <br/>
 
 ```bash
@@ -106,7 +105,7 @@ prompt: sslpassphrase:
 <ul>
 <li>GITPAYD_HOST - host of your server
 <li>GITPAYD_PORT - port of your server
-<li>GITPAYD_HOST*** - configured automatically for each build
+<li>GITHUB_TOKEN*** - configured automatically for each build
 <li>API_KEY - default is automatically <b>generated at setup in ~/.gitpayd/config.json</b>
 </ul>
 
@@ -137,7 +136,7 @@ prompt: sslpassphrase:
 
 ```bash
 # gitpayd-cli required arguments
-gitpayd --cap=/home/USER/path-to-ca-cert/ca.crt --kp=/home/USER/path-to-private-key/PRIVATEKEY.key --cep=/home/USER/path-server-cert/server.crt --rp=/home/USER/path-to-root-cert/root.crt --o=owner -r=gitpayd
+gitpayd --cap=/home/USER/path-to-ca-cert/ca.crt --kp=/home/USER/path-to-private-key/PRIVATEKEY.key --cep=/home/USER/path-server-cert/server.crt --rp=/home/USER/path-to-root-cert/root.crt --o=owner -r=repo
 # optional arguments -p=PORT, -host=IPADDRESS
 ```
 
