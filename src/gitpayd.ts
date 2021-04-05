@@ -44,8 +44,7 @@ APP.post("/gitpayd/noops", (req, res) => {
     );
     res.status(GitpaydConfig.UNAUTHORIZED).json({ msg: `bad creds: ${AUTH}` });
   } else {
-    runNoOps(GITHUB_TOKEN)
-    .catch(e => {
+    runNoOps(GITHUB_TOKEN).catch(e => {
       log(`noOps failed to execute`, LogLevel.ERROR, true);
       res.status(GitpaydConfig.SERVER_FAILURE).json({ msg: `${e}` });
     });

@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import axios from "axios";
 import { splitter, validateCollaborators } from "../util/util";
 import {
@@ -52,7 +51,6 @@ async function parseAmountDue(
   const AMT_MATCHES_BOUNTY: boolean = decodedAmt === issueAmount;
   if (!AMT_MATCHES_BOUNTY) {
     log("decoded amount does not match bounty!", LogLevel.ERROR, true);
-    throw new Error('bounty payment request mismatch');
   } else {
     await handlePaymentAction(null, PaymentAction.RETURN_BALANCE).then(
       (res) => (balance = res.data.local_balance.sat)
@@ -80,7 +78,6 @@ async function parseAmountDue(
       }
     } else {
       log("invalid payment request", LogLevel.ERROR, true);
-      throw new Error('invalid payment request');
     }
   }
 }
@@ -103,9 +100,11 @@ export async function runNoOps(token: string): Promise<void> {
       pull.author_association
     );
     if (!isCollaborator) {
-      throw new Error(
-        `unauthorized collaborator ${pull.user.login} access on gitpayd`
-      );
+      log(
+        `unauthorized collaborator ${pull.user.login} access on gitpayd`,
+        LogLevel.INFO,
+        true
+        );
     }
     if (ISSUE_NUM && PAYMENT_REQUEST) {
       log(`processing issue #${ISSUE_NUM}...`, LogLevel.INFO, true);
@@ -122,11 +121,10 @@ export async function runNoOps(token: string): Promise<void> {
           true
         );
         parseAmountDue(AMT, PAYMENT_REQUEST, PULL_NUM)
-          .catch(() => new Error('failed to parse amount'));
+          .catch(() => log('failed to parse amount', LogLevel.ERROR, true));
       }
     } else {
       log('no pull requests are eligible', LogLevel.INFO, true);
-      throw new Error('no pull request found');
     }
   });
 }
