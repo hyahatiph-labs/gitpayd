@@ -4,10 +4,26 @@
 
 Github Workflows + [BTC](https://bitcoin.org/en/bitcoin-core) / [LND](https://github.com/lightningnetwork/lnd), gitpayd watches your repo for new commits and sends payments to contributors
 
-  
 
-![image](https://user-images.githubusercontent.com/13033037/112792971-6e67e800-9032-11eb-96bb-79e5a460320c.png)
+```bash
+[INFO]  2021-04-05T00:34:10.007Z => found lnd version: 0.12.0-beta.rc1 
+[INFO]  2021-04-05T00:34:10.010Z => gitpayd started in 849ms on SERVER:7777
+[INFO]  2021-04-05T00:36:41.376Z => x.x.x.x connected to gitpayd/health
+[INFO]  2021-04-05T00:36:41.598Z => x.x.x.x connected to gitpayd/noops
+[INFO]  2021-04-05T00:36:41.707Z => processing issue #13...
+[INFO]  2021-04-05T00:36:41.779Z => attempting to settle pull request #14 for 150 sats
+[INFO]  2021-04-05T00:36:41.890Z => payment amount decoded: 100 sats
+[ERROR] 2021-04-05T00:36:41.892Z => decoded amount does not match bounty!
+[INFO]  2021-04-05T00:38:07.507Z => x.x.x.x connected to gitpayd/health
+[INFO]  2021-04-05T00:38:07.590Z => x.x.x.x connected to gitpayd/noops
+[INFO]  2021-04-05T00:38:07.702Z => processing issue #13...
+[INFO]  2021-04-05T00:38:07.772Z => attempting to settle pull request #14 for 100 sats
+[INFO]  2021-04-05T00:38:07.869Z => payment amount decoded: 100 sats
+[INFO]  2021-04-05T00:38:07.944Z => gitpayd channel balance is: 484976 sats
+[INFO]  2021-04-05T00:38:08.926Z => Pull Request successfully merged
+[INFO]  2021-04-05T00:38:13.092Z => payment pre-image: L2wHWnourzWsAsH0F3f2GKxDYilTUzNEavdhk6MKqF8=
 
+```
 *** <b>Caution</b>: This application is beta and breaking changes may occur. Use mainnet at your own risk!
 
 ## Project Layout
