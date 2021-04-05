@@ -4,6 +4,8 @@
 
 Github Workflows + [BTC](https://bitcoin.org/en/bitcoin-core) / [LND](https://github.com/lightningnetwork/lnd), gitpayd watches your repo for new commits and sends payments to contributors
 
+![image](https://user-images.githubusercontent.com/13033037/113526005-2262f900-9586-11eb-99d2-93ec47c03ded.png)
+
 
 ```bash
 [INFO]  2021-04-05T00:34:10.007Z => found lnd version: 0.12.0-beta.rc1 
