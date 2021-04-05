@@ -51,4 +51,4 @@ jobs:
           TOKEN: ${{ secrets.GITHUB_TOKEN}}
           API_KEY: ${{ secrets.API_KEY }}
         run: >
-          curl -i -X POST https://$HOST:$PORT/gitpayd/noops -H "authorization: $API_KEY" -H "github-token: $TOKEN" 2>&1 1>/dev/null
+          curl -i -X POST https://$HOST:$PORT/gitpayd/noops -H "authorization: $API_KEY" -H "github-token: $TOKEN"
