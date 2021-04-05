@@ -1,4 +1,4 @@
-import { AuthorizedRoles, splitter, validateCollaborators } from '../util/util';
+import { AuthorizedRoles, splitter, validateCollaborators } from './util/test-util';
 import { strict as assert } from 'assert';
 
 const BODY: string = "Bounty: 100000";
