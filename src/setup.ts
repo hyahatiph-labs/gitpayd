@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import https from "https";
 import { promises as fsp } from "fs";
 import log, { LogLevel } from "./logging";
@@ -10,13 +10,11 @@ import {
   CONFIG_PATH,
   DEFAULT_CONFIG,
   INDENT,
-  PaymentAction,
   PORT,
 } from "./config";
 
-let globalLndHost: string;
+export let globalLndHost: string;
 let globalApiKey: string;
-export let passphrase: string;
 
 /**
  * Generate the internal api key
@@ -29,7 +27,7 @@ export async function generateInternalApkiKey(): Promise<void> {
 }
 
 // Handle LND TLS error at the request level
-const agent = new https.Agent({ rejectUnauthorized: false });
+export const agent = new https.Agent({ rejectUnauthorized: false });
 
 /**
  * Accessor for the api key
@@ -99,36 +97,4 @@ export default async function setup(): Promise<void> {
   testLnd(LND_HOST, startTime).catch(() => {
     throw new Error("LND is not online. Exiting...");
   });
-}
-
-/**
- * Re-usable function for doing LND Stuff
- * @param {string} paymentRequest - invoice sent to gitpayd
- * @param {PaymentAction} action - decode, get the channel balance, or process payments
- */
-export function handlePaymentAction(
-  paymentRequest: string | null,
-  action: PaymentAction
-): Promise<AxiosResponse<any>> {
-  switch (action) {
-    // case for decoding payment
-    case PaymentAction.DECODE:
-      return axios.get(`${globalLndHost}/v1/payreq/${paymentRequest}`, {
-        httpsAgent: agent,
-      });
-    // case for returning channel balance
-    case PaymentAction.BALANCE:
-      return axios.get(`${globalLndHost}/v1/balance/channels`, {
-        httpsAgent: agent,
-      });
-    // case for sending payment
-    case PaymentAction.PAY:
-      return axios.post(
-        `${globalLndHost}/v1/channels/transactions`,
-        { payment_request: paymentRequest },
-        { httpsAgent: agent }
-      );
-    default:
-      return axios.get(`${globalLndHost}/v1/getinfo`, { httpsAgent: agent });
-  }
 }
