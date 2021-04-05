@@ -1,6 +1,6 @@
 {
   "name": "gitpayd",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Github Workflows + BTC / LND, gitpayd watches your repo for new commits and sends payments to contributors",
   "scripts": {
     "clean": "rm -rf dist/",
@@ -16,7 +16,12 @@
     "type": "git",
     "url": "git+https://github.com/hyahatiph-labs/gitpayd.git"
   },
-  "keywords": [],
+  "keywords": [
+    "bitcoin",
+    "lightning",
+    "network",
+    "automation"
+  ],
   "author": "hyahatiph-labs",
   "license": "GPL-3.0",
   "bugs": {
