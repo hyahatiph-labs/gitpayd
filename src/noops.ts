@@ -23,12 +23,12 @@ axios.defaults.headers.get.Accept = "application/vnd.github.v3+json";
  */
 async function sendPayment(paymentRequest: string): Promise<void> {
   // send the payment
-  let preImage: string;
-  const PRE_IMAGE = await handlePaymentAction(
+  let preimage: string;
+  await handlePaymentAction(
     paymentRequest,
     PaymentAction.PAY
-  ).then((res) => (preImage = res.data.payment_preimage));
-  log(`payment pre-image: ${PRE_IMAGE.data.image}`, LogLevel.INFO, false);
+  ).then((res) => preimage = res.data.payment_preimage);
+  log(`payment pre-image: ${preimage}`, LogLevel.INFO, false);
 }
 
 /**
