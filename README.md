@@ -86,7 +86,6 @@ Options:
 3. Payment thresholds are configured in command line.
 4. SSL certs / passphrase is required to start the https server (self-signed should be fine).
 5. GITHUB_TOKEN runs at the repo level. Only authorized contributors are allowed.
-   Enter at setup.s
 6. It is possible to run dev and secure server concurrently with environment variable
    <b>$GITPAYD_ENV=DEV</b> set
 <br/>
@@ -134,7 +133,7 @@ prompt: sslpassphrase:
 
 1. Run `npm i -g gitpayd`
 2. Execute `gitpayd` should start up the server
-3. Install in the workflow and execute `noops`
+3. Execute from workflow as curl or create your own action thingy!
 
 ```bash
 # gitpayd-cli required arguments
