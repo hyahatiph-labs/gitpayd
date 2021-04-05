@@ -1,3 +1,6 @@
+import { PaymentAction } from "../src/config";
+import axios, { AxiosResponse } from "axios";
+import { globalLndHost, agent } from "../src/setup";
 
 /**
  * Authorized roles
@@ -28,3 +31,35 @@ export const validateCollaborators = (role: AuthorizedRoles): boolean => {
     role === AuthorizedRoles.COLLABORATOR || role === AuthorizedRoles.OWNER
   );
 };
+
+/**
+ * Re-usable function for doing LND Stuff
+ * @param {string} paymentRequest - invoice sent to gitpayd
+ * @param {PaymentAction} action - decode, get the channel balance, or process payments
+ */
+ export function handlePaymentAction(
+  paymentRequest: string | null,
+  action: PaymentAction
+): Promise<AxiosResponse<any>> {
+  switch (action) {
+    // case for decoding payment
+    case PaymentAction.DECODE:
+      return axios.get(`${globalLndHost}/v1/payreq/${paymentRequest}`, {
+        httpsAgent: agent,
+      });
+    // case for returning channel balance
+    case PaymentAction.RETURN_BALANCE:
+      return axios.get(`${globalLndHost}/v1/balance/channels`, {
+        httpsAgent: agent,
+      });
+    // case for sending payment
+    case PaymentAction.PAY:
+      return axios.post(
+        `${globalLndHost}/v1/channels/transactions`,
+        { payment_request: paymentRequest },
+        { httpsAgent: agent }
+      );
+    default:
+      return axios.get(`${globalLndHost}/v1/getinfo`, { httpsAgent: agent });
+  }
+}

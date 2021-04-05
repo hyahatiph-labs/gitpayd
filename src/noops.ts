@@ -11,7 +11,7 @@ import {
   PAYMENT_THRESHOLD,
 } from "./config";
 import log, { LogLevel } from "./logging";
-import { handlePaymentAction } from "./setup";
+import { handlePaymentAction } from "../util/util";
 let githubToken: string;
 
 // set accept in axios header
@@ -55,7 +55,7 @@ async function parseAmountDue(
     throw new Error('bounty payment request mismatch');
   } else {
     await handlePaymentAction(null, PaymentAction.RETURN_BALANCE).then(
-      (res) => (balance = res.data.local_balance)
+      (res) => (balance = res.data.local_balance.sat)
     );
     log(`gitpayd channel balance is: ${balance} sats`, LogLevel.INFO, true);
     // ensure the node has a high enough local balance to payout
