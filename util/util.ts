@@ -1,6 +1,6 @@
 import { PaymentAction } from "../src/config";
 import axios, { AxiosResponse } from "axios";
-import { globalLndHost, agent } from "../src/setup";
+import { agent, getLndHost } from "../src/setup";
 
 /**
  * Authorized roles
@@ -8,6 +8,16 @@ import { globalLndHost, agent } from "../src/setup";
 export enum AuthorizedRoles {
   COLLABORATOR = "COLLABORATOR",
   OWNER = "OWNER",
+  MEMBER = "MEMBER"
+}
+
+/**
+ * Delimiters for parsing data from Github
+ */
+export enum Delimiters {
+  ISSUE = 'Closes #',
+  INVOICE = 'LN:',
+  BOUNTY = 'Bounty: '
 }
 
 /**
@@ -28,7 +38,9 @@ export const splitter = (body: string, delimiter: string): string | null => {
  */
 export const validateCollaborators = (role: AuthorizedRoles): boolean => {
   return (
-    role === AuthorizedRoles.COLLABORATOR || role === AuthorizedRoles.OWNER
+    role === AuthorizedRoles.COLLABORATOR
+    || role === AuthorizedRoles.OWNER
+    || role === AuthorizedRoles.MEMBER
   );
 };
 
@@ -44,22 +56,22 @@ export const validateCollaborators = (role: AuthorizedRoles): boolean => {
   switch (action) {
     // case for decoding payment
     case PaymentAction.DECODE:
-      return axios.get(`${globalLndHost}/v1/payreq/${paymentRequest}`, {
+      return axios.get(`${getLndHost()}/v1/payreq/${paymentRequest}`, {
         httpsAgent: agent,
       });
     // case for returning channel balance
     case PaymentAction.RETURN_BALANCE:
-      return axios.get(`${globalLndHost}/v1/balance/channels`, {
+      return axios.get(`${getLndHost()}/v1/balance/channels`, {
         httpsAgent: agent,
       });
     // case for sending payment
     case PaymentAction.PAY:
       return axios.post(
-        `${globalLndHost}/v1/channels/transactions`,
+        `${getLndHost()}/v1/channels/transactions`,
         { payment_request: paymentRequest },
         { httpsAgent: agent }
       );
     default:
-      return axios.get(`${globalLndHost}/v1/getinfo`, { httpsAgent: agent });
+      return axios.get(`${getLndHost()}/v1/getinfo`, { httpsAgent: agent });
   }
 }
