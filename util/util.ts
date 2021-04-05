@@ -1,4 +1,3 @@
-import { getInternalApiKey } from "../src/setup";
 
 /**
  * Authorized roles
