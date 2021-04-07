@@ -139,7 +139,7 @@ prompt: sslpassphrase:
 ```bash
 # gitpayd-cli required arguments
 gitpayd --cap=/home/USER/path-to-ca-cert/ca.crt --kp=/home/USER/path-to-private-key/PRIVATEKEY.key --cep=/home/USER/path-server-cert/server.crt --rp=/home/USER/path-to-root-cert/root.crt --o=owner -r=repo
-# optional arguments -p=PORT, -host=IPADDRESS
+# optional arguments -p=PORT, -host=IP_ADDRESS --dvp=DEV_PORT --ll=DEBUG,INFO,ERROR (default is INFO,ERROR)
 ```
 
 ## Releasing
