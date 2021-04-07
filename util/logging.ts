@@ -2,6 +2,7 @@ import { promises as fs } from "fs";
 import { spawn } from "child_process";
 import os from "os";
 import { ChildProcessWithoutNullStreams } from "node:child_process";
+import { LOG_FILTERS } from "../src/config";
 export const LOG_FILE: string = `${os.homedir}/.gitpayd/app.log`;
 let isFirstLog: boolean = true;
 
@@ -30,14 +31,21 @@ export default async function log(
   if (isFirstLog && write) {
     await fs.writeFile(LOG_FILE, "");
   }
-  isFirstLog = false;
-  const DATE: string = new Date().toISOString();
-  const LOG_STRING: string = `[${level}]\t${DATE} => ${message}`;
-  if (write) {
-    fs.appendFile(LOG_FILE, `${LOG_STRING}\n`);
+  // check if log filters got passed into the app
+  if (LOG_FILTERS.length > 0) {
+    LOG_FILTERS.forEach((filter: LogLevel) => {
+      if (filter === level) {
+        isFirstLog = false;
+        const DATE: string = new Date().toISOString();
+        const LOG_STRING: string = `[${level}]\t${DATE} => ${message}`;
+        if (write) {
+          fs.appendFile(LOG_FILE, `${LOG_STRING}\n`);
+        }
+        const CHILD_LOG: ChildProcessWithoutNullStreams = spawn("echo", [
+          `${LOG_STRING}`,
+        ]);
+        CHILD_LOG.stdout.pipe(process.stdout);
+      }
+    });
   }
-  const CHILD_LOG: ChildProcessWithoutNullStreams = spawn("echo", [
-    `${LOG_STRING}`,
-  ]);
-  CHILD_LOG.stdout.pipe(process.stdout);
 }

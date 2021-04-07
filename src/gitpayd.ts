@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import express from "express";
-import log, { LogLevel } from "./logging";
+import log, { LogLevel } from "../util/logging";
 import https from "https";
 import http from "http";
 import fs from "fs";

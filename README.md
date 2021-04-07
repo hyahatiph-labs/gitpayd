@@ -37,11 +37,11 @@ gitpayd/
 ├── src                # Directory of source code
    ├── config.ts         # Configuration properties
    ├── gitpayd.ts        # Entry point for the app
-   ├── logging.ts        # In house logger, since TS hates console.log()
    ├── noops.ts          # NoOps / DevOps script for processing CI / CD payments
    ├── setup.ts          # Creates configuration, connects to LND, helper functions, etc.
 ├── test               # Test files
 ├── util               # Helper functions
+   ├── logging.ts        # In house logger, since TS hates console.log()
    ├── util.ts           # General purpose functions and logic for CI / CD
 ```
 
@@ -88,7 +88,7 @@ Options:
 4. SSL certs / passphrase is required to start the https server (self-signed should be fine).
 5. GITHUB_TOKEN runs at the repo level. Only authorized contributors are allowed.
 6. It is possible to run dev and secure server concurrently with environment variable
-   <b>$GITPAYD_ENV=DEV</b> set
+   <b>export GITPAYD_ENV=DEV</b> set
 <br/>
 
 ```bash

@@ -9,7 +9,7 @@ import {
   PaymentAction,
   PAYMENT_THRESHOLD,
 } from "./config";
-import log, { LogLevel } from "./logging";
+import log, { LogLevel } from "../util/logging";
 import { handlePaymentAction } from "../util/util";
 let githubToken: string;
 

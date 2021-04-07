@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import https from "https";
 import { promises as fsp } from "fs";
-import log, { LogLevel } from "./logging";
+import log, { LogLevel } from "../util/logging";
 import os from "os";
 import { randomBytes } from "crypto";
 import {
