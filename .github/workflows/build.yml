@@ -45,10 +45,4 @@ jobs:
   
       # execute NoOps for gitpayd server
       - name: gitpayd noops doin a lil sum'
-        env:
-          HOST: ${{ secrets.GITPAYD_HOST }}
-          PORT: ${{ secrets.GITPAYD_PORT }}
-          TOKEN: ${{ secrets.GITHUB_TOKEN}}
-          API_KEY: ${{ secrets.API_KEY }}
-        run: >
-          curl -i -X POST https://$HOST:$PORT/gitpayd/noops -H "authorization: $API_KEY" -H "github-token: $TOKEN"
+        uses: hyahatiph-labs/gitpayd@v0.1.5

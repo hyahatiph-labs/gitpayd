@@ -29,6 +29,8 @@
   },
   "homepage": "https://github.com/hyahatiph-labs/gitpayd#readme",
   "dependencies": {
+    "@actions/core": "^1.2.6",
+    "@actions/github": "^4.0.0",
     "axios": "^0.21.1",
     "express": "^4.17.1",
     "prompt": "^1.1.0",
