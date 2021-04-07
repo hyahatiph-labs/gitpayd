@@ -1,7 +1,7 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import https from "https";
 import { promises as fsp } from "fs";
-import log, { LogLevel } from "./logging";
+import log, { LogLevel } from "../util/logging";
 import os from "os";
 import { randomBytes } from "crypto";
 import {
@@ -51,9 +51,12 @@ export const getInternalApiKey = (): string => {
  * @param {number} startTime
  */
 async function testLnd(host: string, startTime: number): Promise<void> {
-  const INFO = await axios.get(`${host}/v1/getinfo`, { httpsAgent: agent });
+  let nodeInfo: AxiosResponse<any>;
+  await axios.get(`${host}/v1/getinfo`, { httpsAgent: agent })
+    .then(res => nodeInfo = res)
+    .catch(() => log("LND failed to connect", LogLevel.ERROR, true));
   log(
-    `found lnd version: ${INFO.data.version.split("commit=")[0]}`,
+    `found lnd version: ${nodeInfo.data.version.split("commit=")[0]}`,
     LogLevel.INFO,
     true
   );
@@ -103,6 +106,7 @@ export default async function setup(): Promise<void> {
   globalLndHost = LND_HOST;
   globalApiKey = INTERNAL_API_KEY;
   testLnd(LND_HOST, startTime).catch(() => {
-    throw new Error("LND is not online. Exiting...");
+    // exit if lnd could not connect
+    throw new Error('could not connect to LND');
   });
 }

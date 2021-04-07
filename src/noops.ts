@@ -9,7 +9,7 @@ import {
   PaymentAction,
   PAYMENT_THRESHOLD,
 } from "./config";
-import log, { LogLevel } from "./logging";
+import log, { LogLevel } from "../util/logging";
 import { handlePaymentAction } from "../util/util";
 let githubToken: string;
 
@@ -27,6 +27,66 @@ async function sendPayment(paymentRequest: string): Promise<void> {
     (res) => (preimage = res.data.payment_preimage)
   );
   log(`payment pre-image: ${preimage}`, LogLevel.INFO, false);
+}
+
+async function processIssues(
+  issueNum: string,
+  paymentRequest: string,
+  pullNum: number
+): Promise<void> {
+  log(`processing issue #${issueNum}...`, LogLevel.INFO, true);
+  let issue: string;
+  await axios
+    .get(`${API}/${GITPAYD_OWNER}/${GITPAYD_REPO}/issues/${issueNum}`)
+    .then((res) => (issue = res.data.body))
+    .catch(() => log(`no issues found`, LogLevel.ERROR, true));
+  if (issue) {
+    const AMT: string | null = splitter(issue, Delimiters.BOUNTY);
+    log(
+      `attempting to settle pull request #${pullNum} for ${AMT} sats`,
+      LogLevel.INFO,
+      true
+    );
+    parseAmountDue(AMT, paymentRequest, pullNum).catch(() =>
+      log("failed to parse amount", LogLevel.ERROR, true)
+    );
+  }
+}
+
+/**
+ * Helper function for validating payments
+ * @param issueAmount - amount on the Bounty tag in the issue
+ * @param balance - balance of the node connected to gitpayd
+ * @param pullNum - pull request number being processed
+ * @param paymentRequest - lightning invoice
+ */
+async function processPayments(
+  issueAmount: string,
+  balance: number,
+  pullNum: number,
+  paymentRequest: string
+): Promise<void> {
+  const NUM_AMT = parseInt(issueAmount, 10);
+  const isValidPayment =
+    NUM_AMT > 0 &&
+    NUM_AMT < MAX_PAYMENT &&
+    balance >= NUM_AMT &&
+    NUM_AMT < PAYMENT_THRESHOLD;
+  if (isValidPayment) {
+    const headers: object = { authorization: `token ${githubToken}` };
+    const MERGE = await axios.put(
+      `${API}/${GITPAYD_OWNER}/${GITPAYD_REPO}/pulls/${pullNum.toString()}/merge`,
+      MERGE_BODY,
+      { headers }
+    );
+    log(`${MERGE.data.message}`, LogLevel.INFO, true);
+    if (MERGE.data.merged) {
+      // if pull request merged successfully send payment
+      sendPayment(paymentRequest);
+    }
+  } else {
+    log("invalid payment request", LogLevel.ERROR, true);
+  }
 }
 
 /**
@@ -56,33 +116,13 @@ async function parseAmountDue(
     );
     log(`gitpayd channel balance is: ${balance} sats`, LogLevel.INFO, true);
     // ensure the node has a high enough local balance to payout
-    const NUM_AMT = parseInt(issueAmount, 10);
-    const isValidPayment =
-      NUM_AMT > 0 &&
-      NUM_AMT < MAX_PAYMENT &&
-      AMT_MATCHES_BOUNTY &&
-      balance >= NUM_AMT &&
-      NUM_AMT < PAYMENT_THRESHOLD;
-    if (isValidPayment) {
-      const headers: object = { authorization: `token ${githubToken}` };
-      const MERGE = await axios.put(
-        `${API}/${GITPAYD_OWNER}/${GITPAYD_REPO}/pulls/${pullNum.toString()}/merge`,
-        MERGE_BODY,
-        { headers }
-      );
-      log(`${MERGE.data.message}`, LogLevel.INFO, true);
-      if (MERGE.data.merged) {
-        // if pull request merged successfully send payment
-        sendPayment(paymentRequest);
-      }
-    } else {
-      log("invalid payment request", LogLevel.ERROR, true);
-    }
+    processPayments(issueAmount, balance, pullNum, paymentRequest);
   }
 }
 
 /**
  * This function acquires the issue linked in the pull request
+ * @param token - Github token from the workflow
  */
 export async function runNoOps(token: string): Promise<void> {
   githubToken = token;
@@ -92,40 +132,26 @@ export async function runNoOps(token: string): Promise<void> {
     .then((res) => (pr = res.data))
     .catch(() => log("failed to fetch pull requests", LogLevel.ERROR, true));
   pr.forEach(async (pull: any) => {
-    const ISSUE_NUM: string | null = splitter(pull.body, Delimiters.BOUNTY);
+    const ISSUE_NUM: string | null = splitter(pull.body, Delimiters.ISSUE);
+    log(`checking issue number: ${ISSUE_NUM}`, LogLevel.DEBUG, true);
     const PAYMENT_REQUEST: string | null = splitter(
       pull.body,
       Delimiters.INVOICE
     );
     const PULL_NUM: number = pull.number;
+    log(`parsed pull request: ${PULL_NUM}`, LogLevel.DEBUG, true);
     const isCollaborator: boolean = validateCollaborators(
       pull.author_association
     );
     if (!isCollaborator) {
       log(
         `unauthorized collaborator ${pull.user.login} access on gitpayd`,
-        LogLevel.INFO,
+        LogLevel.DEBUG,
         true
       );
     }
     if (ISSUE_NUM && PAYMENT_REQUEST && isCollaborator) {
-      log(`processing issue #${ISSUE_NUM}...`, LogLevel.INFO, true);
-      let issue: string;
-      await axios
-        .get(`${API}/${GITPAYD_OWNER}/${GITPAYD_REPO}/issues/${ISSUE_NUM}`)
-        .then((res) => (issue = res.data.body))
-        .catch(() => log(`no issues found`, LogLevel.ERROR, true));
-      if (issue) {
-        const AMT: string | null = splitter(issue, Delimiters.BOUNTY);
-        log(
-          `attempting to settle pull request #${PULL_NUM} for ${AMT} sats`,
-          LogLevel.INFO,
-          true
-        );
-        parseAmountDue(AMT, PAYMENT_REQUEST, PULL_NUM).catch(() =>
-          log("failed to parse amount", LogLevel.ERROR, true)
-        );
-      }
+      processIssues(ISSUE_NUM, PAYMENT_REQUEST, PULL_NUM);
     } else {
       log("no pull requests are eligible", LogLevel.INFO, true);
     }

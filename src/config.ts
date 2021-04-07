@@ -1,5 +1,6 @@
 import * as yargs from "yargs";
 import os from "os";
+import { LogLevel } from "../util/logging";
 
 // api key size
 export const API_KEY_SIZE: number = 32;
@@ -110,6 +111,12 @@ const ARGS = yargs
     alias: "pt",
     description: "minimum channel balance to maintain",
     demand: false,
+  })
+  .option("log-level", {
+    string: true,
+    alias: "ll",
+    description: "comma separated list of log levels to maintain",
+    demand: false,
   }).argv;
 
 // set https certs here
@@ -142,6 +149,23 @@ export const PAYMENT_THRESHOLD: number =
   CUSTOM_PAYMENT_THRESHOLD === undefined
     ? DEFAULT_PAYMENT_THRESHOLD
     : parseInt(CUSTOM_PAYMENT_THRESHOLD, 10);
+
+// global log level
+const LOG_LEVEL_ARG: string = ARGS["log-level"];
+const IS_MULTI_LOG_LEVEL: boolean = LOG_LEVEL_ARG !== undefined
+  && LOG_LEVEL_ARG.length > 0 && LOG_LEVEL_ARG.indexOf(",") > 0
+const singleLogLevel: string[] = [];
+if(!IS_MULTI_LOG_LEVEL && LOG_LEVEL_ARG !== undefined) {
+  singleLogLevel.push(LOG_LEVEL_ARG);
+} else {
+  // default log level
+  singleLogLevel.push("INFO");
+  singleLogLevel.push("ERROR");
+}
+export const LOG_FILTERS: string[] | null = IS_MULTI_LOG_LEVEL
+  ? LOG_LEVEL_ARG.split(",")
+  : !IS_MULTI_LOG_LEVEL ? singleLogLevel
+  : null;
 
 // some defaults for linux
 export const CONFIG_PATH: string = `${os.homedir()}/.gitpayd/config.json`;
