@@ -1,6 +1,8 @@
-import { PaymentAction } from "../src/config";
+import { GitpaydMode, PaymentAction } from "../src/config";
 import axios, { AxiosResponse } from "axios";
 import { agent, getLndHost } from "../src/setup";
+import log, { LogLevel } from "./logging";
+import os from "os";
 
 /**
  * Authorized roles
@@ -8,16 +10,16 @@ import { agent, getLndHost } from "../src/setup";
 export enum AuthorizedRoles {
   COLLABORATOR = "COLLABORATOR",
   OWNER = "OWNER",
-  MEMBER = "MEMBER"
+  MEMBER = "MEMBER",
 }
 
 /**
  * Delimiters for parsing data from Github
  */
 export enum Delimiters {
-  ISSUE = 'Closes #',
-  INVOICE = 'LN:',
-  BOUNTY = 'Bounty: '
+  ISSUE = "Closes #",
+  INVOICE = "LN:",
+  BOUNTY = "Bounty: ",
 }
 
 /**
@@ -38,9 +40,9 @@ export const splitter = (body: string, delimiter: string): string | null => {
  */
 export const validateCollaborators = (role: AuthorizedRoles): boolean => {
   return (
-    role === AuthorizedRoles.COLLABORATOR
-    || role === AuthorizedRoles.OWNER
-    || role === AuthorizedRoles.MEMBER
+    role === AuthorizedRoles.COLLABORATOR ||
+    role === AuthorizedRoles.OWNER ||
+    role === AuthorizedRoles.MEMBER
   );
 };
 
@@ -49,7 +51,7 @@ export const validateCollaborators = (role: AuthorizedRoles): boolean => {
  * @param {string} paymentRequest - invoice sent to gitpayd
  * @param {PaymentAction} action - decode, get the channel balance, or process payments
  */
- export function handlePaymentAction(
+export function handlePaymentAction(
   paymentRequest: string | null,
   action: PaymentAction
 ): Promise<AxiosResponse<any>> {
@@ -74,4 +76,24 @@ export const validateCollaborators = (role: AuthorizedRoles): boolean => {
     default:
       return axios.get(`${getLndHost()}/v1/getinfo`, { httpsAgent: agent });
   }
+}
+
+/**
+ * Log the port of server mode
+ * @param port - port server started on
+ * @param mode - mode server started on
+ * @param startTime - server start time
+ */
+export async function logStartup(
+  port: number,
+  mode: GitpaydMode,
+  startTime: number
+): Promise<void> {
+  const END_TIME: number = new Date().getMilliseconds() - startTime;
+  const REAL_TIME: number = END_TIME < 0 ? END_TIME * -1 : END_TIME;
+  await log(
+    `gitpayd ${mode} started in ${REAL_TIME}ms on ${os.hostname()}:${port}`,
+    LogLevel.INFO,
+    true
+  );
 }

@@ -87,8 +87,7 @@ Options:
 3. Payment thresholds are configured in command line.
 4. SSL certs / passphrase is required to start the https server (self-signed should be fine).
 5. GITHUB_TOKEN runs at the repo level. Only authorized contributors are allowed.
-6. It is possible to run dev and secure server concurrently with environment variable
-   <b>export GITPAYD_ENV=DEV</b> set
+6. It is possible to run dev server on http as fallback mechanism with <b>export GITPAYD_ENV=DEV</b> set
 <br/>
 
 ```bash
