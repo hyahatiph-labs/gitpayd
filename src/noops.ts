@@ -132,7 +132,7 @@ export async function runNoOps(token: string): Promise<void> {
     .then((res) => (pr = res.data))
     .catch(() => log("failed to fetch pull requests", LogLevel.ERROR, true));
   pr.forEach(async (pull: any) => {
-    const ISSUE_NUM: string | null = splitter(pull.body, Delimiters.BOUNTY);
+    const ISSUE_NUM: string | null = splitter(pull.body, Delimiters.ISSUE);
     log(`checking issue number: ${ISSUE_NUM}`, LogLevel.DEBUG, true);
     const PAYMENT_REQUEST: string | null = splitter(
       pull.body,
