@@ -31,21 +31,18 @@ export default async function log(
   if (isFirstLog && write) {
     await fs.writeFile(LOG_FILE, "");
   }
-  // check if log filters got passed into the app
-  if (LOG_FILTERS.length > 0) {
-    LOG_FILTERS.forEach((filter: LogLevel) => {
-      if (filter === level) {
-        isFirstLog = false;
-        const DATE: string = new Date().toISOString();
-        const LOG_STRING: string = `[${level}]\t${DATE} => ${message}`;
-        if (write) {
-          fs.appendFile(LOG_FILE, `${LOG_STRING}\n`);
-        }
-        const CHILD_LOG: ChildProcessWithoutNullStreams = spawn("echo", [
-          `${LOG_STRING}`,
-        ]);
-        CHILD_LOG.stdout.pipe(process.stdout);
+  LOG_FILTERS.forEach((filter: LogLevel) => {
+    if (filter === level) {
+      isFirstLog = false;
+      const DATE: string = new Date().toISOString();
+      const LOG_STRING: string = `[${level}]\t${DATE} => ${message}`;
+      if (write) {
+        fs.appendFile(LOG_FILE, `${LOG_STRING}\n`);
       }
-    });
-  }
+      const CHILD_LOG: ChildProcessWithoutNullStreams = spawn("echo", [
+        `${LOG_STRING}`,
+      ]);
+      CHILD_LOG.stdout.pipe(process.stdout);
+    }
+  });
 }
