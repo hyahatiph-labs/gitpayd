@@ -1,6 +1,5 @@
 import * as yargs from "yargs";
 import os from "os";
-import { LogLevel } from "../util/logging";
 
 // api key size
 export const API_KEY_SIZE: number = 32;
@@ -37,6 +36,7 @@ export enum GitpaydConfig {
 export const SSL_SCHEMA: any = {
   properties: {
     sslpassphrase: {
+      message: "Enter SSL passphrase or press Enter for DEV mode",
       hidden: true,
     },
   },
