@@ -18,4 +18,4 @@ outputs:
     description: 'The time NoOps completed'
 runs:
   using: 'node12'
-  main: './bin/gitpayd-action.js'
+  main: './bin/index.js'
