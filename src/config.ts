@@ -1,5 +1,6 @@
 import * as yargs from "yargs";
 import os from "os";
+import { LogLevel } from "../util/logging";
 
 // api key size
 export const API_KEY_SIZE: number = 32;
@@ -154,8 +155,12 @@ const LOG_LEVEL_ARG: string = ARGS["log-level"];
 const IS_MULTI_LOG_LEVEL: boolean = LOG_LEVEL_ARG !== undefined
   && LOG_LEVEL_ARG.length > 0 && LOG_LEVEL_ARG.indexOf(",") > 0
 const singleLogLevel: string[] = [];
-if(!IS_MULTI_LOG_LEVEL && LOG_LEVEL_ARG.length > 0) {
+if(!IS_MULTI_LOG_LEVEL && LOG_LEVEL_ARG !== undefined) {
   singleLogLevel.push(LOG_LEVEL_ARG);
+} else {
+  // default log level
+  singleLogLevel.push("INFO");
+  singleLogLevel.push("ERROR");
 }
 export const LOG_FILTERS: string[] | null = IS_MULTI_LOG_LEVEL
   ? LOG_LEVEL_ARG.split(",")
