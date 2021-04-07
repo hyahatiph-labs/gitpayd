@@ -45,4 +45,4 @@ jobs:
   
       # execute NoOps for gitpayd server
       - name: gitpayd noops doin a lil sum'
-        uses: hyahatiph-labs/gitpayd@v0.1.5
+        uses: hyahatiph-labs/gitpayd@v0.1.4
