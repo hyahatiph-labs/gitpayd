@@ -1,6 +1,5 @@
 import * as yargs from "yargs";
 import os from "os";
-import { LogLevel } from "../util/logging";
 
 // api key size
 export const API_KEY_SIZE: number = 32;
@@ -28,7 +27,7 @@ export enum GitpaydConfig {
   DEFAULT_PAYMENT_THRESHOLD = 250000,
   HTTP_OK = 200,
   UNAUTHORIZED = 403,
-  SERVER_FAILURE = 500
+  SERVER_FAILURE = 500,
 }
 
 /**
@@ -37,6 +36,9 @@ export enum GitpaydConfig {
 export const SSL_SCHEMA: any = {
   properties: {
     sslpassphrase: {
+      message:
+        "Enter SSL passphrase or press Enter for DEV mode " +
+        "\n\tHint: for DEV mode export GITPAYD_ENV=DEV\n",
       hidden: true,
     },
   },
@@ -143,8 +145,8 @@ const DEFAULT_MAX_PAYMENT: number = 100000;
 const DEFAULT_PAYMENT_THRESHOLD: number = 250000;
 export const MAX_PAYMENT: number | string =
   CUSTOM_MAX_PAYMENT === undefined
-  ? DEFAULT_MAX_PAYMENT
-  : parseInt(CUSTOM_MAX_PAYMENT, 10);
+    ? DEFAULT_MAX_PAYMENT
+    : parseInt(CUSTOM_MAX_PAYMENT, 10);
 export const PAYMENT_THRESHOLD: number =
   CUSTOM_PAYMENT_THRESHOLD === undefined
     ? DEFAULT_PAYMENT_THRESHOLD
@@ -152,10 +154,12 @@ export const PAYMENT_THRESHOLD: number =
 
 // global log level
 const LOG_LEVEL_ARG: string = ARGS["log-level"];
-const IS_MULTI_LOG_LEVEL: boolean = LOG_LEVEL_ARG !== undefined
-  && LOG_LEVEL_ARG.length > 0 && LOG_LEVEL_ARG.indexOf(",") > 0
+const IS_MULTI_LOG_LEVEL: boolean =
+  LOG_LEVEL_ARG !== undefined &&
+  LOG_LEVEL_ARG.length > 0 &&
+  LOG_LEVEL_ARG.indexOf(",") > 0;
 const singleLogLevel: string[] = [];
-if(!IS_MULTI_LOG_LEVEL && LOG_LEVEL_ARG !== undefined) {
+if (!IS_MULTI_LOG_LEVEL && LOG_LEVEL_ARG !== undefined) {
   singleLogLevel.push(LOG_LEVEL_ARG);
 } else {
   // default log level
@@ -164,7 +168,8 @@ if(!IS_MULTI_LOG_LEVEL && LOG_LEVEL_ARG !== undefined) {
 }
 export const LOG_FILTERS: string[] | null = IS_MULTI_LOG_LEVEL
   ? LOG_LEVEL_ARG.split(",")
-  : !IS_MULTI_LOG_LEVEL ? singleLogLevel
+  : !IS_MULTI_LOG_LEVEL
+  ? singleLogLevel
   : null;
 
 // some defaults for linux

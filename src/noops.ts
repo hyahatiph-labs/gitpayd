@@ -17,6 +17,22 @@ let githubToken: string;
 axios.defaults.headers.get.Accept = "application/vnd.github.v3+json";
 
 /**
+ * Run payment validity logic
+ * @param issueAmount - issue bounty
+ * @param balance - balance of the lightning node gitpayd connects to
+ * @returns
+ */
+const isValidPayment = (issueAmount: string, balance: number): boolean => {
+  const NUM_AMT = parseInt(issueAmount, 10);
+  return (
+    NUM_AMT > 0 &&
+    NUM_AMT < MAX_PAYMENT &&
+    balance >= NUM_AMT &&
+    NUM_AMT < PAYMENT_THRESHOLD
+  );
+};
+
+/**
  * Make the API call to LND for processing payments
  * @param {string} paymentRequest - lnd invoice
  */
@@ -29,6 +45,12 @@ async function sendPayment(paymentRequest: string): Promise<void> {
   log(`payment pre-image: ${preimage}`, LogLevel.INFO, false);
 }
 
+/**
+ * Process issue number and bounty amount from pull request
+ * @param issueNum - issue number
+ * @param paymentRequest - lightning invoice
+ * @param pullNum - pull request number
+ */
 async function processIssues(
   issueNum: string,
   paymentRequest: string,
@@ -66,13 +88,7 @@ async function processPayments(
   pullNum: number,
   paymentRequest: string
 ): Promise<void> {
-  const NUM_AMT = parseInt(issueAmount, 10);
-  const isValidPayment =
-    NUM_AMT > 0 &&
-    NUM_AMT < MAX_PAYMENT &&
-    balance >= NUM_AMT &&
-    NUM_AMT < PAYMENT_THRESHOLD;
-  if (isValidPayment) {
+  if (isValidPayment(issueAmount, balance)) {
     const headers: object = { authorization: `token ${githubToken}` };
     const MERGE = await axios.put(
       `${API}/${GITPAYD_OWNER}/${GITPAYD_REPO}/pulls/${pullNum.toString()}/merge`,
@@ -144,11 +160,7 @@ export async function runNoOps(token: string): Promise<void> {
       pull.author_association
     );
     if (!isCollaborator) {
-      log(
-        `unauthorized collaborator ${pull.user.login} access on gitpayd`,
-        LogLevel.DEBUG,
-        true
-      );
+      log(`unauthorized user: ${pull.user.login}`, LogLevel.DEBUG, true);
     }
     if (ISSUE_NUM && PAYMENT_REQUEST && isCollaborator) {
       processIssues(ISSUE_NUM, PAYMENT_REQUEST, PULL_NUM);
