@@ -43,11 +43,12 @@ jobs:
           PORT: ${{ secrets.GITPAYD_PORT }}
         run: curl -i https://$HOST:$PORT/gitpayd/health
 
-      # execute NoOps for gitpayd server
+       # execute NoOps for gitpayd server
       - name: gitpayd noops doin a lil sum'
-        uses: hyahatiph-labs/gitpayd-action@v0.1.0
         env:
           HOST: ${{ secrets.GITPAYD_HOST }}
           PORT: ${{ secrets.GITPAYD_PORT }}
-          API_KEY: ${{ secrets.API_KEY}}
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          API_KEY: ${{ secrets.API_KEY }}
+        run: >
+          curl -i -X POST https://$HOST:$PORT/gitpayd/noops -H "authorization: $API_KEY" -H "github-token: $TOKEN"
