@@ -43,7 +43,7 @@ jobs:
           PORT: ${{ secrets.GITPAYD_PORT }}
         run: curl -i https://$HOST:$PORT/gitpayd/health
   
-      # execute nNsoOps for gitpayd server
+      # execute NoOps for gitpayd server
       - name: gitpayd noops doin a lil sum'
         env:
           HOST: ${{ secrets.GITPAYD_HOST }}

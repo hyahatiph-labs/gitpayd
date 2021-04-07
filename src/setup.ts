@@ -13,7 +13,7 @@ import {
   PORT,
 } from "./config";
 
-export let globalLndHost: string;
+let globalLndHost: string;
 let globalApiKey: string;
 
 /**
@@ -21,9 +21,9 @@ let globalApiKey: string;
  * It is validated against Github secrets.API_KEY
  */
 export async function generateInternalApkiKey(): Promise<void> {
-  const buf: Buffer = randomBytes(API_KEY_SIZE);
-  log(`generated api key of length ${buf.length}`, LogLevel.INFO, true);
-  DEFAULT_CONFIG.internalApiKey = buf.toString("hex");
+  const BUFFER: Buffer = randomBytes(API_KEY_SIZE);
+  log(`generated api key of length ${BUFFER.length}`, LogLevel.INFO, true);
+  DEFAULT_CONFIG.internalApiKey = BUFFER.toString("hex");
 }
 
 // Handle LND TLS error at the request level
@@ -35,6 +35,14 @@ export const agent = new https.Agent({ rejectUnauthorized: false });
  */
 export const getInternalApiKey = (): string => {
   return globalApiKey;
+};
+
+/**
+ * Accessor for the LND HOST
+ * @returns - lnd host
+ */
+ export const getLndHost = (): string => {
+  return globalLndHost;
 };
 
 /**
