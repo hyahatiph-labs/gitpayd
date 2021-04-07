@@ -9,8 +9,7 @@ import {
   ConfigFile,
   CONFIG_PATH,
   DEFAULT_CONFIG,
-  INDENT,
-  PORT,
+  INDENT
 } from "./config";
 
 let globalLndHost: string;
@@ -50,20 +49,13 @@ export const getInternalApiKey = (): string => {
  * @param {string} host
  * @param {number} startTime
  */
-async function testLnd(host: string, startTime: number): Promise<void> {
+async function testLnd(host: string): Promise<void> {
   let nodeInfo: AxiosResponse<any>;
   await axios.get(`${host}/v1/getinfo`, { httpsAgent: agent })
     .then(res => nodeInfo = res)
     .catch(() => log("LND failed to connect", LogLevel.ERROR, true));
   log(
     `found lnd version: ${nodeInfo.data.version.split("commit=")[0]}`,
-    LogLevel.INFO,
-    true
-  );
-  const END_TIME: number = new Date().getMilliseconds() - startTime;
-  const REAL_TIME: number = END_TIME < 0 ? END_TIME * -1 : END_TIME;
-  log(
-    `gitpayd started in ${REAL_TIME}ms on ${os.hostname()}:${PORT}`,
     LogLevel.INFO,
     true
   );
@@ -75,7 +67,6 @@ async function testLnd(host: string, startTime: number): Promise<void> {
  * check for the LND node existing
  */
 export default async function setup(): Promise<void> {
-  const startTime: number = new Date().getMilliseconds();
   let config: ConfigFile | Buffer;
   try {
     config = await fsp.readFile(CONFIG_PATH);
@@ -105,7 +96,7 @@ export default async function setup(): Promise<void> {
   const LND_HOST: string = JSON.parse(config.toString()).lndHost;
   globalLndHost = LND_HOST;
   globalApiKey = INTERNAL_API_KEY;
-  testLnd(LND_HOST, startTime).catch(() => {
+  testLnd(LND_HOST).catch(() => {
     // exit if lnd could not connect
     throw new Error('could not connect to LND');
   });

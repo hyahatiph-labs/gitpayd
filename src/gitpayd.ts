@@ -16,15 +16,18 @@ import {
   GITPAYD_ENV,
   DEV_PORT,
   SSL_SCHEMA,
+  GitpaydMode,
 } from "./config";
 import setup, { getInternalApiKey } from "./setup";
 import prompt from "prompt";
 import { runNoOps } from "./noops";
+import { logStartup } from "../util/util";
 
 let passphrase: string;
 let isConfigured: boolean;
 
 const APP = express();
+const START_TIME: number = new Date().getMilliseconds();
 
 // healthcheck for gitpayd
 APP.get("/gitpayd/health", (req, res) => {
@@ -95,6 +98,7 @@ const startHttps = (input: string): void => {
   isConfigured = true;
 };
 
+
 /**
  * Drive server initialization with SSL passphrase
  */
@@ -109,8 +113,10 @@ async function initialize(): Promise<void> {
     // clear ssl passphrase
     passphrase = null;
     sslpassphrase = null;
+    await logStartup(PORT, GitpaydMode.SECURE, START_TIME);
   } catch {
     startHttp();
+    await logStartup(DEV_PORT, GitpaydMode.UNSECURE, START_TIME);
   }
 }
 
