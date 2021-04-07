@@ -1,6 +1,6 @@
 {
   "name": "gitpayd",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Github Workflows + BTC / LND, gitpayd watches your repo for new commits and sends payments to contributors",
   "scripts": {
     "clean": "rm -rf dist/",
@@ -29,6 +29,8 @@
   },
   "homepage": "https://github.com/hyahatiph-labs/gitpayd#readme",
   "dependencies": {
+    "@actions/core": "^1.2.6",
+    "@actions/github": "^4.0.0",
     "axios": "^0.21.1",
     "express": "^4.17.1",
     "prompt": "^1.1.0",

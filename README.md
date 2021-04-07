@@ -2,6 +2,8 @@
 
 [![Build](https://github.com/reemuru/gitpayd/actions/workflows/build.yml/badge.svg)](https://github.com/reemuru/gitpayd/actions/workflows/build.yml)
 
+[![gitpayd](https://snyk.io/advisor/npm-package/gitpayd/badge.svg)](https://snyk.io/advisor/npm-package/gitpayd)
+
 Github Workflows + [BTC](https://bitcoin.org/en/bitcoin-core) / [LND](https://github.com/lightningnetwork/lnd), gitpayd watches your repo for new commits and sends payments to contributors
 
 ![image](https://user-images.githubusercontent.com/13033037/113526005-2262f900-9586-11eb-99d2-93ec47c03ded.png)
@@ -35,11 +37,11 @@ gitpayd/
 ├── src                # Directory of source code
    ├── config.ts         # Configuration properties
    ├── gitpayd.ts        # Entry point for the app
-   ├── logging.ts        # In house logger, since TS hates console.log()
    ├── noops.ts          # NoOps / DevOps script for processing CI / CD payments
    ├── setup.ts          # Creates configuration, connects to LND, helper functions, etc.
 ├── test               # Test files
 ├── util               # Helper functions
+   ├── logging.ts        # In house logger, since TS hates console.log()
    ├── util.ts           # General purpose functions and logic for CI / CD
 ```
 
@@ -86,7 +88,7 @@ Options:
 4. SSL certs / passphrase is required to start the https server (self-signed should be fine).
 5. GITHUB_TOKEN runs at the repo level. Only authorized contributors are allowed.
 6. It is possible to run dev and secure server concurrently with environment variable
-   <b>$GITPAYD_ENV=DEV</b> set
+   <b>export GITPAYD_ENV=DEV</b> set
 <br/>
 
 ```bash
@@ -137,7 +139,7 @@ prompt: sslpassphrase:
 ```bash
 # gitpayd-cli required arguments
 gitpayd --cap=/home/USER/path-to-ca-cert/ca.crt --kp=/home/USER/path-to-private-key/PRIVATEKEY.key --cep=/home/USER/path-server-cert/server.crt --rp=/home/USER/path-to-root-cert/root.crt --o=owner -r=repo
-# optional arguments -p=PORT, -host=IPADDRESS
+# optional arguments -p=PORT, -host=IP_ADDRESS --dvp=DEV_PORT --ll=DEBUG,INFO,ERROR (default is INFO,ERROR)
 ```
 
 ## Releasing
@@ -149,8 +151,3 @@ TODO: Automated release management via `npm publish` and workflows
 `npm test`
 <br/>
 more tests are encouraged
-
-## Contributing
-Suggested Merge Flow:
-
-developer branch => PR for dev branch => PR for release/v.X.X.X branch => PR merge to main branch

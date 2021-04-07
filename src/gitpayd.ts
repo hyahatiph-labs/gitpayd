@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import express from "express";
-import log, { LogLevel } from "./logging";
+import log, { LogLevel } from "../util/logging";
 import https from "https";
 import http from "http";
 import fs from "fs";
@@ -35,23 +35,65 @@ APP.get("/gitpayd/health", (req, res) => {
 // NoOps for gitpayd
 APP.post("/gitpayd/noops", (req, res) => {
   const AUTH = req.headers.authorization;
-  const GITHUB_TOKEN = req.header('github-token');
+  const GITHUB_TOKEN = req.header("github-token");
   if (AUTH !== getInternalApiKey()) {
-    log(
-      `${req.ip} unauthorized access on gitpayd/pay`,
-      LogLevel.ERROR,
-      true
-    );
+    log(`${req.ip} unauthorized access on gitpayd/noops`, LogLevel.ERROR, true);
     res.status(GitpaydConfig.UNAUTHORIZED).json({ msg: `bad creds: ${AUTH}` });
   } else {
-    runNoOps(GITHUB_TOKEN).catch(e => {
+    runNoOps(GITHUB_TOKEN).catch(() => {
       log(`noOps failed to execute`, LogLevel.ERROR, true);
-      res.status(GitpaydConfig.SERVER_FAILURE).json({ msg: `${e}` });
+      res.status(GitpaydConfig.SERVER_FAILURE).json({ msg: "NoOps failed" });
     });
     res.status(GitpaydConfig.HTTP_OK).json({ msg: `NoOps Completed` });
     log(`${req.ip} connected to gitpayd/noops`, LogLevel.INFO, true);
   }
 });
+
+/**
+ * Attempts to start the server in DEV mode
+ * GITPAYD_ENV=DEV must be set
+ */
+const startHttp = (): void => {
+  // set the dev server to run if environment variable is set
+  if (GITPAYD_ENV === GitpaydConfig.DEV) {
+    // check for lnd node
+    if (!isConfigured) {
+      setup().catch(() =>
+        log(`setup failed, check ${CONFIG_PATH}`, LogLevel.ERROR, true)
+      );
+    }
+    const HTTP_SERVER = http.createServer(APP);
+    HTTP_SERVER.listen(DEV_PORT, HOST);
+    log("warning: gitpayd development server is running", LogLevel.INFO, true);
+  }
+  log(
+    "https is not configured, check ssl certs location or passphrase",
+    LogLevel.ERROR,
+    true
+  );
+};
+
+/**
+ * Attempts to start the server with SSL info
+ * @param input - SSL private key passphrase
+ */
+const startHttps = (input: string): void => {
+  const HTTPS_SERVER = https.createServer(
+    {
+      key: fs.readFileSync(KEY_PATH),
+      passphrase: input,
+      cert: fs.readFileSync(CERT_PATH),
+      ca: [fs.readFileSync(CA_PATH), fs.readFileSync(ROOT_PATH)],
+    },
+    APP
+  );
+  HTTPS_SERVER.listen(PORT, HOST);
+  // check for lnd node
+  setup().catch(() =>
+    log(`setup failed, check ${CONFIG_PATH}`, LogLevel.ERROR, true)
+  );
+  isConfigured = true;
+};
 
 /**
  * Drive server initialization with SSL passphrase
@@ -63,47 +105,15 @@ async function initialize(): Promise<void> {
   passphrase = sslpassphrase.toString();
   // start the gitpayd server
   try {
-    const HTTPS_SERVER = https.createServer(
-      {
-        key: fs.readFileSync(KEY_PATH),
-        passphrase,
-        cert: fs.readFileSync(CERT_PATH),
-        ca: [fs.readFileSync(CA_PATH), fs.readFileSync(ROOT_PATH)],
-      },
-      APP
-    );
-    HTTPS_SERVER.listen(PORT, HOST);
-    // check for lnd node
-    setup().catch(() =>
-      log(`setup failed, check ${CONFIG_PATH}`, LogLevel.ERROR, true)
-    );
-    isConfigured = true;
+    startHttps(passphrase);
     // clear ssl passphrase
     passphrase = null;
     sslpassphrase = null;
   } catch {
-    // set the dev server to run if environment variable is set
-    if (GITPAYD_ENV === GitpaydConfig.DEV) {
-      // check for lnd node
-      if (!isConfigured) {
-        setup().catch(() =>
-          log(`setup failed, check ${CONFIG_PATH}`, LogLevel.ERROR, true)
-        );
-      }
-      const HTTP_SERVER = http.createServer(APP);
-      HTTP_SERVER.listen(DEV_PORT, HOST);
-      log(
-        "warning: gitpayd development server is running",
-        LogLevel.INFO,
-        true
-      );
-    }
-    log(
-      "https is not configured, check ssl certs location or passphrase",
-      LogLevel.ERROR,
-      true
-    );
+    startHttp();
   }
 }
 
-initialize().catch(() => log('gitpayd failed to initialize', LogLevel.ERROR, false));
+initialize().catch(() =>
+  log("gitpayd failed to initialize", LogLevel.ERROR, false)
+);
