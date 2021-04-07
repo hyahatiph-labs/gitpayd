@@ -31,9 +31,9 @@ export default async function log(
   if (isFirstLog && write) {
     await fs.writeFile(LOG_FILE, "");
   }
+  isFirstLog = false;
   LOG_FILTERS.forEach((filter: LogLevel) => {
     if (filter === level) {
-      isFirstLog = false;
       const DATE: string = new Date().toISOString();
       const LOG_STRING: string = `[${level}]\t${DATE} => ${message}`;
       if (write) {
