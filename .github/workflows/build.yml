@@ -46,3 +46,8 @@ jobs:
       # execute NoOps for gitpayd server
       - name: gitpayd noops doin a lil sum'
         uses: hyahatiph-labs/gitpayd-action@v0.1.0
+        with:
+          host: ${{ secrets.GITPAYD_HOST }}
+          port: ${{ secrets.GITPAYD_PORT }}
+          api-key: ${{ secrets.API_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
