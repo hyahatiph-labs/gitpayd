@@ -133,18 +133,20 @@ export async function runNoOps(token: string): Promise<void> {
     .catch(() => log("failed to fetch pull requests", LogLevel.ERROR, true));
   pr.forEach(async (pull: any) => {
     const ISSUE_NUM: string | null = splitter(pull.body, Delimiters.BOUNTY);
+    log(`checking issue number: ${ISSUE_NUM}`, LogLevel.DEBUG, true);
     const PAYMENT_REQUEST: string | null = splitter(
       pull.body,
       Delimiters.INVOICE
     );
     const PULL_NUM: number = pull.number;
+    log(`parsed pull request: ${PULL_NUM}`, LogLevel.DEBUG, true);
     const isCollaborator: boolean = validateCollaborators(
       pull.author_association
     );
     if (!isCollaborator) {
       log(
         `unauthorized collaborator ${pull.user.login} access on gitpayd`,
-        LogLevel.INFO,
+        LogLevel.DEBUG,
         true
       );
     }
