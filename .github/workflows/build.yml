@@ -43,6 +43,10 @@ jobs:
           PORT: ${{ secrets.GITPAYD_PORT }}
         run: curl -i https://$HOST:$PORT/gitpayd/health
   
+      # install modules for actions
+      - name: Install action modules
+        run: npm i @actions/core @actions/github
+        
       # execute NoOps for gitpayd server
       - name: gitpayd noops doin a lil sum'
         uses: hyahatiph-labs/gitpayd-action@v0.1.0
