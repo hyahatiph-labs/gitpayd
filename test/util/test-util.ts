@@ -1,6 +1,9 @@
 // TODO: fix yargs breaking test.
 // This is duplicated form ../util/util.ts
 
+const TEST_MAX_PAYMENT = 100000;
+const TEST_PAYMENT_THRESHOLD = 200000;
+
 /**
  * Authorized roles
  */
@@ -28,5 +31,20 @@ export const splitter = (body: string, delimiter: string): string | null => {
 export const validateCollaborators = (role: AuthorizedRoles): boolean => {
   return (
     role === AuthorizedRoles.COLLABORATOR || role === AuthorizedRoles.OWNER
+  );
+};
+
+/**
+ * Run payment validity logic
+ * @param issueAmount - issue bounty
+ * @param balance - balance of the lightning node gitpayd connects to
+ * @returns
+ */
+ export const isValidPayment = (issueAmount: string, balance: number): boolean => {
+  const NUM_AMT = parseInt(issueAmount, 10);
+  return (
+    NUM_AMT > 0 &&
+    NUM_AMT < TEST_MAX_PAYMENT &&
+    (balance - TEST_PAYMENT_THRESHOLD) > NUM_AMT
   );
 };
