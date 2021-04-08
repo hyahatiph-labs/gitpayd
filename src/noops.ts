@@ -27,8 +27,7 @@ const isValidPayment = (issueAmount: string, balance: number): boolean => {
   return (
     NUM_AMT > 0 &&
     NUM_AMT < MAX_PAYMENT &&
-    balance >= NUM_AMT &&
-    NUM_AMT < PAYMENT_THRESHOLD
+    (balance - PAYMENT_THRESHOLD) > NUM_AMT
   );
 };
 

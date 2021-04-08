@@ -1,4 +1,4 @@
-import { AuthorizedRoles, splitter, validateCollaborators } from './util/test-util';
+import { AuthorizedRoles, isValidPayment, splitter, validateCollaborators } from './util/test-util';
 import { strict as assert } from 'assert';
 
 const BODY: string = "Bounty: 100000";
@@ -25,5 +25,20 @@ describe('Test helper function for author validation', () => {
   it('should return true for collaborator', () => {
     const check = validateCollaborators(AuthorizedRoles.COLLABORATOR);
     assert.strictEqual(check, true);
+  });
+});
+
+describe('Test helper function for payment validation', () => {
+  it('should return true valid payment', () => {
+    const check = isValidPayment("10000", 400000);
+    assert.strictEqual(check, true);
+  });
+  it('should return false if above maximum allowable payment', () => {
+    const check = isValidPayment("100001", 400000);
+    assert.strictEqual(check, false);
+  });
+  it('should return false if it breaks threshold', () => {
+    const check = isValidPayment("10000", 209000);
+    assert.strictEqual(check, false);
   });
 });
