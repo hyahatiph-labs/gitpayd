@@ -116,9 +116,12 @@ prompt: sslpassphrase:
 
 ```json 
 {
- "macaroonPath": "/home/USER/.lnd/data/chain/bitcoin/mainnet/admin.macaroon",
- "lndHost": "https://localhost:8080",
- "internalApiKey": "xxx"
+  "macaroonPath": "/home/USER/path/to/macaroon",
+  "lndHost": "localhost:10009",
+  "internalApiKey": "xxx",
+  "tlsPath": "/home/USER/path/to/tls.cert",
+  "rpcProtoPath": "/home/USER/path/to/rpc.proto",
+  "routerProtoPath": "/home/USER/path/to/routerrpc/rpc.proto"
 }
 ```
 
