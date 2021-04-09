@@ -1,5 +1,18 @@
 # gitpayd
 
+<img src="./circ-ci-cid-econ.jpg">
+
+## Proposal
+
+1. End user opens issue (generates invoice) and pays amount that becomes a bounty.
+2. Developer picks up issue on first come first serve basis
+   * Pull request is opened to resolve the issue
+   * aggressive build, testing and security analysis completes
+   * PR is merged and % of bounty is paid to the developer
+3. Payment is sent for production deployment to bots deploying and / maintaining infrastructure
+   * end user gets feedback
+   * issue is resolved
+
 [![Build](https://github.com/reemuru/gitpayd/actions/workflows/build.yml/badge.svg)](https://github.com/reemuru/gitpayd/actions/workflows/build.yml)
 
 [![gitpayd](https://snyk.io/advisor/npm-package/gitpayd/badge.svg)](https://snyk.io/advisor/npm-package/gitpayd)
@@ -47,7 +60,7 @@ gitpayd/
 
 ## Building
 
-1. Run `npm i` to install modules
+1. `cd gitpayd/` and run `npm i` to install modules
 2. Run `npm run clean && npm run build`
 3. Output is in `/dist`
 
@@ -91,7 +104,9 @@ Options:
 <br/>
 
 ```bash
-prompt: sslpassphrase:  
+prompt: Enter SSL passphrase or press Enter for DEV mode 
+        Hint: for DEV mode export GITPAYD_ENV=DEV
+:  
 [ERROR] 2021-04-03T00:30:49.164Z => https is not configured, check ssl certs location or passphrase
 [user@server gitpayd]$ 
 ```
@@ -116,9 +131,12 @@ prompt: sslpassphrase:
 
 ```json 
 {
- "macaroonPath": "/home/USER/.lnd/data/chain/bitcoin/mainnet/admin.macaroon",
- "lndHost": "https://localhost:8080",
- "internalApiKey": "xxx"
+  "macaroonPath": "/home/USER/path/to/macaroon",
+  "lndHost": "localhost:10009",
+  "internalApiKey": "xxx",
+  "tlsPath": "/home/USER/path/to/tls.cert",
+  "rpcProtoPath": "/home/USER/path/to/rpc.proto",
+  "routerProtoPath": "/home/USER/path/to/routerrpc/rpc.proto"
 }
 ```
 
