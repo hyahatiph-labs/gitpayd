@@ -61,9 +61,10 @@ const startHttp = (): void => {
   if (GITPAYD_ENV === GitpaydConfig.DEV) {
     // check for lnd node
     if (!isConfigured) {
-      setup().catch(() =>
+      setup().catch((e) => {
+        log(`${e}`, LogLevel.DEBUG, true)
         log(`setup failed, check ${CONFIG_PATH}`, LogLevel.ERROR, true)
-      );
+      });
     }
     const HTTP_SERVER = http.createServer(APP);
     HTTP_SERVER.listen(DEV_PORT, HOST);
@@ -116,7 +117,7 @@ async function initialize(): Promise<void> {
     await logStartup(PORT, GitpaydMode.SECURE, START_TIME);
   } catch {
     startHttp();
-    if(GITPAYD_ENV !== undefined) {
+    if(GITPAYD_ENV) {
       await logStartup(DEV_PORT, GitpaydMode.UNSECURE, START_TIME);
     }
   }
