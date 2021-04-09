@@ -1,5 +1,18 @@
 # gitpayd
 
+<img src="./circ-ci-cid-econ.jpg">
+
+## Proposal
+
+1. End user opens issue (generates invoice) and pays amount that becomes a bounty.
+2. Developer picks up issue on first come first serve basis
+   * Pull request is opened to resolve the issue
+   * aggressive build, testing and security analysis completes
+   * PR is merged and % of bounty is paid to the developer
+3. Payment is sent for production deployment to bots deploying and / maintaining infrastructure
+   * end user gets feedback
+   * issue is resolved
+
 [![Build](https://github.com/reemuru/gitpayd/actions/workflows/build.yml/badge.svg)](https://github.com/reemuru/gitpayd/actions/workflows/build.yml)
 
 [![gitpayd](https://snyk.io/advisor/npm-package/gitpayd/badge.svg)](https://snyk.io/advisor/npm-package/gitpayd)
