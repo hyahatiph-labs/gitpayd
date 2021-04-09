@@ -13,6 +13,9 @@ export interface ConfigFile {
   macaroonPath: string;
   lndHost: string;
   internalApiKey: string;
+  tlsPath: string;
+  rpcProtoPath: string;
+  routerProtoPath: string;
 }
 
 /**
@@ -175,12 +178,18 @@ export const LOG_FILTERS: string[] | null = IS_MULTI_LOG_LEVEL
 // some defaults for linux
 export const CONFIG_PATH: string = `${os.homedir()}/.gitpayd/config.json`;
 export const DEFAULT_MACAROON: string = `${os.homedir()}/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`;
-export const DEFAULT_LND_HOST: string = "https://localhost:8080";
+export const DEFAULT_LND_HOST: string = "localhost:10009";
+export const DEFAULT_TLS_PATH: string = `${os.homedir()}/.lnd/tls.cert`;
+export const DEFAULT_RPC_PROTO_PATH: string = `${os.homedir()}/lnd/lnrpc/rpc.proto`;
+export const DEFAULT_ROUTER_PROTO_PATH: string = `${os.homedir()}/lnd/lnrpc/routerrpc/rpc.proto`;
 export const INDENT = 2;
 export const DEFAULT_CONFIG: ConfigFile = {
   macaroonPath: DEFAULT_MACAROON,
   lndHost: DEFAULT_LND_HOST,
   internalApiKey: "",
+  tlsPath: DEFAULT_TLS_PATH,
+  rpcProtoPath: DEFAULT_RPC_PROTO_PATH,
+  routerProtoPath: DEFAULT_ROUTER_PROTO_PATH
 };
 
 /**
@@ -200,4 +209,47 @@ export enum PaymentAction {
  export enum GitpaydMode {
   SECURE = "secure",
   UNSECURE = "un-secure"
+}
+
+/**
+ * Interface for grpc errors
+ */
+export interface Error {
+  message: string
+}
+
+/**
+ * Interface for node info
+ */
+export interface NodeInfo {
+  version: string
+}
+
+/**
+ * Interface for amount
+ */
+interface Amount {
+  sat: number;
+  msat: number;
+}
+
+/**
+ * Interface for balance
+ */
+export interface ChannelBalance {
+  local_balance: Amount;
+}
+
+/**
+ * Interface for decoded invoice
+ */
+ export interface PaymentRequest {
+  num_satoshis: number
+}
+
+/**
+ * Interface for sending paymen
+ */
+ export interface SendPayment {
+  payment_preimage: string
 }

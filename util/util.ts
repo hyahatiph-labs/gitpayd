@@ -1,8 +1,14 @@
-import { GitpaydMode, PaymentAction } from "../src/config";
-import axios, { AxiosResponse } from "axios";
-import { agent, getLndHost } from "../src/setup";
+import { getLrpc, getRouter } from "../src/setup";
+import {
+  ChannelBalance,
+  GitpaydMode,
+  NodeInfo,
+  PaymentAction,
+  PaymentRequest,
+  SendPayment,
+} from "../src/config";
 import log, { LogLevel } from "./logging";
-import os from "os";
+import os from 'os';
 
 /**
  * Authorized roles
@@ -54,29 +60,45 @@ export const validateCollaborators = (role: AuthorizedRoles): boolean => {
 export function handlePaymentAction(
   paymentRequest: string | null,
   action: PaymentAction
-): Promise<AxiosResponse<any>> {
+): Promise<any> {
+  const REQUEST = {
+    pay_req: paymentRequest,
+  };
   switch (action) {
     // case for decoding payment
     case PaymentAction.DECODE:
-      return axios.get(`${getLndHost()}/v1/payreq/${paymentRequest}`, {
-        httpsAgent: agent,
+      return getLrpc().decodePayReq(REQUEST, (e: Error, r: PaymentRequest) => {
+        if (e) {
+          log(`${e}`, LogLevel.ERROR, true);
+        }
+        return r.num_satoshis;
       });
     // case for returning channel balance
     case PaymentAction.RETURN_BALANCE:
-      return axios.get(`${getLndHost()}/v1/balance/channels`, {
-        httpsAgent: agent,
+      return getLrpc().channelBalance({}, (e: Error, r: ChannelBalance) => {
+        if (e) {
+          log(`${e}`, LogLevel.ERROR, true);
+        }
+        return r.local_balance.sat;
       });
     // case for sending payment
     case PaymentAction.PAY:
-      return axios.post(
-        `${getLndHost()}/v1/channels/transactions`,
-        { payment_request: paymentRequest },
-        { httpsAgent: agent }
-      );
+      return getRouter().sendPaymentV2({}, (e: Error, r: SendPayment) => {
+        if (e) {
+          log(`${e}`, LogLevel.ERROR, true);
+        }
+        return r.payment_preimage;
+      });
     default:
-      return axios.get(`${getLndHost()}/v1/getinfo`, { httpsAgent: agent });
+      return getLrpc().getInfo({}, (e: Error, r: NodeInfo) => {
+        if (e) {
+          log(`${e}`, LogLevel.ERROR, true);
+        }
+        return r.version;
+      });
   }
 }
+
 
 /**
  * Log the port of server mode
@@ -84,7 +106,7 @@ export function handlePaymentAction(
  * @param mode - mode server started on
  * @param startTime - server start time
  */
-export async function logStartup(
+ export async function logStartup(
   port: number,
   mode: GitpaydMode,
   startTime: number
