@@ -10,7 +10,7 @@ import {
   PAYMENT_THRESHOLD,
 } from "./config";
 import log, { LogLevel } from "../util/logging";
-import { handlePaymentAction } from "../util/util";
+import { handlePaymentAction} from "../util/util";
 let githubToken: string;
 
 // set accept in axios header
@@ -39,7 +39,7 @@ async function sendPayment(paymentRequest: string): Promise<void> {
   // send the payment
   let preimage: string;
   await handlePaymentAction(paymentRequest, PaymentAction.PAY).then(
-    (res) => (preimage = res.data.payment_preimage)
+    (res: string) => preimage = res
   );
   log(`payment pre-image: ${preimage}`, LogLevel.INFO, false);
 }
@@ -115,11 +115,11 @@ async function parseAmountDue(
   paymentRequest: string,
   pullNum: number
 ): Promise<void> {
-  let decodedAmt: string;
+  let decodedAmt: string | number;
   let balance: number;
   // decode the payment request and make sure it matches bounty
   await handlePaymentAction(paymentRequest, PaymentAction.DECODE).then(
-    (res) => (decodedAmt = res.data.num_satoshis)
+    (res: number) => (decodedAmt = res)
   );
   log(`payment amount decoded: ${decodedAmt} sats`, LogLevel.INFO, false);
   const AMT_MATCHES_BOUNTY: boolean = decodedAmt === issueAmount;
@@ -127,11 +127,11 @@ async function parseAmountDue(
     log("decoded amount does not match bounty!", LogLevel.ERROR, true);
   } else {
     await handlePaymentAction(null, PaymentAction.RETURN_BALANCE).then(
-      (res) => (balance = res.data.local_balance.sat)
+      (res: number) => (balance = res)
     );
     log(`gitpayd channel balance is: ${balance} sats`, LogLevel.INFO, true);
     // ensure the node has a high enough local balance to payout
-    processPayments(issueAmount, balance, pullNum, paymentRequest);
+    // processPayments(issueAmount, balance, pullNum, paymentRequest);
   }
 }
 

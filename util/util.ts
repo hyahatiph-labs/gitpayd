@@ -1,6 +1,12 @@
-import { GitpaydMode, PaymentAction } from "../src/config";
-import axios, { AxiosResponse } from "axios";
-import { agent, getLndHost } from "../src/setup";
+import { getLrpc, getRouter } from "../src/setup";
+import {
+  ChannelBalance,
+  GitpaydMode,
+  NodeInfo,
+  PaymentAction,
+  PaymentRequest,
+  SendPayment,
+} from "../src/config";
 import log, { LogLevel } from "./logging";
 import os from "os";
 
@@ -30,7 +36,7 @@ export enum Delimiters {
  */
 export const splitter = (body: string, delimiter: string): string | null => {
   const PRE_PARSE = body.split(delimiter);
-  return PRE_PARSE[1] !== undefined ? PRE_PARSE[1].split("\n")[0].trim() : null;
+  return PRE_PARSE[1] ? PRE_PARSE[1].split("\n")[0].trim() : null;
 };
 
 /**
@@ -54,27 +60,42 @@ export const validateCollaborators = (role: AuthorizedRoles): boolean => {
 export function handlePaymentAction(
   paymentRequest: string | null,
   action: PaymentAction
-): Promise<AxiosResponse<any>> {
+): Promise<any> {
+  const REQUEST = {
+    pay_req: paymentRequest,
+  };
   switch (action) {
     // case for decoding payment
     case PaymentAction.DECODE:
-      return axios.get(`${getLndHost()}/v1/payreq/${paymentRequest}`, {
-        httpsAgent: agent,
+      return getLrpc().decodePayReq(REQUEST, (e: Error, r: PaymentRequest) => {
+        if (e) {
+          log(`${e}`, LogLevel.ERROR, true);
+        }
+        return r.num_satoshis;
       });
     // case for returning channel balance
     case PaymentAction.RETURN_BALANCE:
-      return axios.get(`${getLndHost()}/v1/balance/channels`, {
-        httpsAgent: agent,
+      return getLrpc().channelBalance({}, (e: Error, r: ChannelBalance) => {
+        if (e) {
+          log(`${e}`, LogLevel.ERROR, true);
+        }
+        return r.local_balance.sat;
       });
     // case for sending payment
     case PaymentAction.PAY:
-      return axios.post(
-        `${getLndHost()}/v1/channels/transactions`,
-        { payment_request: paymentRequest },
-        { httpsAgent: agent }
-      );
+      const CALL = getRouter().sendPaymentV2(REQUEST);
+      CALL.on("data", (r: SendPayment) => {
+        // A response was received from the server.
+        return r.payment_preimage
+      });
+      return null;
     default:
-      return axios.get(`${getLndHost()}/v1/getinfo`, { httpsAgent: agent });
+      return getLrpc().getInfo({}, (e: Error, r: NodeInfo) => {
+        if (e) {
+          log(`${e}`, LogLevel.ERROR, true);
+        }
+        return r.version;
+      });
   }
 }
 
