@@ -130,12 +130,12 @@ export const CERT_PATH: string = ARGS["cert-path"];
 export const CA_PATH: string = ARGS["ca-path"];
 export const ROOT_PATH: string = ARGS["root-path"];
 export const PORT: number =
-  ARGS.port === undefined ? GitpaydConfig.DEFAULT_PORT : ARGS.port;
+  !ARGS.port ? GitpaydConfig.DEFAULT_PORT : ARGS.port;
 export const HOST: string =
-  ARGS.host === undefined ? GitpaydConfig.DEFAULT_HOST : ARGS.host;
+  !ARGS.host ? GitpaydConfig.DEFAULT_HOST : ARGS.host;
 export const GITPAYD_ENV: string = process.env.GITPAYD_ENV;
 export const DEV_PORT: number =
-  ARGS["dev-port"] === undefined
+  !ARGS["dev-port"]
     ? GitpaydConfig.DEFAULT_DEV_PORT
     : ARGS["dev-port"];
 export const GITPAYD_OWNER: string = ARGS.owner;
@@ -147,22 +147,22 @@ const CUSTOM_PAYMENT_THRESHOLD: string = ARGS["payment-threshold"];
 const DEFAULT_MAX_PAYMENT: number = 100000;
 const DEFAULT_PAYMENT_THRESHOLD: number = 250000;
 export const MAX_PAYMENT: number | string =
-  CUSTOM_MAX_PAYMENT === undefined
+  !CUSTOM_MAX_PAYMENT
     ? DEFAULT_MAX_PAYMENT
     : parseInt(CUSTOM_MAX_PAYMENT, 10);
 export const PAYMENT_THRESHOLD: number =
-  CUSTOM_PAYMENT_THRESHOLD === undefined
+  !CUSTOM_PAYMENT_THRESHOLD
     ? DEFAULT_PAYMENT_THRESHOLD
     : parseInt(CUSTOM_PAYMENT_THRESHOLD, 10);
 
 // global log level
 const LOG_LEVEL_ARG: string = ARGS["log-level"];
 const IS_MULTI_LOG_LEVEL: boolean =
-  LOG_LEVEL_ARG !== undefined &&
+  LOG_LEVEL_ARG &&
   LOG_LEVEL_ARG.length > 0 &&
   LOG_LEVEL_ARG.indexOf(",") > 0;
 const singleLogLevel: string[] = [];
-if (!IS_MULTI_LOG_LEVEL && LOG_LEVEL_ARG !== undefined) {
+if (!IS_MULTI_LOG_LEVEL && LOG_LEVEL_ARG) {
   singleLogLevel.push(LOG_LEVEL_ARG);
 } else {
   // default log level

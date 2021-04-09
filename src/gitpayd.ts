@@ -117,7 +117,7 @@ async function initialize(): Promise<void> {
     await logStartup(PORT, GitpaydMode.SECURE, START_TIME);
   } catch {
     startHttp();
-    if(GITPAYD_ENV !== undefined) {
+    if(GITPAYD_ENV) {
       await logStartup(DEV_PORT, GitpaydMode.UNSECURE, START_TIME);
     }
   }

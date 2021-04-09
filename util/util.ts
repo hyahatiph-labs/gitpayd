@@ -8,7 +8,7 @@ import {
   SendPayment,
 } from "../src/config";
 import log, { LogLevel } from "./logging";
-import os from 'os';
+import os from "os";
 
 /**
  * Authorized roles
@@ -36,7 +36,7 @@ export enum Delimiters {
  */
 export const splitter = (body: string, delimiter: string): string | null => {
   const PRE_PARSE = body.split(delimiter);
-  return PRE_PARSE[1] !== undefined ? PRE_PARSE[1].split("\n")[0].trim() : null;
+  return PRE_PARSE[1] ? PRE_PARSE[1].split("\n")[0].trim() : null;
 };
 
 /**
@@ -83,12 +83,12 @@ export function handlePaymentAction(
       });
     // case for sending payment
     case PaymentAction.PAY:
-      return getRouter().sendPaymentV2({}, (e: Error, r: SendPayment) => {
-        if (e) {
-          log(`${e}`, LogLevel.ERROR, true);
-        }
-        return r.payment_preimage;
+      const CALL = getRouter().sendPaymentV2(REQUEST);
+      CALL.on("data", (r: SendPayment) => {
+        // A response was received from the server.
+        return r.payment_preimage
       });
+      return null;
     default:
       return getLrpc().getInfo({}, (e: Error, r: NodeInfo) => {
         if (e) {
@@ -99,14 +99,13 @@ export function handlePaymentAction(
   }
 }
 
-
 /**
  * Log the port of server mode
  * @param port - port server started on
  * @param mode - mode server started on
  * @param startTime - server start time
  */
- export async function logStartup(
+export async function logStartup(
   port: number,
   mode: GitpaydMode,
   startTime: number

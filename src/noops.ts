@@ -131,7 +131,7 @@ async function parseAmountDue(
     );
     log(`gitpayd channel balance is: ${balance} sats`, LogLevel.INFO, true);
     // ensure the node has a high enough local balance to payout
-    //processPayments(issueAmount, balance, pullNum, paymentRequest);
+    // processPayments(issueAmount, balance, pullNum, paymentRequest);
   }
 }
 
