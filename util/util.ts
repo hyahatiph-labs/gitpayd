@@ -71,6 +71,7 @@ export function handlePaymentAction(
         if (e) {
           log(`${e}`, LogLevel.ERROR, true);
         }
+        log(`lnrpc decode response ${r}`, LogLevel.DEBUG, false);
         return r.num_satoshis;
       });
     // case for returning channel balance
