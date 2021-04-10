@@ -22,12 +22,11 @@ axios.defaults.headers.get.Accept = "application/vnd.github.v3+json";
  * @param balance - balance of the lightning node gitpayd connects to
  * @returns
  */
-const isValidPayment = (issueAmount: string, balance: number): boolean => {
-  const NUM_AMT = parseInt(issueAmount, 10);
+const isValidPayment = (issueAmount: number, balance: number): boolean => {
   return (
-    NUM_AMT > 0 &&
-    NUM_AMT < MAX_PAYMENT &&
-    (balance - PAYMENT_THRESHOLD) > NUM_AMT
+    issueAmount > 0 &&
+    issueAmount < MAX_PAYMENT &&
+    (balance - PAYMENT_THRESHOLD) > issueAmount
   );
 };
 
@@ -82,7 +81,7 @@ async function processIssues(
  * @param paymentRequest - lightning invoice
  */
 async function processPayments(
-  issueAmount: string,
+  issueAmount: number,
   balance: number,
   pullNum: number,
   paymentRequest: string
@@ -115,14 +114,15 @@ async function parseAmountDue(
   paymentRequest: string,
   pullNum: number
 ): Promise<void> {
-  let decodedAmt: string | number;
+  let decodedAmt: number;
   let balance: number;
+  const NUM_AMT = parseInt(issueAmount, 10);
   // decode the payment request and make sure it matches bounty
   await handlePaymentAction(paymentRequest, PaymentAction.DECODE).then(
     (res: number) => (decodedAmt = res)
   );
   log(`payment amount decoded: ${decodedAmt} sats`, LogLevel.INFO, false);
-  const AMT_MATCHES_BOUNTY: boolean = decodedAmt === issueAmount;
+  const AMT_MATCHES_BOUNTY: boolean = decodedAmt === NUM_AMT;
   if (!AMT_MATCHES_BOUNTY) {
     log("decoded amount does not match bounty!", LogLevel.ERROR, true);
   } else {
@@ -131,7 +131,7 @@ async function parseAmountDue(
     );
     log(`gitpayd channel balance is: ${balance} sats`, LogLevel.INFO, true);
     // ensure the node has a high enough local balance to payout
-    processPayments(issueAmount, balance, pullNum, paymentRequest);
+    processPayments(NUM_AMT, balance, pullNum, paymentRequest);
   }
 }
 
