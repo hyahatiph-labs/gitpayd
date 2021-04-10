@@ -44,6 +44,7 @@ jobs:
         run: curl -i https://$HOST:$PORT/gitpayd/health
 
        # execute NoOps for gitpayd server
+       # using -k flag here for testing but better not to
       - name: gitpayd noops doin a lil sum'
         env:
           HOST: ${{ secrets.GITPAYD_HOST }}
@@ -51,4 +52,4 @@ jobs:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
           API_KEY: ${{ secrets.API_KEY }}
         run: >
-          curl -i -X POST https://$HOST:$PORT/gitpayd/noops -H "authorization: $API_KEY" -H "github-token: $TOKEN"
+          curl -ik -X POST https://$HOST:$PORT/gitpayd/noops -H "authorization: $API_KEY" -H "github-token: $TOKEN"
