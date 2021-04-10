@@ -248,7 +248,7 @@ export interface ChannelBalance {
 }
 
 /**
- * Interface for sending paymen
+ * Interface for sending payment
  */
  export interface SendPayment {
   payment_preimage: string
