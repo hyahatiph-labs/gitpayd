@@ -136,7 +136,7 @@ prompt: Enter SSL passphrase or press Enter for DEV mode
   "internalApiKey": "xxx",
   "tlsPath": "/home/USER/path/to/tls.cert",
   "rpcProtoPath": "/home/USER/path/to/rpc.proto",
-  "routerProtoPath": "/home/USER/path/to/routerrpc/rpc.proto"
+  "routerProtoPath": "/home/USER/path/to/routerrpc/router.proto"
 }
 ```
 
