@@ -67,16 +67,16 @@ export function handlePaymentAction(
   switch (action) {
     // case for decoding payment
     case PaymentAction.DECODE:
-      return getLrpc().decodePayReq(REQUEST, (e: Error, r: PaymentRequest) => {
+      return getLrpc().decodePayReq(REQUEST, (e: Error, r: PaymentRequest): number => {
         if (e) {
           log(`${e}`, LogLevel.ERROR, true);
         }
-        log(`lnrpc decode response ${r}`, LogLevel.DEBUG, false);
+        log(`lnrpc decode response ${r.num_satoshis}`, LogLevel.DEBUG, false);
         return r.num_satoshis;
       });
     // case for returning channel balance
     case PaymentAction.RETURN_BALANCE:
-      return getLrpc().channelBalance({}, (e: Error, r: ChannelBalance) => {
+      return getLrpc().channelBalance({}, (e: Error, r: ChannelBalance): number => {
         if (e) {
           log(`${e}`, LogLevel.ERROR, true);
         }
