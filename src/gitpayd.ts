@@ -45,7 +45,6 @@ APP.post("/gitpayd/noops", (req, res) => {
   } else {
     runNoOps(GITHUB_TOKEN).catch(() => {
       log(`noOps failed to execute`, LogLevel.ERROR, true);
-      res.status(GitpaydConfig.SERVER_FAILURE).json({ msg: "NoOps failed" });
     });
     res.status(GitpaydConfig.HTTP_OK).json({ msg: `NoOps Completed` });
     log(`${req.ip} connected to gitpayd/noops`, LogLevel.INFO, true);
