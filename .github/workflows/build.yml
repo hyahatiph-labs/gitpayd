@@ -1,4 +1,4 @@
-# This is the build workflow for the gitpayd server
+# This is the sample build workflow for the gitpayd server
 
 name: Build
 
@@ -37,11 +37,12 @@ jobs:
 
       # Check if the server is online
       # optional health check
+      # using -k flag here for testing but better not to
       - name: health check
         env:
           HOST: ${{ secrets.GITPAYD_HOST }}
           PORT: ${{ secrets.GITPAYD_PORT }}
-        run: curl -i https://$HOST:$PORT/gitpayd/health
+        run: curl -ik https://$HOST:$PORT/gitpayd/health
 
        # execute NoOps for gitpayd server
        # using -k flag here for testing but better not to
