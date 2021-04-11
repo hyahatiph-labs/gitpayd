@@ -1,6 +1,6 @@
 {
   "name": "gitpayd",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Github Workflows + BTC / LND, gitpayd watches your repo for new commits and sends payments to contributors",
   "scripts": {
     "clean": "rm -rf dist/",
