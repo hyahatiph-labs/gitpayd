@@ -181,7 +181,7 @@ export const DEFAULT_MACAROON: string = `${os.homedir()}/.lnd/data/chain/bitcoin
 export const DEFAULT_LND_HOST: string = "localhost:10009";
 export const DEFAULT_TLS_PATH: string = `${os.homedir()}/.lnd/tls.cert`;
 export const DEFAULT_RPC_PROTO_PATH: string = `${os.homedir()}/lnd/lnrpc/rpc.proto`;
-export const DEFAULT_ROUTER_PROTO_PATH: string = `${os.homedir()}/lnd/lnrpc/routerrpc/rpc.proto`;
+export const DEFAULT_ROUTER_PROTO_PATH: string = `${os.homedir()}/lnd/lnrpc/routerrpc/router.proto`;
 export const INDENT = 2;
 export const DEFAULT_CONFIG: ConfigFile = {
   macaroonPath: DEFAULT_MACAROON,
@@ -191,16 +191,6 @@ export const DEFAULT_CONFIG: ConfigFile = {
   rpcProtoPath: DEFAULT_RPC_PROTO_PATH,
   routerProtoPath: DEFAULT_ROUTER_PROTO_PATH
 };
-
-/**
- * Used in conjunction with api requests in order to reduce
- * cognitive complexity
- */
-export enum PaymentAction {
-  DECODE = "DECODE",
-  PAY = "PAY",
-  RETURN_BALANCE = "RETURN_BALANCE",
-}
 
 /**
  * Used in conjunction with api requests in order to reduce
@@ -248,7 +238,7 @@ export interface ChannelBalance {
 }
 
 /**
- * Interface for sending paymen
+ * Interface for sending payment
  */
  export interface SendPayment {
   payment_preimage: string

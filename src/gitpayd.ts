@@ -37,6 +37,7 @@ APP.get("/gitpayd/health", (req, res) => {
 
 // NoOps for gitpayd
 APP.post("/gitpayd/noops", (req, res) => {
+  log(`${req.ip} connected to gitpayd/noops`, LogLevel.INFO, true);
   const AUTH = req.headers.authorization;
   const GITHUB_TOKEN = req.header("github-token");
   if (AUTH !== getInternalApiKey()) {
@@ -44,11 +45,9 @@ APP.post("/gitpayd/noops", (req, res) => {
     res.status(GitpaydConfig.UNAUTHORIZED).json({ msg: `bad creds: ${AUTH}` });
   } else {
     runNoOps(GITHUB_TOKEN).catch(() => {
-      log(`noOps failed to execute`, LogLevel.ERROR, true);
-      res.status(GitpaydConfig.SERVER_FAILURE).json({ msg: "NoOps failed" });
+      log(`An error occurred during NoOps`, LogLevel.ERROR, true);
     });
     res.status(GitpaydConfig.HTTP_OK).json({ msg: `NoOps Completed` });
-    log(`${req.ip} connected to gitpayd/noops`, LogLevel.INFO, true);
   }
 });
 

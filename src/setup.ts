@@ -63,7 +63,7 @@ export const getLrpc = (): any => {
 
 /**
  * Accessor for the grpc router
- * @returns - grpc routerimplementation
+ * @returns - grpc router implementation
  */
 export const getRouter = (): any => {
   return router;
@@ -79,7 +79,7 @@ async function testLnd(): Promise<void> {
     if (e) {
       log(`${e}`, LogLevel.ERROR, true);
     }
-    log(`${r.version}`, LogLevel.DEBUG, true);
+    log(`${r.version.split("commit=")[0]}`, LogLevel.DEBUG, true);
   });
 }
 
