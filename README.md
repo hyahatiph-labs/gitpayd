@@ -1,7 +1,6 @@
 # gitpayd
 
 [![Build](https://github.com/reemuru/gitpayd/actions/workflows/build.yml/badge.svg)](https://github.com/reemuru/gitpayd/actions/workflows/build.yml)
-
 [![gitpayd](https://snyk.io/advisor/npm-package/gitpayd/badge.svg)](https://snyk.io/advisor/npm-package/gitpayd)
 
 Github Workflows + [BTC](https://bitcoin.org/en/bitcoin-core) / [LND](https://github.com/lightningnetwork/lnd), gitpayd watches your repo for new commits and sends payments to contributors
