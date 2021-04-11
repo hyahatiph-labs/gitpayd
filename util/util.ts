@@ -1,12 +1,4 @@
-import { getLrpc, getRouter } from "../src/setup";
-import {
-  ChannelBalance,
-  GitpaydMode,
-  NodeInfo,
-  PaymentAction,
-  PaymentRequest,
-  SendPayment,
-} from "../src/config";
+import { GitpaydMode } from "../src/config";
 import log, { LogLevel } from "./logging";
 import os from "os";
 
@@ -51,53 +43,6 @@ export const validateCollaborators = (role: AuthorizedRoles): boolean => {
     role === AuthorizedRoles.MEMBER
   );
 };
-
-/**
- * Re-usable function for doing LND Stuff
- * @param {string} paymentRequest - invoice sent to gitpayd
- * @param {PaymentAction} action - decode, get the channel balance, or process payments
- */
-export function handlePaymentAction(
-  paymentRequest: string | null,
-  action: PaymentAction
-): Promise<any> {
-  const REQUEST = {
-    pay_req: paymentRequest,
-  };
-  switch (action) {
-    // case for decoding payment
-    case PaymentAction.DECODE:
-      return getLrpc().decodePayReq(REQUEST, (e: Error, r: PaymentRequest) => {
-        if (e) {
-          log(`${e}`, LogLevel.ERROR, true);
-        }
-        return r.num_satoshis;
-      });
-    // case for returning channel balance
-    case PaymentAction.RETURN_BALANCE:
-      return getLrpc().channelBalance({}, (e: Error, r: ChannelBalance) => {
-        if (e) {
-          log(`${e}`, LogLevel.ERROR, true);
-        }
-        return r.local_balance.sat;
-      });
-    // case for sending payment
-    case PaymentAction.PAY:
-      const CALL = getRouter().sendPaymentV2(REQUEST);
-      CALL.on("data", (r: SendPayment) => {
-        // A response was received from the server.
-        return r.payment_preimage
-      });
-      return null;
-    default:
-      return getLrpc().getInfo({}, (e: Error, r: NodeInfo) => {
-        if (e) {
-          log(`${e}`, LogLevel.ERROR, true);
-        }
-        return r.version;
-      });
-  }
-}
 
 /**
  * Log the port of server mode
