@@ -31,6 +31,7 @@ export enum GitpaydConfig {
   HTTP_OK = 200,
   UNAUTHORIZED = 403,
   SERVER_FAILURE = 500,
+  PAYMENT_TIMEOUT = 9
 }
 
 /**
