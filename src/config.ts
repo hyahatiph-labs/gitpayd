@@ -196,16 +196,6 @@ export const DEFAULT_CONFIG: ConfigFile = {
  * Used in conjunction with api requests in order to reduce
  * cognitive complexity
  */
-export enum PaymentAction {
-  DECODE = "DECODE",
-  PAY = "PAY",
-  RETURN_BALANCE = "RETURN_BALANCE",
-}
-
-/**
- * Used in conjunction with api requests in order to reduce
- * cognitive complexity
- */
  export enum GitpaydMode {
   SECURE = "secure",
   UNSECURE = "un-secure"

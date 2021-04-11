@@ -2,15 +2,17 @@ import axios from "axios";
 import { Delimiters, splitter, validateCollaborators } from "../util/util";
 import {
   API,
+  ChannelBalance,
   GITPAYD_OWNER,
   GITPAYD_REPO,
   MAX_PAYMENT,
   MERGE_BODY,
-  PaymentAction,
+  PaymentRequest,
   PAYMENT_THRESHOLD,
+  SendPayment,
 } from "./config";
 import log, { LogLevel } from "../util/logging";
-import { handlePaymentAction} from "../util/util";
+import { getLrpc, getRouter } from "./setup";
 let githubToken: string;
 
 // set accept in axios header
@@ -26,7 +28,7 @@ const isValidPayment = (issueAmount: number, balance: number): boolean => {
   return (
     issueAmount > 0 &&
     issueAmount < MAX_PAYMENT &&
-    (balance - PAYMENT_THRESHOLD) > issueAmount
+    balance - PAYMENT_THRESHOLD > issueAmount
   );
 };
 
@@ -34,14 +36,15 @@ const isValidPayment = (issueAmount: number, balance: number): boolean => {
  * Make the API call to LND for processing payments
  * @param {string} paymentRequest - lnd invoice
  */
-async function sendPayment(paymentRequest: string): Promise<void> {
+const sendPayment = (paymentRequest: string): void => {
   // send the payment
-  let preimage: string;
-  await handlePaymentAction(paymentRequest, PaymentAction.PAY).then(
-    (res: string) => preimage = res
-  );
-  log(`payment pre-image: ${preimage}`, LogLevel.INFO, false);
-}
+  const REQUEST = { pay_req: paymentRequest }
+  const CALL = getRouter().sendPaymentV2(REQUEST);
+  CALL.on("data", (r: SendPayment) => {
+    // A response was received from the server.
+    log(`payment pre-image: ${r.payment_preimage}`, LogLevel.INFO, false);
+  });
+};
 
 /**
  * Process issue number and bounty amount from pull request
@@ -67,9 +70,7 @@ async function processIssues(
       LogLevel.INFO,
       true
     );
-    parseAmountDue(AMT, paymentRequest, pullNum).catch(() =>
-      log("failed to parse amount", LogLevel.ERROR, true)
-    );
+    parseAmountDue(AMT, paymentRequest, pullNum);
   }
 }
 
@@ -109,31 +110,36 @@ async function processPayments(
  * @param {string} paymentRequest - lnd invoice
  * @param {string} pullNum - pull request number
  */
-async function parseAmountDue(
+const parseAmountDue = (
   issueAmount: string,
   paymentRequest: string,
   pullNum: number
-): Promise<void> {
-  let decodedAmt: number;
-  let balance: number;
-  const NUM_AMT = parseInt(issueAmount, 10);
+): void => {
+  const NUM_AMT: number = parseInt(issueAmount, 10);
+  const REQUEST: object = { pay_req: paymentRequest };
   // decode the payment request and make sure it matches bounty
-  await handlePaymentAction(paymentRequest, PaymentAction.DECODE).then(
-    (res: number) => (decodedAmt = res)
-  );
-  log(`payment amount decoded: ${decodedAmt} sats`, LogLevel.INFO, false);
-  const AMT_MATCHES_BOUNTY: boolean = decodedAmt === NUM_AMT;
-  if (!AMT_MATCHES_BOUNTY) {
-    log("decoded amount does not match bounty!", LogLevel.ERROR, true);
-  } else {
-    await handlePaymentAction(null, PaymentAction.RETURN_BALANCE).then(
-      (res: number) => (balance = res)
-    );
-    log(`gitpayd channel balance is: ${balance} sats`, LogLevel.INFO, true);
-    // ensure the node has a high enough local balance to payout
-    processPayments(NUM_AMT, balance, pullNum, paymentRequest);
-  }
-}
+  getLrpc().decodePayReq(REQUEST, (de: Error, dr: PaymentRequest) => {
+    if (de) {
+      log(`${de}`, LogLevel.ERROR, true);
+    }
+    const DECODED: number = dr.num_satoshis;
+    log(`lnrpc decoded response ${DECODED}`, LogLevel.DEBUG, false);
+    const AMT_MATCHES_BOUNTY: boolean = DECODED === NUM_AMT;
+    if (!AMT_MATCHES_BOUNTY) {
+      log("decoded amount does not match bounty!", LogLevel.ERROR, true);
+    } else {
+      getLrpc().channelBalance({}, (be: Error, br: ChannelBalance) => {
+        if (be) {
+          log(`${be}`, LogLevel.ERROR, true);
+        }
+        const BALANCE = br.local_balance.sat;
+        log(`gitpayd channel balance is: ${BALANCE} sats`, LogLevel.INFO, true);
+        // ensure the node has a high enough local balance to payout
+        processPayments(NUM_AMT, BALANCE, pullNum, paymentRequest);
+      });
+    }
+  });
+};
 
 /**
  * This function acquires the issue linked in the pull request
