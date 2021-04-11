@@ -40,9 +40,9 @@ const isValidPayment = (issueAmount: number, balance: number): boolean => {
 const sendPayment = (paymentRequest: string): void => {
   // send the payment
   const REQUEST = {
-    pay_req: paymentRequest,
-    timeout_seconds: GitpaydConfig.PAYMENT_TIMEOUT
-  }
+    payment_request: paymentRequest,
+    timeout_seconds: GitpaydConfig.PAYMENT_TIMEOUT,
+  };
   const CALL = getRouter().sendPaymentV2(REQUEST);
   CALL.on("data", (r: SendPayment) => {
     // A response was received from the server.
@@ -92,21 +92,19 @@ async function processPayments(
   paymentRequest: string
 ): Promise<void> {
   if (isValidPayment(issueAmount, balance)) {
-  //   const headers: object = { authorization: `token ${githubToken}` };
-  //   const MERGE = await axios.put(
-  //     `${API}/${GITPAYD_OWNER}/${GITPAYD_REPO}/pulls/${pullNum.toString()}/merge`,
-  //     MERGE_BODY,
-  //     { headers }
-  //   );
-  //   log(`${MERGE.data.message}`, LogLevel.INFO, true);
-  //   if (MERGE.data.merged) {
-  //     // if pull request merged successfully send payment
-  //     sendPayment(paymentRequest);
-  //   }
-  // } else {
-  //   log("invalid payment request", LogLevel.ERROR, true);
-  // }
-  sendPayment(paymentRequest);
+    const headers: object = { authorization: `token ${githubToken}` };
+    const MERGE = await axios.put(
+      `${API}/${GITPAYD_OWNER}/${GITPAYD_REPO}/pulls/${pullNum.toString()}/merge`,
+      MERGE_BODY,
+      { headers }
+    );
+    log(`${MERGE.data.message}`, LogLevel.INFO, true);
+    if (MERGE.data.merged) {
+      // if pull request merged successfully send payment
+      sendPayment(paymentRequest);
+    }
+  } else {
+    log("invalid payment request", LogLevel.ERROR, true);
   }
 }
 
@@ -140,7 +138,12 @@ const parseAmountDue = (
         const BALANCE = br.local_balance.sat;
         log(`gitpayd channel balance is: ${BALANCE} sats`, LogLevel.INFO, true);
         // ensure the node has a high enough local balance to payout
-        processPayments(parseInt(issueAmount, 10), BALANCE, pullNum, paymentRequest);
+        processPayments(
+          parseInt(issueAmount, 10),
+          BALANCE,
+          pullNum,
+          paymentRequest
+        );
       });
     }
   });
