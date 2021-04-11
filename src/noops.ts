@@ -3,6 +3,7 @@ import { Delimiters, splitter, validateCollaborators } from "../util/util";
 import {
   API,
   ChannelBalance,
+  GitpaydConfig,
   GITPAYD_OWNER,
   GITPAYD_REPO,
   MAX_PAYMENT,
@@ -38,7 +39,10 @@ const isValidPayment = (issueAmount: number, balance: number): boolean => {
  */
 const sendPayment = (paymentRequest: string): void => {
   // send the payment
-  const REQUEST = { pay_req: paymentRequest }
+  const REQUEST = {
+    pay_req: paymentRequest,
+    timeout_seconds: GitpaydConfig.PAYMENT_TIMEOUT
+  }
   const CALL = getRouter().sendPaymentV2(REQUEST);
   CALL.on("data", (r: SendPayment) => {
     // A response was received from the server.
@@ -88,19 +92,21 @@ async function processPayments(
   paymentRequest: string
 ): Promise<void> {
   if (isValidPayment(issueAmount, balance)) {
-    const headers: object = { authorization: `token ${githubToken}` };
-    const MERGE = await axios.put(
-      `${API}/${GITPAYD_OWNER}/${GITPAYD_REPO}/pulls/${pullNum.toString()}/merge`,
-      MERGE_BODY,
-      { headers }
-    );
-    log(`${MERGE.data.message}`, LogLevel.INFO, true);
-    if (MERGE.data.merged) {
-      // if pull request merged successfully send payment
-      sendPayment(paymentRequest);
-    }
-  } else {
-    log("invalid payment request", LogLevel.ERROR, true);
+  //   const headers: object = { authorization: `token ${githubToken}` };
+  //   const MERGE = await axios.put(
+  //     `${API}/${GITPAYD_OWNER}/${GITPAYD_REPO}/pulls/${pullNum.toString()}/merge`,
+  //     MERGE_BODY,
+  //     { headers }
+  //   );
+  //   log(`${MERGE.data.message}`, LogLevel.INFO, true);
+  //   if (MERGE.data.merged) {
+  //     // if pull request merged successfully send payment
+  //     sendPayment(paymentRequest);
+  //   }
+  // } else {
+  //   log("invalid payment request", LogLevel.ERROR, true);
+  // }
+  sendPayment(paymentRequest);
   }
 }
 
@@ -115,7 +121,6 @@ const parseAmountDue = (
   paymentRequest: string,
   pullNum: number
 ): void => {
-  const NUM_AMT: number = parseInt(issueAmount, 10);
   const REQUEST: object = { pay_req: paymentRequest };
   // decode the payment request and make sure it matches bounty
   getLrpc().decodePayReq(REQUEST, (de: Error, dr: PaymentRequest) => {
@@ -124,7 +129,7 @@ const parseAmountDue = (
     }
     const DECODED: number = dr.num_satoshis;
     log(`lnrpc decoded response ${DECODED}`, LogLevel.DEBUG, false);
-    const AMT_MATCHES_BOUNTY: boolean = DECODED === NUM_AMT;
+    const AMT_MATCHES_BOUNTY: boolean = DECODED.toString() === issueAmount;
     if (!AMT_MATCHES_BOUNTY) {
       log("decoded amount does not match bounty!", LogLevel.ERROR, true);
     } else {
@@ -135,7 +140,7 @@ const parseAmountDue = (
         const BALANCE = br.local_balance.sat;
         log(`gitpayd channel balance is: ${BALANCE} sats`, LogLevel.INFO, true);
         // ensure the node has a high enough local balance to payout
-        processPayments(NUM_AMT, BALANCE, pullNum, paymentRequest);
+        processPayments(parseInt(issueAmount, 10), BALANCE, pullNum, paymentRequest);
       });
     }
   });
