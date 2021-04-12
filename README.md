@@ -154,11 +154,6 @@ prompt: Enter SSL passphrase or press Enter for DEV mode
 2. Execute `gitpayd` should start up the server
 3. Execute from workflow as curl or create your own action thingy!
 
-```bash
-# gitpayd-cli required arguments
-gitpayd --o=owner -r=repo
-```
-
 ## Releasing
 
 TODO: Automated release management via `npm publish` and workflows
