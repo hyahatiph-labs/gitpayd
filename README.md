@@ -113,8 +113,8 @@ prompt: Enter SSL passphrase or press Enter for DEV mode
 ## Notes
 1. This application runs on the latest Node 12.x+
 2. Currently, only battle tested on Fedora 34 Beta
-4. Secrets can be configured in your repository `settings` => `secrets`
-5. Sample Github workflow .yml is located in `gitpayd/.github/workflows/build.yml`
+3. Secrets can be configured in your repository `settings` => `secrets`
+4. Sample Github workflow .yml is located in `gitpayd/.github/workflows/build.yml`
 
 <b>Required Secrets</b>
 <ul>
