@@ -1,7 +1,6 @@
 # gitpayd
 
 [![Build](https://github.com/reemuru/gitpayd/actions/workflows/build.yml/badge.svg)](https://github.com/reemuru/gitpayd/actions/workflows/build.yml)
-
 [![gitpayd](https://snyk.io/advisor/npm-package/gitpayd/badge.svg)](https://snyk.io/advisor/npm-package/gitpayd)
 
 Github Workflows + [BTC](https://bitcoin.org/en/bitcoin-core) / [LND](https://github.com/lightningnetwork/lnd), gitpayd watches your repo for new commits and sends payments to contributors
@@ -114,8 +113,8 @@ prompt: Enter SSL passphrase or press Enter for DEV mode
 ## Notes
 1. This application runs on the latest Node 12.x+
 2. Currently, only battle tested on Fedora 34 Beta
-4. Secrets can be configured in your repository `settings` => `secrets`
-5. Sample Github workflow .yml is located in `gitpayd/.github/workflows/build.yml`
+3. Secrets can be configured in your repository `settings` => `secrets`
+4. Sample Github workflow .yml is located in `gitpayd/.github/workflows/build.yml`
 
 <b>Required Secrets</b>
 <ul>
@@ -155,8 +154,7 @@ prompt: Enter SSL passphrase or press Enter for DEV mode
 
 ```bash
 # gitpayd-cli required arguments
-gitpayd --cap=/home/USER/path-to-ca-cert/ca.crt --kp=/home/USER/path-to-private-key/PRIVATEKEY.key --cep=/home/USER/path-server-cert/server.crt --rp=/home/USER/path-to-root-cert/root.crt --o=owner -r=repo
-# optional arguments -p=PORT, -host=IP_ADDRESS --dvp=DEV_PORT --ll=DEBUG,INFO,ERROR (default is INFO,ERROR)
+gitpayd --o=owner -r=repo
 ```
 
 ## Releasing

@@ -1,6 +1,6 @@
 {
   "name": "gitpayd",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Github Workflows + BTC / LND, gitpayd watches your repo for new commits and sends payments to contributors",
   "scripts": {
     "clean": "rm -rf dist/",
@@ -24,7 +24,7 @@
   "author": "hyahatiph-labs",
   "funding": {
     "type": "monero",
-    "url": "https://hiahatf.org/payments"
+    "url": "https://hiahatf.org/donations"
   },
   "license": "GPL-3.0",
   "bugs": {
