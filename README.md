@@ -154,8 +154,7 @@ prompt: Enter SSL passphrase or press Enter for DEV mode
 
 ```bash
 # gitpayd-cli required arguments
-gitpayd --cap=/home/USER/path-to-ca-cert/ca.crt --kp=/home/USER/path-to-private-key/PRIVATEKEY.key --cep=/home/USER/path-server-cert/server.crt --rp=/home/USER/path-to-root-cert/root.crt --o=owner -r=repo
-# optional arguments -p=PORT, -host=IP_ADDRESS --dvp=DEV_PORT --ll=DEBUG,INFO,ERROR (default is INFO,ERROR)
+gitpayd --o=owner -r=repo
 ```
 
 ## Releasing

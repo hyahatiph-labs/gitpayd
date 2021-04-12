@@ -56,25 +56,25 @@ const ARGS = yargs
     string: true,
     alias: "kp",
     description: "Path to SSL private key",
-    demand: true,
+    demand: false,
   })
   .option("cert-path", {
     string: true,
     alias: "cep",
     description: "Path to the server certification",
-    demand: true,
+    demand: false,
   })
   .option("ca-path", {
     string: true,
     alias: "cap",
     description: "Path to the CA intermediate certification",
-    demand: true,
+    demand: false,
   })
   .option("root-path", {
     string: true,
     alias: "rp",
     description: "Path to the root intermediate certification",
-    demand: true,
+    demand: false,
   })
   .option("port", {
     number: true,
