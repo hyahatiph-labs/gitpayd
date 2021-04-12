@@ -75,13 +75,12 @@ gitpayd/
 Options:
       --help                     Show help                             [boolean]
       --version                  Show version number                   [boolean]
-      --key-path, --kp           Path to SSL private key     [string] [required]
-      --cert-path, --cep         Path to the server certification
-                                                             [string] [required]
+      --key-path, --kp           Path to SSL private key                [string]
+      --cert-path, --cep         Path to the server certification       [string]
       --ca-path, --cap           Path to the CA intermediate certification
-                                                             [string] [required]
+                                                                        [string]
       --root-path, --rp          Path to the root intermediate certification
-                                                             [string] [required]
+                                                                        [string]
   -p, --port                     port to run the server                 [number]
       --dev-port, --dvp          dev port to run the server             [number]
   -o, --owner                    owner of the repo NoOps is running
@@ -90,7 +89,10 @@ Options:
                                                              [string] [required]
       --max-pay, --mp            maximum allowable payment              [string]
       --payment-threshold, --pt  minimum channel balance to maintain    [string]
+      --log-level, --ll          comma separated list of log levels to maintain
+                                                                        [string]
 
+Missing required arguments: owner, repo
 ```
 ## Security
 
