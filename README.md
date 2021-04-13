@@ -47,12 +47,11 @@ Github Workflows + [BTC](https://bitcoin.org/en/bitcoin-core) / [LND](https://gi
 ```bash
 gitpayd/
 ├── src                # Directory of source code
+   ├── test              # Test files
    ├── config.ts         # Configuration properties
    ├── gitpayd.ts        # Entry point for the app
    ├── noops.ts          # NoOps / DevOps script for processing CI / CD payments
    ├── setup.ts          # Creates configuration, connects to LND, helper functions, etc.
-├── test               # Test files
-├── util               # Helper functions
    ├── logging.ts        # In house logger, since TS hates console.log()
    ├── util.ts           # General purpose functions and logic for CI / CD
 ```
@@ -66,7 +65,7 @@ gitpayd/
 ## Development
 
 1. Set environment variable `export GITPAYD_ENV=DEV` for development if needed
-2. Run `node dist/src/gitpayd.js` to run server *--help for help 
+2. Run `node dist/gitpayd.js` to run server *--help for help 
 3. Test health check at `http://hostname:7778/gitpayd/health` (*port 7777 is default secure port)
 4. Verify configuration files at `~/.gitpayd/config.json`
 <br/>
@@ -158,7 +157,7 @@ prompt: Enter SSL passphrase or press Enter for DEV mode
 
 TODO: Automated release management via `npm publish` and workflows
 
-## Testing
+## Testing with Jest
 
 `npm test`
 <br/>

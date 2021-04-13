@@ -1,4 +1,4 @@
-import { GitpaydMode } from "../src/config";
+import { GitpaydMode } from "./config";
 import log, { LogLevel } from "./logging";
 import os from "os";
 

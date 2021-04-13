@@ -2,11 +2,11 @@ import * as yargs from "yargs";
 import os from "os";
 
 // api key size
-export const API_KEY_SIZE: number = 32;
+export const API_KEY_SIZE = 32;
 
 // default values for NoOps
-export const API: string = "https://api.github.com/repos";
-export const MERGE_BODY: object = { commit_title: "merged by gitpayd" };
+export const API = "https://api.github.com/repos";
+export const MERGE_BODY: Record<string, unknown> = { commit_title: "merged by gitpayd" };
 
 // interface for the config file
 export interface ConfigFile {
@@ -145,8 +145,8 @@ export const GITPAYD_REPO: string = ARGS.repo;
 // payment settings
 const CUSTOM_MAX_PAYMENT: string = ARGS["max-pay"];
 const CUSTOM_PAYMENT_THRESHOLD: string = ARGS["payment-threshold"];
-const DEFAULT_MAX_PAYMENT: number = 100000;
-const DEFAULT_PAYMENT_THRESHOLD: number = 250000;
+const DEFAULT_MAX_PAYMENT = 100000;
+const DEFAULT_PAYMENT_THRESHOLD = 250000;
 export const MAX_PAYMENT: number | string =
   !CUSTOM_MAX_PAYMENT
     ? DEFAULT_MAX_PAYMENT
@@ -177,12 +177,12 @@ export const LOG_FILTERS: string[] | null = IS_MULTI_LOG_LEVEL
   : null;
 
 // some defaults for linux
-export const CONFIG_PATH: string = `${os.homedir()}/.gitpayd/config.json`;
-export const DEFAULT_MACAROON: string = `${os.homedir()}/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`;
-export const DEFAULT_LND_HOST: string = "localhost:10009";
-export const DEFAULT_TLS_PATH: string = `${os.homedir()}/.lnd/tls.cert`;
-export const DEFAULT_RPC_PROTO_PATH: string = `${os.homedir()}/lnd/lnrpc/rpc.proto`;
-export const DEFAULT_ROUTER_PROTO_PATH: string = `${os.homedir()}/lnd/lnrpc/routerrpc/router.proto`;
+export const CONFIG_PATH = `${os.homedir()}/.gitpayd/config.json`;
+export const DEFAULT_MACAROON = `${os.homedir()}/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`;
+export const DEFAULT_LND_HOST = "localhost:10009";
+export const DEFAULT_TLS_PATH = `${os.homedir()}/.lnd/tls.cert`;
+export const DEFAULT_RPC_PROTO_PATH = `${os.homedir()}/lnd/lnrpc/rpc.proto`;
+export const DEFAULT_ROUTER_PROTO_PATH = `${os.homedir()}/lnd/lnrpc/routerrpc/router.proto`;
 export const INDENT = 2;
 export const DEFAULT_CONFIG: ConfigFile = {
   macaroonPath: DEFAULT_MACAROON,

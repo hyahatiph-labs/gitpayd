@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import express from "express";
-import log, { LogLevel } from "../util/logging";
+import log, { LogLevel } from "./logging";
 import https from "https";
 import http from "http";
 import fs from "fs";
@@ -21,7 +21,7 @@ import {
 import setup, { getInternalApiKey } from "./setup";
 import prompt from "prompt";
 import { runNoOps } from "./noops";
-import { logStartup } from "../util/util";
+import { logStartup } from "./util";
 
 let passphrase: string;
 let isConfigured: boolean;
