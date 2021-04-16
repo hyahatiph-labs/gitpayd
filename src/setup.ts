@@ -1,5 +1,5 @@
 import { promises as fsp } from "fs";
-import log, { LogLevel } from "../util/logging";
+import log, { LogLevel } from "./logging";
 import os from "os";
 import { randomBytes } from "crypto";
 import * as grpc from "@grpc/grpc-js";

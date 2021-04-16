@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Delimiters, splitter, validateCollaborators } from "../util/util";
+import { Delimiters, splitter, validateCollaborators } from "./util";
 import {
   API,
   ChannelBalance,
@@ -12,7 +12,7 @@ import {
   PAYMENT_THRESHOLD,
   SendPayment,
 } from "./config";
-import log, { LogLevel } from "../util/logging";
+import log, { LogLevel } from "./logging";
 import { getLrpc, getRouter } from "./setup";
 let githubToken: string;
 
@@ -92,7 +92,7 @@ async function processPayments(
   paymentRequest: string
 ): Promise<void> {
   if (isValidPayment(issueAmount, balance)) {
-    const headers: object = { authorization: `token ${githubToken}` };
+    const headers: Record<string, unknown> = { authorization: `token ${githubToken}` };
     const MERGE = await axios.put(
       `${API}/${GITPAYD_OWNER}/${GITPAYD_REPO}/pulls/${pullNum.toString()}/merge`,
       MERGE_BODY,
@@ -119,7 +119,7 @@ const parseAmountDue = (
   paymentRequest: string,
   pullNum: number
 ): void => {
-  const REQUEST: object = { pay_req: paymentRequest };
+  const REQUEST: Record<string, unknown> = { pay_req: paymentRequest };
   // decode the payment request and make sure it matches bounty
   getLrpc().decodePayReq(REQUEST, (de: Error, dr: PaymentRequest) => {
     if (de) {
@@ -155,7 +155,7 @@ const parseAmountDue = (
  */
 export async function runNoOps(token: string): Promise<void> {
   githubToken = token;
-  let pr: object[];
+  let pr: Record<string, unknown>[];
   await axios
     .get(`${API}/${GITPAYD_OWNER}/${GITPAYD_REPO}/pulls?state=open`)
     .then((res) => (pr = res.data))

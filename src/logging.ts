@@ -2,9 +2,9 @@ import { promises as fs } from "fs";
 import { spawn } from "child_process";
 import os from "os";
 import { ChildProcessWithoutNullStreams } from "node:child_process";
-import { LOG_FILTERS } from "../src/config";
-export const LOG_FILE: string = `${os.homedir}/.gitpayd/app.log`;
-let isFirstLog: boolean = true;
+import { LOG_FILTERS } from "./config";
+export const LOG_FILE = `${os.homedir}/.gitpayd/app.log`;
+let isFirstLog = true;
 
 /**
  * Enum for the log level
@@ -35,7 +35,7 @@ export default async function log(
   LOG_FILTERS.forEach((filter: LogLevel) => {
     if (filter === level) {
       const DATE: string = new Date().toISOString();
-      const LOG_STRING: string = `[${level}]\t${DATE} => ${message}`;
+      const LOG_STRING = `[${level}]\t${DATE} => ${message}`;
       if (write) {
         fs.appendFile(LOG_FILE, `${LOG_STRING}\n`);
       }
