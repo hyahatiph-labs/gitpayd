@@ -1,10 +1,10 @@
 import { AuthorizedRoles, isValidPayment, splitter, validateCollaborators } from './util/test-util';
 import { strict as assert } from 'assert';
 
-const BODY: string = "Bounty: 100000";
-const INVALID_BODY: string = "Bountis100000";
-const DELIMITER: string = "Bounty:";
-const EXPECTED_BOUNTY: number = 100000;
+const BODY = "Bounty: 100000";
+const INVALID_BODY = "Bountis100000";
+const DELIMITER = "Bounty:";
+const EXPECTED_BOUNTY = 100000;
 
 describe('Test helper function for data parsing', () => {
   it('should return amount for parsing bounty', () => {
