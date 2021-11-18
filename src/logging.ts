@@ -1,9 +1,8 @@
 import { promises as fs } from "fs";
-import { spawn } from "child_process";
 import os from "os";
-import { ChildProcessWithoutNullStreams } from "node:child_process";
 import { LOG_FILTERS } from "./config";
 export const LOG_FILE = `${os.homedir}/.gitpayd/app.log`;
+import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
 let isFirstLog = true;
 
 /**
