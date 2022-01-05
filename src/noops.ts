@@ -92,7 +92,7 @@ async function processPayments(
   paymentRequest: string
 ): Promise<void> {
   if (isValidPayment(issueAmount, balance)) {
-    const headers: Record<string, unknown> = { authorization: `token ${githubToken}` };
+    const headers: Record<string, string> = { authorization: `token ${githubToken}` };
     const MERGE = await axios.put(
       `${API}/${GITPAYD_OWNER}/${GITPAYD_REPO}/pulls/${pullNum.toString()}/merge`,
       MERGE_BODY,

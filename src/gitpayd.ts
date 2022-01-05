@@ -4,6 +4,7 @@ import log, { LogLevel } from "./logging";
 import https from "https";
 import http from "http";
 import fs from "fs";
+import helmet from "helmet";
 import {
   CONFIG_PATH,
   GitpaydConfig,
@@ -28,6 +29,20 @@ let isConfigured: boolean;
 
 const APP = express();
 const START_TIME: number = new Date().getMilliseconds();
+
+// add helmet for hardening
+APP.use(helmet({
+  frameguard: {
+    action: 'deny'
+  },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ['style.com'],
+    }
+  },
+  dnsPrefetchControl: false
+}));
 
 // healthcheck for gitpayd
 APP.get("/gitpayd/health", (req, res) => {
