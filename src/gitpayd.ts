@@ -28,6 +28,7 @@ let passphrase: string;
 let isConfigured: boolean;
 
 const APP = express();
+APP.disable('x-powered-by');
 const START_TIME: number = new Date().getMilliseconds();
 
 // add helmet for hardening
@@ -38,7 +39,6 @@ APP.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      styleSrc: ['style.com'],
     }
   },
   dnsPrefetchControl: false
