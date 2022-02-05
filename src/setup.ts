@@ -167,6 +167,6 @@ async function configureLndGrpc(config: ConfigFile) {
   router = new lnrouter.Router(LND_HOST, CREDENTIALS);
   await testLnd().catch((e) => {
     // exit if lnd could not connect
-    log(`testing lnd connection`, LogLevel.DEBUG, false);
+    log(`${e}`, LogLevel.DEBUG, false);
   });
 }
