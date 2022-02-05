@@ -77,17 +77,17 @@ const startHttp = (): void => {
     if (!isConfigured) {
       setup().catch((e) => {
         log(`${e}`, LogLevel.DEBUG, true)
-        log(`setup failed, check ${CONFIG_PATH}`, LogLevel.ERROR, true)
+        log(`setup failed, check ${CONFIG_PATH}`, LogLevel.ERROR, false)
       });
     }
     const HTTP_SERVER = http.createServer(APP);
     HTTP_SERVER.listen(DEV_PORT, HOST);
-    log("warning: gitpayd development server is running", LogLevel.INFO, true);
+    log("warning: gitpayd development server is running", LogLevel.INFO, false);
   }
   log(
     "https is not configured, check ssl certs location or passphrase",
     LogLevel.ERROR,
-    true
+    false
   );
 };
 
@@ -108,7 +108,7 @@ const startHttps = (input: string): void => {
   HTTPS_SERVER.listen(PORT, HOST);
   // check for lnd node
   setup().catch(() =>
-    log(`setup failed, check ${CONFIG_PATH}`, LogLevel.ERROR, true)
+    log(`setup failed, check ${CONFIG_PATH}`, LogLevel.ERROR, false)
   );
   isConfigured = true;
 };

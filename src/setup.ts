@@ -41,7 +41,7 @@ const LOADER_OPTIONS = {
  */
 export async function generateInternalApkiKey(): Promise<void> {
   const BUFFER: Buffer = randomBytes(API_KEY_SIZE);
-  log(`generated api key of length ${BUFFER.length}`, LogLevel.INFO, true);
+  log(`generated api key of length ${BUFFER.length}`, LogLevel.INFO, false);
   DEFAULT_CONFIG.internalApiKey = BUFFER.toString("hex");
 }
 
@@ -79,7 +79,7 @@ async function testLnd(): Promise<void> {
     if (e) {
       log(`${e}`, LogLevel.ERROR, true);
     }
-    log(`${r.version.split("commit=")[0]}`, LogLevel.DEBUG, true);
+    log(`${r.version.split("commit=")[0]}`, LogLevel.DEBUG, false);
   });
 }
 
@@ -93,17 +93,17 @@ export default async function setup(): Promise<void> {
   try {
     config = await fsp.readFile(CONFIG_PATH);
   } catch {
-    log("no config file found", LogLevel.ERROR, true);
+    log("no config file found", LogLevel.ERROR, false);
     // none found, write it
     await generateInternalApkiKey().catch(() =>
-      log(`failed to generate api key`, LogLevel.INFO, true)
+      log(`failed to generate api key`, LogLevel.INFO, false)
     );
     await fsp
       .mkdir(`${os.homedir()}/.gitpayd/`)
-      .catch(() => log(`path for config already exists`, LogLevel.INFO, true));
+      .catch(() => log(`path for config already exists`, LogLevel.INFO, false));
     await fsp
       .writeFile(CONFIG_PATH, JSON.stringify(DEFAULT_CONFIG, null, INDENT))
-      .catch(() => log("failed to write config file", LogLevel.INFO, true));
+      .catch(() => log("failed to write config file", LogLevel.INFO, false));
     config = await fsp.readFile(CONFIG_PATH);
   }
   // set config as JSON
@@ -167,6 +167,6 @@ async function configureLndGrpc(config: ConfigFile) {
   router = new lnrouter.Router(LND_HOST, CREDENTIALS);
   await testLnd().catch((e) => {
     // exit if lnd could not connect
-    throw new Error(`${e}`);
+    log(`testing lnd connection`, LogLevel.DEBUG, false);
   });
 }
