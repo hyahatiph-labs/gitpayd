@@ -38,19 +38,19 @@ jobs:
       # Check if the server is online
       # optional health check
       # using -k flag here for testing but better not to
-      - name: health check
-        env:
-          HOST: ${{ secrets.GITPAYD_HOST }}
-          PORT: ${{ secrets.GITPAYD_PORT }}
-        run: curl -ik https://$HOST:$PORT/gitpayd/health
+      # - name: health check
+      #   env:
+      #     HOST: ${{ secrets.GITPAYD_HOST }}
+      #     PORT: ${{ secrets.GITPAYD_PORT }}
+      #   run: curl -ik https://$HOST:$PORT/gitpayd/health
 
        # execute NoOps for gitpayd server
        # using -k flag here for testing but better not to
-      - name: gitpayd noops doin a lil sum'
-        env:
-          HOST: ${{ secrets.GITPAYD_HOST }}
-          PORT: ${{ secrets.GITPAYD_PORT }}
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          API_KEY: ${{ secrets.API_KEY }}
-        run: >
-          curl -ik -X POST https://$HOST:$PORT/gitpayd/noops -H "authorization: $API_KEY" -H "github-token: $TOKEN"
+      # - name: gitpayd noops doin a lil sum'
+      #   env:
+      #     HOST: ${{ secrets.GITPAYD_HOST }}
+      #     PORT: ${{ secrets.GITPAYD_PORT }}
+      #     TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     API_KEY: ${{ secrets.API_KEY }}
+      #   run: >
+      #     curl -ik -X POST https://$HOST:$PORT/gitpayd/noops -H "authorization: $API_KEY" -H "github-token: $TOKEN"

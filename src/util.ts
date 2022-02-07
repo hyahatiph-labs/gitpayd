@@ -60,6 +60,6 @@ export async function logStartup(
   await log(
     `gitpayd ${mode} started in ${REAL_TIME}ms on ${os.hostname()}:${port}`,
     LogLevel.INFO,
-    true
+    false
   );
 }

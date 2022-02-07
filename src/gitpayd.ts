@@ -4,6 +4,7 @@ import log, { LogLevel } from "./logging";
 import https from "https";
 import http from "http";
 import fs from "fs";
+import helmet from "helmet";
 import {
   CONFIG_PATH,
   GitpaydConfig,
@@ -27,7 +28,21 @@ let passphrase: string;
 let isConfigured: boolean;
 
 const APP = express();
+APP.disable('x-powered-by');
 const START_TIME: number = new Date().getMilliseconds();
+
+// add helmet for hardening
+APP.use(helmet({
+  frameguard: {
+    action: 'deny'
+  },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+    }
+  },
+  dnsPrefetchControl: false
+}));
 
 // healthcheck for gitpayd
 APP.get("/gitpayd/health", (req, res) => {
@@ -62,17 +77,17 @@ const startHttp = (): void => {
     if (!isConfigured) {
       setup().catch((e) => {
         log(`${e}`, LogLevel.DEBUG, true)
-        log(`setup failed, check ${CONFIG_PATH}`, LogLevel.ERROR, true)
+        log(`setup failed, check ${CONFIG_PATH}`, LogLevel.ERROR, false)
       });
     }
     const HTTP_SERVER = http.createServer(APP);
     HTTP_SERVER.listen(DEV_PORT, HOST);
-    log("warning: gitpayd development server is running", LogLevel.INFO, true);
+    log("warning: gitpayd development server is running", LogLevel.INFO, false);
   }
   log(
     "https is not configured, check ssl certs location or passphrase",
     LogLevel.ERROR,
-    true
+    false
   );
 };
 
@@ -93,7 +108,7 @@ const startHttps = (input: string): void => {
   HTTPS_SERVER.listen(PORT, HOST);
   // check for lnd node
   setup().catch(() =>
-    log(`setup failed, check ${CONFIG_PATH}`, LogLevel.ERROR, true)
+    log(`setup failed, check ${CONFIG_PATH}`, LogLevel.ERROR, false)
   );
   isConfigured = true;
 };
