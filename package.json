@@ -38,7 +38,7 @@
   "homepage": "https://github.com/hyahatiph-labs/gitpayd#readme",
   "dependencies": {
     "@grpc/grpc-js": "^1.2.12",
-    "@grpc/proto-loader": "^0.6.0",
+    "@grpc/proto-loader": "^0.7.0",
     "axios": "^0.27.2",
     "express": "^4.17.1",
     "google-protobuf": "^3.15.8",
